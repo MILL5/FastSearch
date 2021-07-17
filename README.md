@@ -12,7 +12,7 @@ BetterLinqSearch |Uses a simple Parallel LINQ Contains query with precomputed ca
 | CharSequenceSearch | Uses a character sequence tree to facilitate searching |
 
 Here are some quick results from testing.
-![](https://github.com/mill5/fastsearch/blob/main/searchresults.png)
+![](https://raw.githubusercontent.com/MILL5/FastSearch/main/SearchResults.png)
 
 We will update the library with new and more interesting techniques as time goes on.  In addition, we plan to keep this a generic library which can be used widely by all developers.  We are taking this approach replace functionality with new and improved algorithms as they are made available.
 
