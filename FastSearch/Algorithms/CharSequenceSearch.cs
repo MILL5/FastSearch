@@ -94,54 +94,54 @@ namespace FastSearch
         {
             var map = new ConcurrentDictionary<char, CharSequence>(Environment.ProcessorCount, 50);
 
-            Parallel.ForEach(items, (item) =>
-            {
-                var value = item
-                    .ToLowerInvariant()
-                    .ToArray();
+            _ = Parallel.ForEach(items, (item) =>
+              {
+                  var value = item
+                      .ToLowerInvariant()
+                      .ToArray();
 
-                for (int i = 0; i < value.Length; i++)
-                {
-                    int startIndex = i;
-                    char currentChar = value[startIndex];
+                  for (int i = 0; i < value.Length; i++)
+                  {
+                      int startIndex = i;
+                      char currentChar = value[startIndex];
 
-                    CharSequence currentSequence;
+                      CharSequence currentSequence;
 
-                    currentSequence = map.GetOrAdd(currentChar, (c) =>
-                    {
-                        return new CharSequence(c);
-                    });
+                      currentSequence = map.GetOrAdd(currentChar, (c) =>
+                      {
+                          return new CharSequence(c);
+                      });
 
-                    var lockObject = currentSequence;
+                      var lockObject = currentSequence;
 
-                    lock (lockObject)
-                    {
-                        if (!currentSequence.Items.Contains(item))
-                        {
-                            currentSequence.Items.Add(item);
-                        }
-                    }
+                      lock (lockObject)
+                      {
+                          if (!currentSequence.Items.Contains(item))
+                          {
+                              currentSequence.Items.Add(item);
+                          }
+                      }
 
-                    for (int j = i + 1; j < value.Length; j++)
-                    {
-                        var nextChar = value[j];
+                      for (int j = i + 1; j < value.Length; j++)
+                      {
+                          var nextChar = value[j];
 
-                        lock (lockObject.NextCharacters)
-                        {
-                            var nextSequence = currentSequence.FindNextCharacter(nextChar);
+                          lock (lockObject.NextCharacters)
+                          {
+                              var nextSequence = currentSequence.FindNextCharacter(nextChar);
 
-                            if (nextSequence == null)
-                            {
-                                nextSequence = new CharSequence(nextChar);
-                                currentSequence.NextCharacters.Add(nextSequence);
-                            }
+                              if (nextSequence == null)
+                              {
+                                  nextSequence = new CharSequence(nextChar);
+                                  currentSequence.NextCharacters.Add(nextSequence);
+                              }
 
-                            nextSequence.Items.Add(item);
-                            currentSequence = nextSequence;
-                        }
-                    }
-                };
-            });
+                              nextSequence.Items.Add(item);
+                              currentSequence = nextSequence;
+                          }
+                      }
+                  };
+              });
 
             _rootmap = map;
         }

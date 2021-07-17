@@ -37,7 +37,7 @@ namespace FastSearch
             }
         }
 
-        private IDictionary<int, List<ObjectWrapper>> _rootmap = new Dictionary<int, List<ObjectWrapper>>();
+        private IDictionary<int, List<ObjectWrapper>> _rootmap;
         private static readonly List<T> Empty = new();
 
         public HashSearch(IEnumerable<T> items)
@@ -60,7 +60,7 @@ namespace FastSearch
             if (_rootmap.TryGetValue(hashCodeToUse, out var found))
             {
                 return found
-                        .Where(x => string.CompareOrdinal(x.ToString(),searchToUse) == 0)
+                        .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                         .Select(x => x.Instance)
                         .ToList();
             }
@@ -72,26 +72,33 @@ namespace FastSearch
         {
             var map = new ConcurrentDictionary<int, List<ObjectWrapper>>(Environment.ProcessorCount, 50);
 
-            Parallel.ForEach(items, (item) =>
-            {
-                var value = new ObjectWrapper(item);
-                var valueAsString = value.ToString();
+            _ = Parallel.ForEach(items, (item) =>
+              {
+                  var value = new ObjectWrapper(item);
+                  var valueAsString = value.ToString();
 
-                for (int i = 0; i < valueAsString.Length; i++)
-                {
-                    var hashCode = valueAsString[i..].GetHashCode();
+                  for (int i = 0; i < valueAsString.Length; i++)
+                  {
+                      var valueToIndex = valueAsString[i..];
 
-                    var list = map.GetOrAdd(hashCode, (hashCode) =>
-                    {
-                        return new List<ObjectWrapper>();
-                    });
+                      for (int j = 0; j < valueToIndex.Length; j++)
+                      {
+                          var valueToAdd = valueToIndex.Substring(0, j + 1);
+                          var hashCodeToAdd = valueToAdd.GetHashCode();
 
-                    lock (list)
-                    {
-                        list.Add(value);
-                    }
-                };
-            });
+                          var list = map.GetOrAdd(hashCodeToAdd, (hc) =>
+                          {
+                              return new List<ObjectWrapper>();
+                          });
+
+                          lock (list)
+                          {
+                              if (!list.Contains(value))
+                                 list.Add(value);
+                          }
+                      }
+                  };
+              });
 
             _rootmap = map;
         }

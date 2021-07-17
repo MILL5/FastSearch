@@ -5,7 +5,7 @@ using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
 {
-    internal class BetterLinqSearch<T> : ISearch<T> where T : class
+    public class BetterLinqSearch<T> : ISearch<T> where T : class
     {
         private static readonly List<T> Empty = new();
 
@@ -55,7 +55,9 @@ namespace FastSearch
 
             var searchToUse = search.ToLowerInvariant();
 
-            return _items.Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase)).ToList();
+            return _items.AsParallel()
+                .Where(x => x.ToString()
+                .Contains(searchToUse, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 }

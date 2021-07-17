@@ -9,7 +9,7 @@ namespace FastSearch.UnitTests
     [TestClass]
     public class ContainsTests
     {
-        private const int _numberOfTimes = 100000000;
+        private const int _numberOfTimes = 10000;
 
         private CharSequenceSearch<string>.CharSequence GetCharacterSequence()
         {
@@ -175,7 +175,7 @@ namespace FastSearch.UnitTests
 
             var result = list1.Intersect(list2).ToList();
 
-            Assert.AreEqual(result.Count, list1.Count);
+            Assert.AreNotEqual(result.Count, list1.Count);
         }
     }
 }

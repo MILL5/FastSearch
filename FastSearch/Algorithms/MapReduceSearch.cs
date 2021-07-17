@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
@@ -46,24 +47,27 @@ namespace FastSearch
 
             var listsToReduce = new List<List<ObjectWrapper>>(_map.Count);
 
-            foreach (var c in searchToUse)
+            var result = Parallel.ForEach(searchToUse, (c,s) =>
             {
                 if (_map.TryGetValue(c, out var foundList))
                 {
-                    listsToReduce.Add(foundList);
+                    lock (listsToReduce)
+                    {
+                        listsToReduce.Add(foundList);
+                    }
                 }
                 else
                 {
-                    return Empty;
+                    s.Break();
                 }
-            }
+            });
 
-            if (listsToReduce.Count == 0)
+            if ((!result.IsCompleted) || (listsToReduce.Count == 0))
             {
                 return Empty;
             }
 
-            listsToReduce = listsToReduce.OrderBy(x => x.Count).ToList();
+            listsToReduce = listsToReduce.AsParallel().OrderBy(x => x.Count).ToList();
 
             List<ObjectWrapper> combinedList = listsToReduce[0];
 
@@ -73,6 +77,7 @@ namespace FastSearch
             }
 
             return combinedList
+                .AsParallel()
                 .Where(x => x.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
                 .ToList();

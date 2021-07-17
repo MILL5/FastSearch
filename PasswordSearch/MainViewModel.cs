@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using FastSearch;
 using GalaSoft.MvvmLight;
@@ -15,20 +16,20 @@ namespace PasswordSearch
     {
         private readonly StringBuilder _sb = new();
         private IEnumerable<string> _passwords;
-        private ISearch<string> _linqSearch;
-        private ISearch<string> _betterLinqSearch;
-        private ISearch<string> _mapReduceSearch;
-        private ISearch<string> _hashSearch;
-        private ISearch<string> _charSequenceSearch;
+        private volatile ISearch<string> _linqSearch;
+        private volatile ISearch<string> _betterLinqSearch;
+        private volatile ISearch<string> _mapReduceSearch;
+        private volatile ISearch<string> _hashSearch;
+        private volatile ISearch<string> _charSequenceSearch;
 
         public MainViewModel()
         {
             LoadFileCommand = new RelayCommand(LoadFileCommandMethod);
-            SearchCommand = new RelayCommand(SearchCommandMethod);
+            SearchCommand = new RelayCommand(SearchCommandMethod, CanExecuteSearch);
         }
 
-        public ICommand LoadFileCommand { get; }
-        public ICommand SearchCommand { get; }
+        public RelayCommand LoadFileCommand { get; }
+        public RelayCommand SearchCommand { get; }
 
         private void LoadFileCommandMethod()
         {
@@ -40,20 +41,27 @@ namespace PasswordSearch
             Task.Run(SearchAsync);
         }
 
+        private bool CanExecuteSearch()
+        {
+            return _betterLinqSearch != null &&
+                   _charSequenceSearch != null &&
+                   _hashSearch != null &&
+                   _linqSearch != null &&
+                   _mapReduceSearch != null;
+        }
+
         private async Task SearchAsync()
         {
-            const int searchLimit = 100000;
-            const int reductionFactor = 100;
-
+            int searchLimit = NumberOfSearches;
             var searchForThis = SearchPhrase;
 
             if (UseLinq)
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using LINQ", reductionFactor))
+                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
                 {
                     ICollection<string> result = null;
 
-                    for (int i = 0; i < (searchLimit / reductionFactor); i++)
+                    for (int i = 0; i < searchLimit; i++)
                     {
                         result = _linqSearch.Search(searchForThis);
                     }
@@ -66,11 +74,11 @@ namespace PasswordSearch
 
             if (UseBetterLinq)
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using Better LINQ", reductionFactor))
+                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using Better LINQ"))
                 {
                     ICollection<string> result = null;
 
-                    for (int i = 0; i < (searchLimit / reductionFactor); i++)
+                    for (int i = 0; i < searchLimit; i++)
                     {
                         result = _betterLinqSearch.Search(searchForThis);
                     }
@@ -83,11 +91,11 @@ namespace PasswordSearch
 
             if (UseMapReduce)
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using MapReduce", reductionFactor))
+                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using MapReduce"))
                 {
                     ICollection<string> result = null;
 
-                    for (int i = 0; i < (searchLimit / reductionFactor); i++)
+                    for (int i = 0; i < searchLimit; i++)
                     {
                         result = _mapReduceSearch.Search(searchForThis);
                     }
@@ -137,7 +145,7 @@ namespace PasswordSearch
 
         private async Task LoadFileAsync()
         {
-            var limit = Limit;
+            var limit = NumberOfEntries;
             var passwords = new List<string>(10000000);
 
             using (new TimerScope(_sb, "Load 10M passwords"))
@@ -156,35 +164,35 @@ namespace PasswordSearch
 
             passwords = passwords.Take(limit).ToList();
 
-            using (new TimerScope(_sb, "LINQ index"))
+            using (new TimerScope(_sb, $"LINQ indexed {limit}"))
             {
                 _linqSearch = new LinqSearch<string>(passwords);
             }
 
             RaisePropertyChanged(() => Output);
 
-            using (new TimerScope(_sb, "Better LINQ index"))
+            using (new TimerScope(_sb, $"Better LINQ indexed {limit}"))
             {
                 _betterLinqSearch = new BetterLinqSearch<string>(passwords);
             }
 
             RaisePropertyChanged(() => Output);
 
-            using (new TimerScope(_sb, "Map Reduce index"))
+            using (new TimerScope(_sb, $"Map Reduce indexed {limit}"))
             {
                 _mapReduceSearch = new MapReduceSearch<string>(passwords);
             }
 
             RaisePropertyChanged(() => Output);
 
-            using (new TimerScope(_sb, "Hash index"))
+            using (new TimerScope(_sb, $"Hash indexed {limit}"))
             {
                 _hashSearch = new HashSearch<string>(passwords);
             }
 
             RaisePropertyChanged(() => Output);
 
-            using (new TimerScope(_sb, "Character Tree index"))
+            using (new TimerScope(_sb, $"Character Tree indexed {limit}"))
             {
                 _charSequenceSearch = new CharSequenceSearch<string>(passwords);
             }
@@ -192,6 +200,11 @@ namespace PasswordSearch
             RaisePropertyChanged(() => Output);
 
             _passwords = passwords;
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SearchCommand.RaiseCanExecuteChanged();
+            });
         }
 
         public string SearchPhrase { get; set; } = "catherine";
@@ -202,7 +215,8 @@ namespace PasswordSearch
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }
 
-        public int Limit { get; set; } = 100000;
+        public int NumberOfEntries { get; set; } = 10000;
+        public int NumberOfSearches { get; set; } = 10000;
         public string Output => _sb.ToString();
     }
 }
