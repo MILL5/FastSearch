@@ -9,15 +9,15 @@
 		<RepositoryUrl>https://github.com/MILL5/FastSearch</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/MILL5/FastSearch</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReleaseNotes>This is fast searching for objects based on strings. No LINQ involved!</PackageReleaseNotes>
+		<PackageReleaseNotes>This is fast searching for objects based on their string value.</PackageReleaseNotes>
 		<Authors>MILL5</Authors>
-		<Description>This is fast searching for objects based on strings. No LINQ involved!</Description>
-		<PackageTags>fast;search;string;algorithm;hash</PackageTags>
+		<Description>This is fast searching for objects based on their string value.</Description>
+		<PackageTags>fast;search;string;algorithm;hash;lookups</PackageTags>
 		<PackageIcon>fastsearch.png</PackageIcon>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>

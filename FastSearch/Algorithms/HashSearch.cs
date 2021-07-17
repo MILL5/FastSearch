@@ -93,7 +93,10 @@ namespace FastSearch
 
                           lock (list)
                           {
-                              if (!list.Contains(value))
+                              var found = list.Where(x => ReferenceEquals(x.Instance, value.Instance))
+                                              .SingleOrDefault();
+
+                              if (found == null)
                                  list.Add(value);
                           }
                       }

@@ -77,7 +77,7 @@ namespace FastSearch.UnitTests
         }
 
         [TestMethod]
-        public void ExepectedRows()
+        public void ExpectedRows()
         {
             var s1 = new HashSearch<string>(_phoenixList);
             var s2 = new CharSequenceSearch<string>(_phoenixList);
@@ -86,6 +86,54 @@ namespace FastSearch.UnitTests
             var r2 = s2.Search("x");
             var union = r1.Intersect(r2).ToList();
 
+            Assert.AreEqual(r1.Count, r2.Count, union.Count);
+        }
+
+        [TestMethod]
+        public void IndexAndSearchTest1()
+        {
+            var list = new List<string> {
+                                          "Moison Ace Hardware",
+                                          "Lorden True Value Hardware",
+                                          "Du Verre Hardware",
+                                          "Gould NY Drapery Hardware",
+                                          "Du Verre: The Hardware Co"
+                                        };
+            var s1 = new HashSearch<string>(list);
+            var s2 = new CharSequenceSearch<string>(list);
+
+            var r1 = s1.Search("Hardware");
+            var r2 = s2.Search("Hardware");
+            var union = r1.Intersect(r2).ToList();
+
+            Assert.AreEqual(r1.Count, r2.Count, list.Count);
+            Assert.AreEqual(r1.Count, r2.Count, union.Count);
+        }
+
+        [TestMethod]
+        public void IndexAndSearchTest2()
+        {
+            IEnumerable<string> lines = File.ReadAllLines("ExcludedTestFile.txt");
+            var list = lines.Where(x => x.Contains("Hardware", System.StringComparison.OrdinalIgnoreCase)).ToList();
+
+            var s1 = new HashSearch<string>(lines);
+            var s2 = new CharSequenceSearch<string>(lines);
+
+            var r1 = s1.Search("Hardware");
+            var r2 = s2.Search("Hardware");
+
+            var union = r1.Intersect(r2).ToList();
+
+            var found = new List<string>();
+            foreach (var item in r2)
+            {
+                if (!r1.Contains(item))
+                {
+                    found.Add(item);
+                }
+            }
+
+            Assert.AreEqual(r1.Count, r2.Count, list.Count);
             Assert.AreEqual(r1.Count, r2.Count, union.Count);
         }
     }
