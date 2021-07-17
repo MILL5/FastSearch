@@ -16,6 +16,12 @@ Here are some quick results from testing.
 
 We will update the library with new and more interesting techniques as time goes on.  In addition, we plan to keep this a generic library which can be used widely by all developers.  We are taking this approach replace functionality with new and improved algorithms as they are made available.
 
+### How To Get Started
+
+1. Download the **FastSearch** library from NuGet.
+2. Make sure your objects `override ToString()`.
+3. Create a new CharSequenceSearch passing in your `IEnumerable<T>`
+
 Enjoy!
 
 [Your Friends @MILL5](https://www.mill5.com)
