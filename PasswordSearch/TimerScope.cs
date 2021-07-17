@@ -25,7 +25,7 @@ namespace PasswordSearch
         public void Dispose()
         {
             _sw.Stop();
-            _sb.Insert(0, $"{_m} took {_sw.ElapsedMilliseconds}ms\r\n");
+            _sb.Insert(0, $"{_m} took {_sw.Elapsed.TotalMilliseconds * 1000000}ns,{_sw.Elapsed.TotalMilliseconds}ms,{_sw.Elapsed.TotalSeconds}s\r\n");
         }
     }
 }

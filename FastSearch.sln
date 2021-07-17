@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasswordSearch", "PasswordS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastSearch", "FastSearch\FastSearch.csproj", "{38ED841E-6650-4705-9CC4-6B01673212AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSearch.UnitTests", "FastSearch.UnitTests\FastSearch.UnitTests.csproj", "{40127238-935E-4153-96FA-1435C7D51E59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastSearch.UnitTests", "FastSearch.UnitTests\FastSearch.UnitTests.csproj", "{40127238-935E-4153-96FA-1435C7D51E59}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6D7C3432-B6A0-4E1B-B52F-7B697FDA1EBF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -37,13 +37,13 @@ namespace FastSearch
             }
         }
 
-        private readonly IEnumerable<T> _items;
+        private readonly IEnumerable<ObjectWrapper> _items;
 
         public BetterLinqSearch(IEnumerable<T> items)
         {
             CheckIsNotNull(nameof(items), items);
 
-            _items = items;
+            _items = items.Select(x => new ObjectWrapper(x)).ToList();
         }
 
         public ICollection<T> Search(string search)
@@ -55,9 +55,12 @@ namespace FastSearch
 
             var searchToUse = search.ToLowerInvariant();
 
-            return _items.AsParallel()
+            return _items
+                .AsParallel()
                 .Where(x => x.ToString()
-                .Contains(searchToUse, StringComparison.OrdinalIgnoreCase)).ToList();
+                .Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Instance)
+                .ToList();
         }
     }
 }

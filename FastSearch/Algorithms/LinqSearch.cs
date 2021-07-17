@@ -26,7 +26,8 @@ namespace FastSearch
             
             var searchToUse = search.ToLowerInvariant();
 
-            return _items.AsParallel()
+            return _items
+                    .AsParallel()
                     .Where(x => x.ToLowerInvariant().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                     .ToList();
         }

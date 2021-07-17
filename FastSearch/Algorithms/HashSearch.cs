@@ -60,9 +60,9 @@ namespace FastSearch
             if (_rootmap.TryGetValue(hashCodeToUse, out var found))
             {
                 return found
-                        .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
-                        .Select(x => x.Instance)
-                        .ToList();
+                    .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
+                    .Select(x => x.Instance)
+                    .ToList();
             }
 
             return Empty;

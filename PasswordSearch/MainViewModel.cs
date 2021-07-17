@@ -55,92 +55,82 @@ namespace PasswordSearch
             int searchLimit = NumberOfSearches;
             var searchForThis = SearchPhrase;
 
-            if (UseLinq)
+            StringBuilder lastlog = null;
+
+            for (int i = 0; i < 1; i++)
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
-                {
-                    ICollection<string> result = null;
-
-                    for (int i = 0; i < searchLimit; i++)
-                    {
-                        result = _linqSearch.Search(searchForThis);
-                    }
-
-                    _sb.Insert(0, $"Found {result.Count} results\r\n");
-                }
-
-                RaisePropertyChanged(() => Output);
+                lastlog = Search(searchLimit, searchForThis);
             }
 
-            if (UseBetterLinq)
+            _sb.Insert(0, lastlog);
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using Better LINQ"))
-                {
-                    ICollection<string> result = null;
-
-                    for (int i = 0; i < searchLimit; i++)
-                    {
-                        result = _betterLinqSearch.Search(searchForThis);
-                    }
-
-                    _sb.Insert(0, $"Found {result.Count} results\r\n");
-                }
-
                 RaisePropertyChanged(() => Output);
+                SearchCommand.RaiseCanExecuteChanged();
+            });
+        }
+
+        private StringBuilder Search(int searchLimit, string searchForThis)
+        {
+            int linqResult = 0,
+                betterLinqResult = 0,
+                mapReduceResult = 0,
+                hashResult = 0,
+                charSequenceResult = 0;
+
+            var sb = new StringBuilder();
+
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
+            {
+                for (int i = 0; i < searchLimit; i++)
+                {
+                    linqResult = _linqSearch.Search(searchForThis).Count;
+                }
             }
 
-            if (UseMapReduce)
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Better LINQ"))
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using MapReduce"))
+                for (int i = 0; i < searchLimit; i++)
                 {
-                    ICollection<string> result = null;
-
-                    for (int i = 0; i < searchLimit; i++)
-                    {
-                        result = _mapReduceSearch.Search(searchForThis);
-                    }
-
-                    _sb.Insert(0, $"Found {result.Count} results\r\n");
+                    betterLinqResult = _betterLinqSearch.Search(searchForThis).Count;
                 }
-
-                RaisePropertyChanged(() => Output);
             }
 
-            if (UseHash)
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using MapReduce"))
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using Hash"))
+                for (int i = 0; i < searchLimit; i++)
                 {
-                    ICollection<string> result = null;
-
-                    for (int i = 0; i < searchLimit; i++)
-                    {
-                        result = _hashSearch.Search(searchForThis);
-                    }
-
-                    _sb.Insert(0, $"Found {result.Count} results\r\n");
+                    mapReduceResult = _mapReduceSearch.Search(searchForThis).Count;
                 }
-
-                RaisePropertyChanged(() => Output);
             }
 
-            if (UseCharSequence)
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Hash"))
             {
-                using (new TimerScope(_sb, $"Search for {searchForThis} {searchLimit} times using Character Tree"))
+                for (int i = 0; i < searchLimit; i++)
                 {
-                    ICollection<string> result = null;
-
-                    for (int i = 0; i < searchLimit; i++)
-                    {
-                        result = _charSequenceSearch.Search(searchForThis);
-                    }
-
-                    _sb.Insert(0, $"Found {result.Count} results\r\n");
+                    hashResult = _hashSearch.Search(searchForThis).Count;
                 }
-
-                RaisePropertyChanged(() => Output);
             }
 
-            await Task.CompletedTask;
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Character Tree"))
+            {
+                for (int i = 0; i < searchLimit; i++)
+                {
+                    charSequenceResult = _charSequenceSearch.Search(searchForThis).Count;
+                }
+            }
+
+            if (linqResult != betterLinqResult &&
+                linqResult != mapReduceResult &&
+                linqResult != hashResult &&
+                linqResult != charSequenceResult)
+            {
+                sb.Clear();
+                sb.Insert(0, $"Validation for results failed.");
+            }
+
+            return sb;
         }
 
         private async Task LoadFileAsync()
@@ -164,47 +154,53 @@ namespace PasswordSearch
 
             passwords = passwords.Take(limit).ToList();
 
-            using (new TimerScope(_sb, $"LINQ indexed {limit}"))
+            StringBuilder lastlog = null;
+            
+            for (int i = 0; i < 6; i++)
+            {
+                lastlog = Index(limit, passwords);
+            }
+
+            _sb.Insert(0, lastlog);
+            _passwords = passwords;
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                RaisePropertyChanged(() => Output);
+                SearchCommand.RaiseCanExecuteChanged();
+            });
+        }
+
+        private StringBuilder Index(int limit, List<string> passwords)
+        {
+            var sb = new StringBuilder();
+
+            using (new TimerScope(sb, $"LINQ indexed {limit}"))
             {
                 _linqSearch = new LinqSearch<string>(passwords);
             }
 
-            RaisePropertyChanged(() => Output);
-
-            using (new TimerScope(_sb, $"Better LINQ indexed {limit}"))
+            using (new TimerScope(sb, $"Better LINQ indexed {limit}"))
             {
                 _betterLinqSearch = new BetterLinqSearch<string>(passwords);
             }
 
-            RaisePropertyChanged(() => Output);
-
-            using (new TimerScope(_sb, $"Map Reduce indexed {limit}"))
+            using (new TimerScope(sb, $"Map Reduce indexed {limit}"))
             {
                 _mapReduceSearch = new MapReduceSearch<string>(passwords);
             }
 
-            RaisePropertyChanged(() => Output);
-
-            using (new TimerScope(_sb, $"Hash indexed {limit}"))
+            using (new TimerScope(sb, $"Hash indexed {limit}"))
             {
                 _hashSearch = new HashSearch<string>(passwords);
             }
 
-            RaisePropertyChanged(() => Output);
-
-            using (new TimerScope(_sb, $"Character Tree indexed {limit}"))
+            using (new TimerScope(sb, $"Character Tree indexed {limit}"))
             {
                 _charSequenceSearch = new CharSequenceSearch<string>(passwords);
             }
 
-            RaisePropertyChanged(() => Output);
-
-            _passwords = passwords;
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                SearchCommand.RaiseCanExecuteChanged();
-            });
+            return sb;
         }
 
         public string SearchPhrase { get; set; } = "catherine";

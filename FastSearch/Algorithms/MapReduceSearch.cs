@@ -73,7 +73,7 @@ namespace FastSearch
 
             for (int i = 1; i < listsToReduce.Count; i++)
             {
-                combinedList = combinedList.Intersect(listsToReduce[i]).ToList();
+                combinedList = combinedList.Intersect(listsToReduce[i].AsParallel()).ToList();
             }
 
             return combinedList
