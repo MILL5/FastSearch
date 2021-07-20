@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using FastSearch;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -17,7 +16,6 @@ namespace PasswordSearch
         private readonly StringBuilder _sb = new();
         private IEnumerable<string> _passwords;
         private volatile ISearch<string> _linqSearch;
-        private volatile ISearch<string> _betterLinqSearch;
         private volatile ISearch<string> _mapReduceSearch;
         private volatile ISearch<string> _hashSearch;
         private volatile ISearch<string> _charSequenceSearch;
@@ -43,8 +41,7 @@ namespace PasswordSearch
 
         private bool CanExecuteSearch()
         {
-            return _betterLinqSearch != null &&
-                   _charSequenceSearch != null &&
+            return _charSequenceSearch != null &&
                    _hashSearch != null &&
                    _linqSearch != null &&
                    _mapReduceSearch != null;
@@ -86,14 +83,6 @@ namespace PasswordSearch
                 for (int i = 0; i < searchLimit; i++)
                 {
                     linqResult = _linqSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Better LINQ"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    betterLinqResult = _betterLinqSearch.Search(searchForThis).Count;
                 }
             }
 
@@ -180,11 +169,6 @@ namespace PasswordSearch
                 _linqSearch = new LinqSearch<string>(passwords);
             }
 
-            using (new TimerScope(sb, $"Better LINQ indexed {limit}"))
-            {
-                _betterLinqSearch = new BetterLinqSearch<string>(passwords);
-            }
-
             using (new TimerScope(sb, $"Map Reduce indexed {limit}"))
             {
                 _mapReduceSearch = new MapReduceSearch<string>(passwords);
@@ -206,7 +190,6 @@ namespace PasswordSearch
         public string SearchPhrase { get; set; } = "catherine";
 
         public bool UseLinq { get; set; }
-        public bool UseBetterLinq { get; set; }
         public bool UseMapReduce { get; set; } = true;
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }

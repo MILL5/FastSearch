@@ -12,10 +12,10 @@ namespace FastSearch
         {
             private readonly string _s;
 
-            public ObjectWrapper(T instance)
+            public ObjectWrapper(T instance, string value)
             {
                 Instance = instance;
-                _s = instance.ToLowerInvariant();
+                _s = value.ToLowerInvariant();
             }
 
             public T Instance { get; }
@@ -29,11 +29,18 @@ namespace FastSearch
         private static readonly List<T> Empty = new();
         private IDictionary<char, List<ObjectWrapper>> _map = new Dictionary<char, List<ObjectWrapper>>();
 
-        public MapReduceSearch(IEnumerable<T> items)
+        private static string[] IndexThis(T instance)
+        {
+            return new[] { instance.ToString() };
+        }
+
+        public MapReduceSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null)
         {
             CheckIsNotNull(nameof(items), items);
 
-            BuildIndex(items);
+            var indexWithThis = indexFunc ?? IndexThis;
+
+            BuildIndex(items, indexWithThis);
         }
 
         public ICollection<T> Search(string search)
@@ -76,34 +83,42 @@ namespace FastSearch
                 combinedList = combinedList.Intersect(listsToReduce[i].AsParallel()).ToList();
             }
 
+            var equalityComparer = new ReferenceEqualityComparer<T>();
+
             return combinedList
                 .AsParallel()
                 .Where(x => x.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
+                .Distinct(equalityComparer)
                 .ToList();
         }
 
-        private void BuildIndex(IEnumerable<T> items)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis)
         {
             var map = new Dictionary<char, List<ObjectWrapper>>();
 
             foreach (var item in items)
             {
-                var o = new ObjectWrapper(item);
+                var strings = indexWithThis(item);
 
-                var value = o.ToString()
-                    .Distinct()
-                    .ToList();
-
-                foreach (var c in value)
+                foreach (var s in strings)
                 {
-                    if (!map.ContainsKey(c))
-                    {
-                        map.Add(c, new List<ObjectWrapper>());
-                    }
+                    var o = new ObjectWrapper(item, s);
 
-                    var list = map[c];
-                    list.Add(o);
+                    var value = o.ToString()
+                        .Distinct()
+                        .ToList();
+
+                    foreach (var c in value)
+                    {
+                        if (!map.ContainsKey(c))
+                        {
+                            map.Add(c, new List<ObjectWrapper>());
+                        }
+
+                        var list = map[c];
+                        list.Add(o);
+                    }
                 }
             }
 

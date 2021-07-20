@@ -53,11 +53,18 @@ namespace FastSearch
         private static readonly List<T> Empty = new();
         private IDictionary<char, CharSequence> _rootmap;
 
-        public CharSequenceSearch(IEnumerable<T> items)
+        private static string IndexThis(T instance)
+        {
+            return instance.ToString();
+        }
+
+        public CharSequenceSearch(IEnumerable<T> items, Func<T, string> indexFunc = null)
         {
             CheckIsNotNull(nameof(items), items);
 
-            BuildIndex(items);
+            var indexWithThis = indexFunc ?? IndexThis;
+
+            BuildIndex(items, indexWithThis);
         }
 
         public ICollection<T> Search(string search)
@@ -90,13 +97,13 @@ namespace FastSearch
             return current.Items;
         }
 
-        private void BuildIndex(IEnumerable<T> items)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string> indexWithThis)
         {
             var map = new ConcurrentDictionary<char, CharSequence>(Environment.ProcessorCount, 50);
 
             _ = Parallel.ForEach(items, (item) =>
               {
-                  var value = item
+                  var value = indexWithThis(item)
                       .ToLowerInvariant()
                       .ToArray();
 

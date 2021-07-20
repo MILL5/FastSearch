@@ -8,14 +8,14 @@
 
   <ItemGroup>
     <None Remove="10-million-password-list-top-1000000.txt" />
-    <None Remove="ExcludedTestFile.txt" />
+    <None Remove="NamesTest.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="10-million-password-list-top-1000000.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ExcludedTestFile.txt">
+    <Content Include="NamesTest.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

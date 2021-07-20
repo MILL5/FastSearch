@@ -13,10 +13,10 @@ namespace FastSearch
         {
             private readonly string _s;
 
-            public ObjectWrapper(T instance)
+            public ObjectWrapper(T instance, string value)
             {
                 Instance = instance;
-                _s = instance.ToLowerInvariant();
+                _s = value.ToLowerInvariant();
             }
 
             public T Instance { get; }
@@ -40,11 +40,18 @@ namespace FastSearch
         private IDictionary<int, List<ObjectWrapper>> _rootmap;
         private static readonly List<T> Empty = new();
 
-        public HashSearch(IEnumerable<T> items)
+        private static string[] IndexThis(T instance)
+        {
+            return new[] { instance.ToString() };
+        }
+
+        public HashSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null)
         {
             CheckIsNotNull(nameof(items), items);
 
-            BuildIndex(items);
+            var indexWithThis = indexFunc ?? IndexThis;
+
+            BuildIndex(items, indexWithThis);
         }
 
         public ICollection<T> Search(string search)
@@ -59,48 +66,54 @@ namespace FastSearch
 
             if (_rootmap.TryGetValue(hashCodeToUse, out var found))
             {
+                var equalityComparer = new ReferenceEqualityComparer<T>();
+
                 return found
                     .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                     .Select(x => x.Instance)
+                    .Distinct(equalityComparer)
                     .ToList();
             }
 
             return Empty;
         }
 
-        private void BuildIndex(IEnumerable<T> items)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis)
         {
             var map = new ConcurrentDictionary<int, List<ObjectWrapper>>(Environment.ProcessorCount, 50);
 
             _ = Parallel.ForEach(items, (item) =>
               {
-                  var value = new ObjectWrapper(item);
-                  var valueAsString = value.ToString();
-
-                  for (int i = 0; i < valueAsString.Length; i++)
+                  foreach (var s in indexWithThis(item))
                   {
-                      var valueToIndex = valueAsString[i..];
+                      var value = new ObjectWrapper(item, s);
+                      var valueAsString = value.ToString();
 
-                      for (int j = 0; j < valueToIndex.Length; j++)
+                      for (int i = 0; i < valueAsString.Length; i++)
                       {
-                          var valueToAdd = valueToIndex.Substring(0, j + 1);
-                          var hashCodeToAdd = valueToAdd.GetHashCode();
+                          var valueToIndex = valueAsString[i..];
 
-                          var list = map.GetOrAdd(hashCodeToAdd, (hc) =>
+                          for (int j = 0; j < valueToIndex.Length; j++)
                           {
-                              return new List<ObjectWrapper>();
-                          });
+                              var valueToAdd = valueToIndex.Substring(0, j + 1);
+                              var hashCodeToAdd = valueToAdd.GetHashCode();
 
-                          lock (list)
-                          {
-                              var found = list.Where(x => ReferenceEquals(x.Instance, value.Instance))
-                                              .SingleOrDefault();
+                              var list = map.GetOrAdd(hashCodeToAdd, (hc) =>
+                              {
+                                  return new List<ObjectWrapper>();
+                              });
 
-                              if (found == null)
-                                 list.Add(value);
+                              lock (list)
+                              {
+                                  var found = list.Where(x => ReferenceEquals(x.Instance, value.Instance))
+                                                  .SingleOrDefault();
+
+                                  if (found == null)
+                                      list.Add(value);
+                              }
                           }
-                      }
-                  };
+                      };
+                  }
               });
 
             _rootmap = map;

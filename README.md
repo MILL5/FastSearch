@@ -5,8 +5,7 @@ This project is meant to provide quick, easy text (i.e. string) searching over a
 
 |Algorithm |Description |
 --- | --- |
-|LinqSearch|Uses a simple Parallel LINQ Contains query|
-BetterLinqSearch |Uses a simple Parallel LINQ Contains query with precomputed case insensitive strings |
+| LinqSearch |Uses a simple Parallel LINQ Contains query with precomputed case insensitive strings |
 | MapReduceSearch |Uses a Map Reduce technique (Not Recommended)|
 | HashSearch | Uses a precomputed hash of each substring combination |
 | CharSequenceSearch | Uses a character sequence tree to facilitate searching |

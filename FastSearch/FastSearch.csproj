@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Title>Intrinio.Net</Title>
+		<Title>FastSearch</Title>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>9.0</LangVersion>
 		<Company>MILL5</Company>
@@ -9,15 +9,15 @@
 		<RepositoryUrl>https://github.com/MILL5/FastSearch</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/MILL5/FastSearch</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReleaseNotes>This is fast searching for objects based on their string value.</PackageReleaseNotes>
+		<PackageReleaseNotes>This is fast searching for objects based on their string value(s).</PackageReleaseNotes>
 		<Authors>MILL5</Authors>
-		<Description>This is fast searching for objects based on their string value.</Description>
+		<Description>This is fast searching for objects based on their string value(s).</Description>
 		<PackageTags>fast;search;string;algorithm;hash;lookups</PackageTags>
 		<PackageIcon>fastsearch.png</PackageIcon>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Version>1.0.4</Version>
+		<Version>1.0.5</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>

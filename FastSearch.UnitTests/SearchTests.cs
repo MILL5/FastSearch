@@ -113,14 +113,14 @@ namespace FastSearch.UnitTests
         [TestMethod]
         public void IndexAndSearchTest2()
         {
-            IEnumerable<string> lines = File.ReadAllLines("ExcludedTestFile.txt");
-            var list = lines.Where(x => x.Contains("Hardware", System.StringComparison.OrdinalIgnoreCase)).ToList();
+            IEnumerable<string> lines = File.ReadAllLines("NamesTest.txt");
+            var list = lines.Where(x => x.Contains("Roxanna", System.StringComparison.OrdinalIgnoreCase)).ToList();
 
             var s1 = new HashSearch<string>(lines);
             var s2 = new CharSequenceSearch<string>(lines);
 
-            var r1 = s1.Search("Hardware");
-            var r2 = s2.Search("Hardware");
+            var r1 = s1.Search("Roxanna");
+            var r2 = s2.Search("Roxanna");
 
             var union = r1.Intersect(r2).ToList();
 
