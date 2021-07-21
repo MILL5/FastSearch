@@ -76,6 +76,7 @@ namespace FastSearch
 
             return _items
                 .AsParallel()
+                .WithDegreeOfParallelism(ParallelismHelper.MaxDegreeOfParallelism)
                 .Where(x => x.ToString()
                 .Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)

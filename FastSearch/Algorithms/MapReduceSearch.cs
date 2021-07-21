@@ -54,7 +54,7 @@ namespace FastSearch
 
             var listsToReduce = new List<List<ObjectWrapper>>(_map.Count);
 
-            var result = Parallel.ForEach(searchToUse, (c,s) =>
+            var result = Parallel.ForEach(searchToUse, ParallelismHelper.Options, (c,s) =>
             {
                 if (_map.TryGetValue(c, out var foundList))
                 {
@@ -74,19 +74,25 @@ namespace FastSearch
                 return Empty;
             }
 
-            listsToReduce = listsToReduce.AsParallel().OrderBy(x => x.Count).ToList();
+            listsToReduce = listsToReduce
+                .AsParallel()
+                .WithDegreeOfParallelism(ParallelismHelper.MaxDegreeOfParallelism)
+                .OrderBy(x => x.Count).ToList();
 
             List<ObjectWrapper> combinedList = listsToReduce[0];
 
             for (int i = 1; i < listsToReduce.Count; i++)
             {
-                combinedList = combinedList.Intersect(listsToReduce[i].AsParallel()).ToList();
+                combinedList = combinedList.Intersect(listsToReduce[i]
+                    .AsParallel()
+                    .WithDegreeOfParallelism(ParallelismHelper.MaxDegreeOfParallelism)).ToList();
             }
 
             var equalityComparer = new ReferenceEqualityComparer<T>();
 
             return combinedList
                 .AsParallel()
+                .WithDegreeOfParallelism(ParallelismHelper.MaxDegreeOfParallelism)
                 .Where(x => x.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
                 .Distinct(equalityComparer)

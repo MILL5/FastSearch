@@ -99,9 +99,10 @@ namespace FastSearch
 
         private void BuildIndex(IEnumerable<T> items, Func<T, string> indexWithThis)
         {
-            var map = new ConcurrentDictionary<char, CharSequence>(Environment.ProcessorCount, 50);
+            var map = new ConcurrentDictionary<char, CharSequence>(ParallelismHelper.MaxDegreeOfParallelism,
+                                                                   50);
 
-            _ = Parallel.ForEach(items, (item) =>
+            _ = Parallel.ForEach(items, ParallelismHelper.Options, (item) =>
               {
                   var value = indexWithThis(item)
                       .ToLowerInvariant()
