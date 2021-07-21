@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using static Pineapple.Common.Preconditions;
+using static FastSearch.ParallelismHelper;
 
 namespace FastSearch
 {
@@ -38,15 +39,18 @@ namespace FastSearch
         }
 
         private readonly IEnumerable<ObjectWrapper> _items;
+        private readonly int _degreeOfParallelism;
 
         private static string[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null)
+        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, int? maxDegreeOfParallelism = null)
         {
             CheckIsNotNull(nameof(items), items);
+
+            _degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
 
             var indexWithThis = indexFunc ?? IndexThis;
 
@@ -73,10 +77,10 @@ namespace FastSearch
             var searchToUse = search.ToLowerInvariant();
 
             var equalityComparer = new ReferenceEqualityComparer<T>();
-
+            
             return _items
                 .AsParallel()
-                .WithDegreeOfParallelism(ParallelismHelper.MaxDegreeOfParallelism)
+                .WithDegreeOfParallelism(_degreeOfParallelism)
                 .Where(x => x.ToString()
                 .Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)

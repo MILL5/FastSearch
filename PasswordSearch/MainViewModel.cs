@@ -16,7 +16,6 @@ namespace PasswordSearch
         private readonly StringBuilder _sb = new();
         private IEnumerable<string> _passwords;
         private volatile ISearch<string> _linqSearch;
-        private volatile ISearch<string> _mapReduceSearch;
         private volatile ISearch<string> _hashSearch;
         private volatile ISearch<string> _charSequenceSearch;
 
@@ -43,8 +42,7 @@ namespace PasswordSearch
         {
             return _charSequenceSearch != null &&
                    _hashSearch != null &&
-                   _linqSearch != null &&
-                   _mapReduceSearch != null;
+                   _linqSearch != null;
         }
 
         private async Task SearchAsync()
@@ -72,7 +70,6 @@ namespace PasswordSearch
         {
             int linqResult = 0,
                 betterLinqResult = 0,
-                mapReduceResult = 0,
                 hashResult = 0,
                 charSequenceResult = 0;
 
@@ -83,14 +80,6 @@ namespace PasswordSearch
                 for (int i = 0; i < searchLimit; i++)
                 {
                     linqResult = _linqSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using MapReduce"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    mapReduceResult = _mapReduceSearch.Search(searchForThis).Count;
                 }
             }
 
@@ -111,7 +100,6 @@ namespace PasswordSearch
             }
 
             if (linqResult != betterLinqResult &&
-                linqResult != mapReduceResult &&
                 linqResult != hashResult &&
                 linqResult != charSequenceResult)
             {
@@ -169,11 +157,6 @@ namespace PasswordSearch
                 _linqSearch = new LinqSearch<string>(passwords);
             }
 
-            using (new TimerScope(sb, $"Map Reduce indexed {limit}"))
-            {
-                _mapReduceSearch = new MapReduceSearch<string>(passwords);
-            }
-
             using (new TimerScope(sb, $"Hash indexed {limit}"))
             {
                 _hashSearch = new HashSearch<string>(passwords);
@@ -190,7 +173,6 @@ namespace PasswordSearch
         public string SearchPhrase { get; set; } = "catherine";
 
         public bool UseLinq { get; set; }
-        public bool UseMapReduce { get; set; } = true;
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }
 

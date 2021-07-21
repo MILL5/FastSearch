@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
 {
@@ -24,6 +25,31 @@ namespace FastSearch
 
                 return Math.Max(maxCpusToUse, minParallelism);
             }
+        }
+
+        public static int GetMaxDegreeOfParallelism(int? maxDegreeOfParallelism)
+        {
+            int value;
+
+            if (maxDegreeOfParallelism.HasValue)
+            {
+                CheckIsNotLessThanOrEqualTo(nameof(maxDegreeOfParallelism), maxDegreeOfParallelism.Value, 0);
+
+                value = Math.Min(MaxDegreeOfParallelism, maxDegreeOfParallelism.Value);
+            }
+            else
+            {
+                value = MaxDegreeOfParallelism;
+            }
+
+            return value;
+        }
+
+        public static ParallelOptions GetOptions(int? maxDegreeOfParallelism)
+        {
+            int degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
+
+            return new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism };
         }
     }
 }

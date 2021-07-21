@@ -26,9 +26,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <RadioButton IsChecked="{Binding UseLinq}" Margin="5" Grid.Row="0" Grid.Column="0" GroupName="Implementation">LINQ</RadioButton>
-                <RadioButton IsChecked="{Binding UseMapReduce}" Margin="5" Grid.Row="1" Grid.Column="0" GroupName="Implementation">Map Reduce</RadioButton>
                 <RadioButton IsChecked="{Binding UseHash}" Margin="5" Grid.Row="0" Grid.Column="1" GroupName="Implementation">Hash</RadioButton>
-                <RadioButton IsChecked="{Binding UseCharSequence}" Margin="5" Grid.Row="1" Grid.Column="1" GroupName="Implementation">Character Sequence</RadioButton>
+                <RadioButton IsChecked="{Binding UseCharSequence}" Margin="5" Grid.Row="1" Grid.Column="0" GroupName="Implementation">Character Sequence</RadioButton>
             </Grid>
             <Grid VerticalAlignment="Center">
                 <Grid.RowDefinitions>
