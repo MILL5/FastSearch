@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Pineapple.Threading;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static Pineapple.Common.Preconditions;
-using static FastSearch.ParallelismHelper;
 
 namespace FastSearch
 {
@@ -46,13 +46,15 @@ namespace FastSearch
             return new[] { instance.ToString() };
         }
 
-        public HashSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, int? maxDegreeOfParallelism = null)
+        public HashSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
         {
             CheckIsNotNull(nameof(items), items);
 
             var indexWithThis = indexFunc ?? IndexThis;
 
-            BuildIndex(items, indexWithThis, maxDegreeOfParallelism);
+            parallelism ??= new Parallelism();
+
+            BuildIndex(items, indexWithThis, parallelism);
         }
 
         public ICollection<T> Search(string search)
@@ -79,14 +81,11 @@ namespace FastSearch
             return Empty;
         }
 
-        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, int? maxDegreeOfParallelism)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism)
         {
-            int degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
-            var options = GetOptions(maxDegreeOfParallelism);
+            var map = new ConcurrentDictionary<int, List<ObjectWrapper>>(parallelism.MaxDegreeOfParallelism, 50);
 
-            var map = new ConcurrentDictionary<int, List<ObjectWrapper>>(degreeOfParallelism, 50);
-
-            _ = Parallel.ForEach(items, options, (item) =>
+            _ = Parallel.ForEach(items, parallelism.Options, (item) =>
               {
                   foreach (var s in indexWithThis(item))
                   {
