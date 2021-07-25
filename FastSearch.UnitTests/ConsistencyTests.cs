@@ -57,10 +57,8 @@ namespace FastSearch.UnitTests
                     }
                 }
             }
-            else
-            {
-                // Assert.Inconclusive("No collisions found.");
-            }
+
+            count.ShouldBeGreaterThan(0);
 
             Console.WriteLine($"{count} searches performed");
         }
