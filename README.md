@@ -23,6 +23,12 @@ We will update the library with new and more interesting techniques as time goes
 2. Make sure your objects `override ToString()`.
 3. Create a new CharSequenceSearch passing in your `IEnumerable<T>`
 
+### Features
+
+1. Support for `ToString()` out-of-the-box.
+2. Index function `Func<T, string>` to return a custom string representation of an object.
+3. Maximum degree of parallelism for index building and searching
+
 Enjoy!
 
 [Your Friends @MILL5](https://www.mill5.com)
