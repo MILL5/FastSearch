@@ -76,15 +76,11 @@ namespace FastSearch
 
             var searchToUse = search.ToLowerInvariant();
 
-            var equalityComparer = new ReferenceEqualityComparer<T>();
-            
             return _items
                 .AsParallel()
                 .WithDegreeOfParallelism(_degreeOfParallelism)
-                .Where(x => x.ToString()
-                .Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
-                .Distinct(equalityComparer)
                 .ToList();
         }
     }

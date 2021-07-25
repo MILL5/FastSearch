@@ -38,7 +38,38 @@ namespace FastSearch
             }
         }
 
-        private IDictionary<int, List<ObjectWrapper>> _rootmap;
+        internal class ObjectWrapperList : List<ObjectWrapper>
+        {
+            private List<T> _instances;
+
+            public ObjectWrapperList()
+            {
+            }
+
+            public void Materialize()
+            {
+                Instances = this.Select(x => x.Instance).ToList();
+            }
+
+            public List<T> Instances
+            { 
+                get
+                {
+                    if (_instances == null)
+                    {
+                        Materialize();
+                    }
+
+                    return _instances;
+                }
+                private set
+                {
+                    _instances = value;
+                }
+            }
+        }
+
+        private IDictionary<int, ObjectWrapperList> _rootmap;
         private static readonly List<T> Empty = new();
 
         private static string[] IndexThis(T instance)
@@ -67,13 +98,7 @@ namespace FastSearch
 
             if (_rootmap.TryGetValue(hashCodeToUse, out var found))
             {
-                var equalityComparer = new ReferenceEqualityComparer<T>();
-
-                return found
-                    .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
-                    .Select(x => x.Instance)
-                    .Distinct(equalityComparer)
-                    .ToList();
+                return found.Instances;
             }
 
             return Empty;
@@ -84,7 +109,7 @@ namespace FastSearch
             int degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
             var options = GetOptions(maxDegreeOfParallelism);
 
-            var map = new ConcurrentDictionary<int, List<ObjectWrapper>>(degreeOfParallelism, 50);
+            var map = new ConcurrentDictionary<int, ObjectWrapperList>(degreeOfParallelism, 50);
 
             _ = Parallel.ForEach(items, options, (item) =>
               {
@@ -104,7 +129,7 @@ namespace FastSearch
 
                               var list = map.GetOrAdd(hashCodeToAdd, (hc) =>
                               {
-                                  return new List<ObjectWrapper>();
+                                  return new ObjectWrapperList();
                               });
 
                               lock (list)
@@ -119,6 +144,11 @@ namespace FastSearch
                       };
                   }
               });
+
+            foreach (var item in map)
+            {
+                item.Value.Materialize();
+            }
 
             _rootmap = map;
         }
