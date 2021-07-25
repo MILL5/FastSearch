@@ -163,8 +163,8 @@ namespace FastSearch.UnitTests
         [TestMethod]
         public void Intersect()
         {
-            List<MyObject2> list1 = new List<MyObject2>();
-            List<MyObject2> list2 = new List<MyObject2>();
+            List<MyObject2> list1 = new();
+            List<MyObject2> list2 = new();
 
             var mo1 = new MyObject2("hello");
             var mo2 = new MyObject2("world");

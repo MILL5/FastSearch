@@ -5,71 +5,40 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Pineapple.Common.Preconditions;
 using static FastSearch.ParallelismHelper;
+using static FastSearch.HashSearchExtensions;
 
 namespace FastSearch
 {
     public class HashSearch<T> : ISearch<T> where T : class
     {
-        internal class ObjectWrapper
+        internal class HashIndexEntry
         {
-            private readonly string _s;
 
-            public ObjectWrapper(T instance, string value)
+            public HashIndexEntry(int hash)
             {
-                Instance = instance;
-                _s = value.ToLowerInvariant();
+                Hash = hash;
+                Items = new List<ValueEntry>();
             }
 
-            public T Instance { get; }
+            public int Hash { get; }
 
-            public override bool Equals(object obj)
-            {
-                return obj is ObjectWrapper other && _s == other._s;
-            }
-
-            public override int GetHashCode()
-            {
-                return _s.GetHashCode();
-            }
-
-            public override string ToString()
-            {
-                return _s;
-            }
+            public List<ValueEntry> Items { get; }
         }
 
-        internal class ObjectWrapperList : List<ObjectWrapper>
+        internal class ValueEntry
         {
-            private List<T> _instances;
-
-            public ObjectWrapperList()
+            public ValueEntry(string value)
             {
+                Value = value;
+                Items = new List<T>();
             }
 
-            public void Materialize()
-            {
-                Instances = this.Select(x => x.Instance).ToList();
-            }
-
-            public List<T> Instances
-            { 
-                get
-                {
-                    if (_instances == null)
-                    {
-                        Materialize();
-                    }
-
-                    return _instances;
-                }
-                private set
-                {
-                    _instances = value;
-                }
-            }
+            public string Value { get; }
+            public List<T> Items { get; }
         }
 
-        private IDictionary<int, ObjectWrapperList> _rootmap;
+        internal IList<HashIndexEntry> _rootmap;
+
         private static readonly List<T> Empty = new();
 
         private static string[] IndexThis(T instance)
@@ -96,11 +65,22 @@ namespace FastSearch
             var searchToUse = search.ToLowerInvariant();
             var hashCodeToUse = searchToUse.GetHashCode();
 
-            if (_rootmap.TryGetValue(hashCodeToUse, out var found))
-            {
-                return found.Instances;
-            }
+            // replace with binary search
+            //if (_rootmap.TryGetValue(hashCodeToUse, out var hashIndexEntry))
 
+            HashIndexEntry hashIndexEntry = _rootmap.Find(hashCodeToUse);
+
+            if (hashIndexEntry != null)
+            {
+                // We can user FirstOrDefault here because we guarantee there are no collisions
+                var valueEntry = hashIndexEntry.Items.FirstOrDefault(x => x.Value.Equals(searchToUse, StringComparison.OrdinalIgnoreCase));
+                
+                if (valueEntry != null)
+                {
+                    return valueEntry.Items;
+                }
+            }
+             
             return Empty;
         }
 
@@ -109,14 +89,16 @@ namespace FastSearch
             int degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
             var options = GetOptions(maxDegreeOfParallelism);
 
-            var map = new ConcurrentDictionary<int, ObjectWrapperList>(degreeOfParallelism, 50);
+            var map = new ConcurrentDictionary<int, HashIndexEntry>(degreeOfParallelism, 50);
 
+            // For each item ...
             _ = Parallel.ForEach(items, options, (item) =>
               {
+                  // We can have multiple strings that represent an item
                   foreach (var s in indexWithThis(item))
                   {
-                      var value = new ObjectWrapper(item, s);
-                      var valueAsString = value.ToString();
+                      // We are case insensitive
+                      var valueAsString = s.ToLowerInvariant();
 
                       for (int i = 0; i < valueAsString.Length; i++)
                       {
@@ -127,30 +109,42 @@ namespace FastSearch
                               var valueToAdd = valueToIndex.Substring(0, j + 1);
                               var hashCodeToAdd = valueToAdd.GetHashCode();
 
-                              var list = map.GetOrAdd(hashCodeToAdd, (hc) =>
+                              var hashIndexEntry = map.GetOrAdd(hashCodeToAdd, (hc) =>
                               {
-                                  return new ObjectWrapperList();
+                                  return new HashIndexEntry(hc);
                               });
 
-                              lock (list)
+                              lock (hashIndexEntry)
                               {
-                                  var found = list.Where(x => ReferenceEquals(x.Instance, value.Instance))
-                                                  .SingleOrDefault();
+                                  ValueEntry valueEntry = null;
+
+                                  foreach (var entry in hashIndexEntry.Items)
+                                  {
+                                      if (entry.Value == valueToAdd)
+                                      {
+                                          valueEntry = entry;
+                                          break;
+                                      }
+                                  }
+
+                                  if (valueEntry == null)
+                                  {
+                                      valueEntry = new ValueEntry(valueToAdd);
+                                      hashIndexEntry.Items.Add(valueEntry);
+                                  }
+
+                                  var found = valueEntry.Items
+                                                .SingleOrDefault(x => ReferenceEquals(x, item));
 
                                   if (found == null)
-                                      list.Add(value);
+                                      valueEntry.Items.Add(item);
                               }
                           }
                       };
                   }
               });
 
-            foreach (var item in map)
-            {
-                item.Value.Materialize();
-            }
-
-            _rootmap = map;
+            _rootmap = map.Values.OrderBy(x => x.Hash).ToList();
         }
     }
 }
