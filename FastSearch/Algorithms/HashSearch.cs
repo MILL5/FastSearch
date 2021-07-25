@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Pineapple.Common.Preconditions;
 using static FastSearch.ParallelismHelper;
-using static FastSearch.HashSearchExtensions;
 
 namespace FastSearch
 {

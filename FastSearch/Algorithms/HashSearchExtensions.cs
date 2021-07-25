@@ -6,6 +6,7 @@ namespace FastSearch
 {
     internal static class HashSearchExtensions
     {
+        // Binary search for ordered hash list
         public static HashSearch<T>.HashIndexEntry Find<T>(this IList<HashSearch<T>.HashIndexEntry> hashIndices, int hashCode) where T : class
         {
             int count = hashIndices.Count;

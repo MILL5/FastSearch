@@ -107,35 +107,35 @@ namespace FastSearch
 
             _ = Parallel.ForEach(items, ParallelismHelper.Options, (item) =>
               {
-              var value = indexWithThis(item)
-                  .ToLowerInvariant()
-                  .ToArray();
+                  var value = indexWithThis(item)
+                      .ToLowerInvariant()
+                      .ToArray();
 
-              for (int i = 0; i < value.Length; i++)
-              {
-                  int startIndex = i;
-                  char currentChar = value[startIndex];
-
-                  CharSequence currentSequence;
-
-                  currentSequence = map.GetOrAdd(currentChar, (c) =>
+                  for (int i = 0; i < value.Length; i++)
                   {
-                      return new CharSequence(c);
-                  });
+                      int startIndex = i;
+                      char currentChar = value[startIndex];
 
-                  var lockObject = currentSequence;
+                      CharSequence currentSequence;
 
-                  lock (lockObject)
-                  {
-                      if (!currentSequence.Items.Contains(item))
+                      currentSequence = map.GetOrAdd(currentChar, (c) =>
                       {
-                          currentSequence.Items.Add(item);
-                      }
-                  }
+                          return new CharSequence(c);
+                      });
 
-                  for (int j = i + 1; j < value.Length; j++)
-                  {
-                      var nextChar = value[j];
+                      var lockObject = currentSequence;
+
+                      lock (lockObject)
+                      {
+                          if (!currentSequence.Items.Contains(item))
+                          {
+                              currentSequence.Items.Add(item);
+                          }
+                      }
+
+                      for (int j = i + 1; j < value.Length; j++)
+                      {
+                          var nextChar = value[j];
 
                           lock (lockObject.NextCharacters)
                           {
@@ -148,8 +148,8 @@ namespace FastSearch
                               }
 
                               var exists = nextSequence
-                                            .Items
-                                            .SingleOrDefault(x => ReferenceEquals(x, item));
+                                          .Items
+                                          .SingleOrDefault(x => ReferenceEquals(x, item));
 
                               if (exists == null)
                               {
