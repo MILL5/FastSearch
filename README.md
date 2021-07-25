@@ -1,12 +1,11 @@
 # FastSearch
 ## Welcome to FastSearch!
 
-This project is meant to provide quick, easy text (i.e. string) searching over a list of objects. We take two assumptions which is that we are doing case insensitive searching and can search at any point in the string.
+This project is meant to provide quick, easy text (i.e. string) searching over a list of objects. We take two assumptions which are that we are doing case insensitive searching and can search at any point in the string.
 
 |Algorithm |Description |
 --- | --- |
 | LinqSearch |Uses a simple Parallel LINQ Contains query with precomputed case insensitive strings |
-| MapReduceSearch |Uses a Map Reduce technique (Not Recommended)|
 | HashSearch | Uses a precomputed hash of each substring combination |
 | CharSequenceSearch | Uses a character sequence tree to facilitate searching |
 
