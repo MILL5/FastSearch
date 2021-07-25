@@ -13,7 +13,6 @@ namespace FastSearch
     {
         internal class HashIndexEntry
         {
-
             public HashIndexEntry(int hash)
             {
                 Hash = hash;
