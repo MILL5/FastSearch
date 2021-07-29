@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PasswordSearch.Benchmark": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

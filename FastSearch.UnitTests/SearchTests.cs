@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,6 +75,25 @@ namespace FastSearch.UnitTests
             var r8 = s2.Search("Tarmey");
 
             Assert.AreEqual(r7.Count, r8.Count);
+        }
+
+        [TestMethod]
+        public void SimpleTestBackwardsAndForwards()
+        {
+            Func<string, string[]> indexFunc = (s) =>
+            {
+                return new[] { s.ToString(), new string(s.Reverse().ToArray()) };
+            };
+
+            var s1 = new HashSearch<string>(_simpleList, indexFunc);
+            var s2 = new CharSequenceSearch<string>(_simpleList, indexFunc);
+
+            var r1 = s1.Search("evetS");
+            var r2 = s2.Search("evetS");
+
+            Assert.AreEqual(r1.Count, r2.Count);
+            Assert.AreEqual(r1.Count, 1);
+            Assert.AreEqual(r2.Count, 1);
         }
 
         [TestMethod]

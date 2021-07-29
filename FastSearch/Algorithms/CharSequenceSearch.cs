@@ -54,9 +54,9 @@ namespace FastSearch
         private static readonly List<T> Empty = new();
         private IDictionary<char, CharSequence> _rootmap;
 
-        private static string IndexThis(T instance)
+        private static string[] IndexThis(T instance)
         {
-            return instance.ToString();
+            return new[] { instance.ToString() };
         }
 
         public CharSequenceSearch(IEnumerable<T> items, Func<T, string> indexFunc = null, IParallelism parallelism = null)
@@ -141,17 +141,26 @@ namespace FastSearch
                           {
                               var nextSequence = currentSequence.FindNextCharacter(nextChar);
 
-                              if (nextSequence == null)
-                              {
-                                  nextSequence = new CharSequence(nextChar);
-                                  currentSequence.NextCharacters.Add(nextSequence);
-                              }
+                                  if (nextSequence == null)
+                                  {
+                                      nextSequence = new CharSequence(nextChar);
+                                      currentSequence.NextCharacters.Add(nextSequence);
+                                  }
 
-                              nextSequence.Items.Add(item);
-                              currentSequence = nextSequence;
+                                  var exists = nextSequence
+                                              .Items
+                                              .SingleOrDefault(x => ReferenceEquals(x, item));
+
+                                  if (exists == null)
+                                  {
+                                      nextSequence.Items.Add(item);
+                                  }
+
+                                  currentSequence = nextSequence;
+                              }
                           }
-                      }
-                  };
+                      };
+                  }
               });
 
             _rootmap = map;

@@ -1,8 +1,8 @@
-﻿using Pineapple.Threading;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Pineapple.Common.Preconditions;
+using static FastSearch.ParallelismHelper;
 
 namespace FastSearch
 {
@@ -39,18 +39,18 @@ namespace FastSearch
         }
 
         private readonly IEnumerable<ObjectWrapper> _items;
-        private readonly IParallelism _parallelism;
+        private readonly int _degreeOfParallelism;
 
         private static string[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
+        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, int? maxDegreeOfParallelism = null)
         {
             CheckIsNotNull(nameof(items), items);
 
-            _parallelism = parallelism ?? new Parallelism();
+            _degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
 
             var indexWithThis = indexFunc ?? IndexThis;
 
@@ -76,15 +76,11 @@ namespace FastSearch
 
             var searchToUse = search.ToLowerInvariant();
 
-            var equalityComparer = new ReferenceEqualityComparer<T>();
-            
             return _items
                 .AsParallel()
-                .WithDegreeOfParallelism(_parallelism.MaxDegreeOfParallelism)
-                .Where(x => x.ToString()
-                .Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
+                .WithDegreeOfParallelism(_degreeOfParallelism)
+                .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
-                .Distinct(equalityComparer)
                 .ToList();
         }
     }
