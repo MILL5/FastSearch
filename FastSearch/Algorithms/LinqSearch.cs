@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Pineapple.Threading;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Pineapple.Common.Preconditions;
-using static FastSearch.ParallelismHelper;
 
 namespace FastSearch
 {
@@ -46,13 +46,12 @@ namespace FastSearch
             return new[] { instance.ToString() };
         }
 
-        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, int? maxDegreeOfParallelism = null)
+        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
         {
             CheckIsNotNull(nameof(items), items);
 
-            _degreeOfParallelism = GetMaxDegreeOfParallelism(maxDegreeOfParallelism);
-
             var indexWithThis = indexFunc ?? IndexThis;
+            parallelism ??= new Parallelism();
 
             var temp = new List<ObjectWrapper>(items.Count());
 

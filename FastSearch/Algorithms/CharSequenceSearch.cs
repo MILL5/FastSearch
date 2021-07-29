@@ -59,7 +59,7 @@ namespace FastSearch
             return new[] { instance.ToString() };
         }
 
-        public CharSequenceSearch(IEnumerable<T> items, Func<T, string> indexFunc = null, IParallelism parallelism = null)
+        public CharSequenceSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
         {
             CheckIsNotNull(nameof(items), items);
 
@@ -100,46 +100,49 @@ namespace FastSearch
             return current.Items;
         }
 
-        private void BuildIndex(IEnumerable<T> items, Func<T, string> indexWithThis, IParallelism parallelism)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism)
         {
             var map = new ConcurrentDictionary<char, CharSequence>(parallelism.MaxDegreeOfParallelism,
                                                                    50);
 
             _ = Parallel.ForEach(items, parallelism.Options, (item) =>
               {
-                  var value = indexWithThis(item)
-                      .ToLowerInvariant()
-                      .ToArray();
+                  var values = indexWithThis(item);
 
-                  for (int i = 0; i < value.Length; i++)
+                  foreach (var s in values)
                   {
-                      int startIndex = i;
-                      char currentChar = value[startIndex];
+                      var value = s.ToLowerInvariant()
+                                   .ToArray();
 
-                      CharSequence currentSequence;
-
-                      currentSequence = map.GetOrAdd(currentChar, (c) =>
+                      for (int i = 0; i < value.Length; i++)
                       {
-                          return new CharSequence(c);
-                      });
+                          int startIndex = i;
+                          char currentChar = value[startIndex];
 
-                      var lockObject = currentSequence;
+                          CharSequence currentSequence;
 
-                      lock (lockObject)
-                      {
-                          if (!currentSequence.Items.Contains(item))
+                          currentSequence = map.GetOrAdd(currentChar, (c) =>
                           {
-                              currentSequence.Items.Add(item);
+                              return new CharSequence(c);
+                          });
+
+                          var lockObject = currentSequence;
+
+                          lock (lockObject)
+                          {
+                              if (!currentSequence.Items.Contains(item))
+                              {
+                                  currentSequence.Items.Add(item);
+                              }
                           }
-                      }
 
-                      for (int j = i + 1; j < value.Length; j++)
-                      {
-                          var nextChar = value[j];
-
-                          lock (lockObject.NextCharacters)
+                          for (int j = i + 1; j < value.Length; j++)
                           {
-                              var nextSequence = currentSequence.FindNextCharacter(nextChar);
+                              var nextChar = value[j];
+
+                              lock (lockObject.NextCharacters)
+                              {
+                                  var nextSequence = currentSequence.FindNextCharacter(nextChar);
 
                                   if (nextSequence == null)
                                   {
@@ -159,7 +162,7 @@ namespace FastSearch
                                   currentSequence = nextSequence;
                               }
                           }
-                      };
+                      }
                   }
               });
 
