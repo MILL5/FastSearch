@@ -64,9 +64,6 @@ namespace FastSearch
             var searchToUse = search.ToLowerInvariant();
             var hashCodeToUse = searchToUse.GetHashCode();
 
-            // replace with binary search
-            //if (_rootmap.TryGetValue(hashCodeToUse, out var hashIndexEntry))
-
             HashIndexEntry hashIndexEntry = _rootmap.Find(hashCodeToUse);
 
             if (hashIndexEntry != null)

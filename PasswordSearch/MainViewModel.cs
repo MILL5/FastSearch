@@ -14,7 +14,7 @@ namespace PasswordSearch
     public class MainViewModel : ViewModelBase
     {
         private readonly StringBuilder _sb = new();
-        private IEnumerable<string> _passwords;
+        private volatile ISearch<string> _stringSearch;
         private volatile ISearch<string> _linqSearch;
         private volatile ISearch<string> _hashSearch;
         private volatile ISearch<string> _charSequenceSearch;
@@ -40,7 +40,8 @@ namespace PasswordSearch
 
         private bool CanExecuteSearch()
         {
-            return _charSequenceSearch != null &&
+            return _stringSearch != null &&
+                   _charSequenceSearch != null &&
                    _hashSearch != null &&
                    _linqSearch != null;
         }
@@ -69,11 +70,19 @@ namespace PasswordSearch
         private StringBuilder Search(int searchLimit, string searchForThis)
         {
             int linqResult = 0,
-                betterLinqResult = 0,
+                stringResult = 0,
                 hashResult = 0,
                 charSequenceResult = 0;
 
             var sb = new StringBuilder();
+
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using String Contains"))
+            {
+                for (int i = 0; i < searchLimit; i++)
+                {
+                    stringResult = _stringSearch.Search(searchForThis).Count;
+                }
+            }
 
             using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
             {
@@ -99,7 +108,7 @@ namespace PasswordSearch
                 }
             }
 
-            if (linqResult != betterLinqResult &&
+            if (linqResult != stringResult &&
                 linqResult != hashResult &&
                 linqResult != charSequenceResult)
             {
@@ -139,7 +148,6 @@ namespace PasswordSearch
             }
 
             _sb.Insert(0, lastlog);
-            _passwords = passwords;
 
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
@@ -151,6 +159,11 @@ namespace PasswordSearch
         private StringBuilder Index(int limit, List<string> passwords)
         {
             var sb = new StringBuilder();
+
+            using (new TimerScope(sb, $"String indexed {limit}"))
+            {
+                _stringSearch = new StringSearch<string>(passwords);
+            }
 
             using (new TimerScope(sb, $"LINQ indexed {limit}"))
             {
@@ -172,6 +185,7 @@ namespace PasswordSearch
 
         public string SearchPhrase { get; set; } = "catherine";
 
+        public bool UseString { get; set; }
         public bool UseLinq { get; set; }
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }

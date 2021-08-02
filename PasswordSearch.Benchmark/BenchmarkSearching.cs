@@ -10,6 +10,7 @@ namespace PasswordSearch.Benchmark
 {
     public class BenchmarkSearching
     {
+        private static StringSearch<string> _stringSearch;
         private static CharSequenceSearch<string> _charSequenceSearch;
         private static HashSearch<string> _hashSearch;
         private static LinqSearch<string> _linqSearch;
@@ -18,9 +19,34 @@ namespace PasswordSearch.Benchmark
         {
             Initialize();
 
+            _stringSearch = new StringSearch<string>(Passwords);
             _charSequenceSearch = new CharSequenceSearch<string>(Passwords);
             _hashSearch = new HashSearch<string>(Passwords);
             _linqSearch = new LinqSearch<string>(Passwords);
+        }
+
+        [Benchmark]
+        public ICollection<string> StringSearchFora()
+        {
+            return _stringSearch.Search("a");
+        }
+
+        [Benchmark]
+        public ICollection<string> StringSearchForcatherine()
+        {
+            return _stringSearch.Search("catherine");
+        }
+
+        [Benchmark]
+        public ICollection<string> StringSearchForphoenix()
+        {
+            return _stringSearch.Search("phoenix");
+        }
+
+        [Benchmark]
+        public ICollection<string> StringSearchForPHOENIX()
+        {
+            return _stringSearch.Search("PHOENIX");
         }
 
         [Benchmark]

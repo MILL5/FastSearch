@@ -39,7 +39,7 @@ namespace FastSearch
         }
 
         private readonly IEnumerable<ObjectWrapper> _items;
-        private readonly int _degreeOfParallelism;
+        private readonly IParallelism _parallelism;
 
         private static string[] IndexThis(T instance)
         {
@@ -51,7 +51,7 @@ namespace FastSearch
             CheckIsNotNull(nameof(items), items);
 
             var indexWithThis = indexFunc ?? IndexThis;
-            parallelism ??= new Parallelism();
+            _parallelism = parallelism ?? new Parallelism();
 
             var temp = new List<ObjectWrapper>(items.Count());
 
@@ -77,7 +77,7 @@ namespace FastSearch
 
             return _items
                 .AsParallel()
-                .WithDegreeOfParallelism(_degreeOfParallelism)
+                .WithDegreeOfParallelism(_parallelism.MaxDegreeOfParallelism)
                 .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.Instance)
                 .ToList();

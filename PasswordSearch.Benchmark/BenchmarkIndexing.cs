@@ -16,6 +16,12 @@ namespace PasswordSearch.Benchmark
         }
 
         [Benchmark]
+        public StringSearch<string> StringSearchIndexing()
+        {
+            return new StringSearch<string>(Passwords);
+        }
+
+        [Benchmark]
         public CharSequenceSearch<string> CharSequenceSearchIndexing()
         {
             return new CharSequenceSearch<string>(Passwords);
