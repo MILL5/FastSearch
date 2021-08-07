@@ -10,12 +10,14 @@ namespace FastSearch
 {
     public class HashSearch<T> : ISearch<T> where T : class
     {
+        private const int DefaultCapacity = 1;
+        
         internal class HashIndexEntry
         {
             public HashIndexEntry(int hash)
             {
                 Hash = hash;
-                Items = new List<ValueEntry>();
+                Items = new List<ValueEntry>(DefaultCapacity);
             }
 
             public int Hash { get; }
@@ -28,7 +30,7 @@ namespace FastSearch
             public ValueEntry(string value)
             {
                 Value = value;
-                Items = new List<T>();
+                Items = new List<T>(DefaultCapacity);
             }
 
             public string Value { get; }
