@@ -53,21 +53,25 @@ namespace FastSearch
 
         private static readonly List<T> Empty = new();
         private IDictionary<char, CharSequence> _rootmap;
+        private readonly bool _enableExactMatch;
+        private readonly Func<T, string[]> _indexWithThis;
 
         private static string[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public CharSequenceSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
+        public CharSequenceSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null, bool enableExactMatch = false)
         {
             CheckIsNotNull(nameof(items), items);
+            
+            _enableExactMatch = enableExactMatch;
 
-            var indexWithThis = indexFunc ?? IndexThis;
+            _indexWithThis = indexFunc ?? IndexThis;
 
             parallelism ??= new Parallelism();
 
-            BuildIndex(items, indexWithThis, parallelism);
+            BuildIndex(items, _indexWithThis, parallelism, _enableExactMatch);
         }
 
         public ICollection<T> Search(string search)
@@ -97,10 +101,10 @@ namespace FastSearch
                 return Empty;
             }
 
-            return current.Items;
+            return _enableExactMatch ? current.Items.Where(x => _indexWithThis(x).Contains(searchToUse)).ToList() : current.Items;
         }
 
-        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism, bool enableExactMatch)
         {
             var map = new ConcurrentDictionary<char, CharSequence>(parallelism.MaxDegreeOfParallelism,
                                                                    50);
@@ -114,7 +118,9 @@ namespace FastSearch
                       var value = s.ToLowerInvariant()
                                    .ToArray();
 
-                      for (int i = 0; i < value.Length; i++)
+                      var endIndex = enableExactMatch ? 1 : value.Length;
+
+                      for (int i = 0; i < endIndex; i++)
                       {
                           int startIndex = i;
                           char currentChar = value[startIndex];
