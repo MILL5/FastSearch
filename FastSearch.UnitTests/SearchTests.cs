@@ -156,5 +156,60 @@ namespace FastSearch.UnitTests
             Assert.AreEqual(r1.Count, r2.Count, list.Count);
             Assert.AreEqual(r1.Count, r2.Count, union.Count);
         }
+        [TestMethod]
+        public void ExactMatchSearch()
+        {
+            var lines = new List<string>
+            {
+                "corperation"
+            };
+
+            var s = new CharSequenceSearch<string>(lines, enableExactMatch : true);
+
+            var result = s.Search("corpERation");
+            Assert.AreEqual(result.Single(), "corperation");
+        }
+
+        [TestMethod]
+        public void MatchSearch()
+        {
+            var lines = new List<string>
+            {
+                "corperation"
+            };
+
+            var s = new CharSequenceSearch<string>(lines, enableExactMatch : false);
+
+            var result = s.Search("orperation");
+            Assert.AreEqual(result.Single(), "corperation");
+        }
+
+        [TestMethod]
+        public void ExactMatchSearchFalse()
+        {
+            var lines = new List<string>
+            {
+                "corperation"
+            };
+
+            var s = new CharSequenceSearch<string>(lines, enableExactMatch: false);
+
+            var result = s.Search("corperation");
+            Assert.AreEqual(result.Single(), "corperation");
+        }
+
+        [TestMethod]
+        public void NoExactMatch()
+        {
+            var lines = new List<string>
+            {
+                "corperation"
+            };
+
+            var s = new CharSequenceSearch<string>(lines, enableExactMatch: true);
+
+            var result = s.Search("co");
+            Assert.AreEqual(result.Count, 0);
+        }
     }
 }
