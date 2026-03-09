@@ -1,34 +1,37 @@
-# FastSearch
-## Welcome to FastSearch!
+# **FastSearch**
+## _Lightning-fast string searching for your .NET applications!_
 
-This project is meant to provide quick, easy text (i.e. string) searching over a list of objects. We take two assumptions which are that we are doing case insensitive searching and can search at any point in the string.
+✨ **Features**
+- **Effortless Searching**: Quickly perform case-insensitive searches across a large list of objects.
+- **Multiple Search Algorithms**: Choose from various algorithms:
+  - **LinqSearch**: Utilizes Parallel LINQ for efficient searching.
+  - **HashSearch**: Leverages precomputed hashes for rapid substring searches.
+  - **CharSequenceSearch**: Implements a character sequence tree for advanced searching capabilities.
+- **Customizable Object Representation**: Easily define how your objects are represented in searches by overriding `ToString()` or providing a custom index function.
 
-|Algorithm |Description |
---- | --- |
-| LinqSearch |Uses a simple Parallel LINQ Contains query with precomputed case insensitive strings |
-| HashSearch | Uses a precomputed hash of each substring combination |
-| CharSequenceSearch | Uses a character sequence tree to facilitate searching |
-
-Here are some quick results from testing. 
-![](https://raw.githubusercontent.com/MILL5/FastSearch/main/SearchResults.png)
-
-- Search results is the total time to perform 10000 searches.
-- Indexing results is the total time to index 10000 items.
-
-We will update the library with new and more interesting techniques as time goes on.  In addition, we plan to keep this a generic library which can be used widely by all developers.  We are taking this approach replace functionality with new and improved algorithms as they are made available.
-
-### How To Get Started
-
+🚀 **Quick Start**
 1. Download the **FastSearch** library from NuGet.
-2. Make sure your objects `override ToString()`.
-3. Create a new CharSequenceSearch passing in your `IEnumerable<T>`
+2. Ensure your objects implement `override ToString()`.
+3. Create a new instance of `CharSequenceSearch` with your `IEnumerable<T>`.
 
-### Features
+### **Performance Insights**
+- FastSearch is designed for high performance, capable of handling thousands of searches in minimal time.
+- Indexing and searching have been optimized for speed, making it suitable for large datasets.
 
-1. Support for `ToString()` out-of-the-box.
-2. Index function `Func<T, string>` to return a custom string representation of an object.
-3. Maximum degree of parallelism for index building and searching
+### **Why Choose FastSearch?**
+- **User-Friendly**: Designed with developers in mind, enabling you to integrate powerful search functionality with ease.
+- **Future-Proof**: Regular updates and improvements ensure you have access to the latest searching techniques.
 
-Enjoy!
+Enjoy the power of efficient searching with FastSearch!
 
-[Your Friends @MILL5](https://www.mill5.com)
+---
+
+### **Contributing**
+We welcome contributions! Please feel free to submit issues or pull requests.
+
+### **License**
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+<sub>Powered by [RepoBeacon](https://repobeacon.com)</sub>
