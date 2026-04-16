@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://effective-dollop-k556ze5.pages.github.io/sitemap.xml
+Sitemap: https://mill5.github.io/FastSearch/sitemap.xml
 
 # LLM discovery
 User-agent: GPTBot
@@ -26,4 +26,4 @@ User-agent: cohere-ai
 Allow: /
 
 # llms.txt for AI/LLM context
-# See: https://effective-dollop-k556ze5.pages.github.io/llms.txt
+# See: https://mill5.github.io/FastSearch/llms.txt
