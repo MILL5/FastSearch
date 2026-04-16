@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mill5.github.io/FastSearch/sitemap.xml
+
+# LLM discovery
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# llms.txt for AI/LLM context
+# See: https://mill5.github.io/FastSearch/llms.txt

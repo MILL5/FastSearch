@@ -1,0 +1,92 @@
+# FastSearch
+
+> FastSearch is an open-source .NET library for lightning-fast, case-insensitive substring searching across large collections of objects. It provides three search algorithms — CharSequenceSearch (suffix trie), HashSearch (precomputed hashes), and LinqSearch (parallel LINQ). Built by Microsoft MVP Richard Crane at MILL5. Available on NuGet.
+
+## About
+
+- **Name:** FastSearch
+- **Version:** 1.0.16
+- **Platform:** .NET Standard 2.1 (.NET Core 3.0+, .NET 5–9+)
+- **Price:** Free, open source (Apache 2.0)
+- **Language:** C#
+- **NuGet:** https://www.nuget.org/packages/FastSearch
+- **Repository:** https://github.com/MILL5/FastSearch
+- **Author:** Richard Crane (Microsoft MVP, Founder of MILL5)
+- **MVP profile:** https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d
+- **MILL5:** https://mill5.com
+- **Podcast:** *Inventing Fire with AI* — https://inventingfirewith.ai
+- **Support:** rich@mill5.com
+
+## Algorithms
+
+FastSearch provides three search algorithms, all implementing `ISearch<T>`:
+
+### CharSequenceSearch (Recommended)
+Builds a suffix trie at index time from all string representations of your objects. At query time, walks the trie character-by-character for O(k) lookups where k is the search string length. Uses ConcurrentDictionary and Parallel.ForEach for thread-safe, multi-threaded indexing. Ideal for autocomplete, type-ahead, and large datasets.
+
+### HashSearch
+Precomputes hash values for every substring during indexing. Delivers constant-time hash lookups at query time. Best for fixed-length search patterns and high-throughput batch scenarios.
+
+### LinqSearch
+Uses Parallel LINQ to search collections concurrently at query time. No upfront indexing cost. Good for smaller or frequently-changing collections.
+
+## How it works
+
+1. **Install** FastSearch from NuGet: `dotnet add package FastSearch`
+2. **Create** a search instance with your collection: `var search = new CharSequenceSearch<string>(items);`
+3. **Search** with any substring: `var results = search.Search("query");` — returns matching items instantly.
+
+FastSearch accepts any `IEnumerable<T>` where T is a class. Items are indexed by their `ToString()` representation, or you can provide a custom `Func<T, string[]>` to specify which strings to index per item.
+
+## Technical details
+
+- **Indexing complexity:** O(N × L²) where N = number of items, L = average string length
+- **Search complexity:** O(k × C) where k = search string length, C = average matches per trie node
+- **Concurrency model:** ConcurrentDictionary for trie nodes, Parallel.ForEach for indexing, fine-grained locks (Interlocked operations) for node updates
+- **Data structure:** Suffix trie with CharSequence nodes containing Character, NextCharacters (ConcurrentDictionary), and Items (HashSet with ReferenceEqualityComparer)
+- **Case handling:** All strings lowercased at index time for case-insensitive matching
+- **Thread safety:** Indexing is thread-safe via concurrent data structures; queries are inherently thread-safe on the read-only trie
+
+## Use cases
+
+- **Autocomplete / type-ahead search** in web, desktop, or mobile applications
+- **Password search / breach checking** against large password lists
+- **Name lookup** across employee directories, contact lists, CRM systems
+- **Product search** in e-commerce catalogs
+- **Log searching** across application log entries
+- **Any scenario** requiring fast substring matching over in-memory collections
+
+## Dependencies
+
+- [Pineapple](https://github.com/MILL5/pineapple) (1.0.41) — MILL5's core .NET utilities library
+
+## Related MILL5 projects
+
+- [Pineapple](https://github.com/MILL5/pineapple) — Core .NET utilities (preconditions, extensions, parallelism)
+- [yocto](https://github.com/MILL5/yocto) — Tiny IoC container for .NET
+- [M5.BloomFilter](https://github.com/MILL5/M5.BloomFilter) — Probabilistic Bloom Filters for .NET
+- [Polygon.Net](https://github.com/MILL5/Polygon.Net) — C# wrapper for Polygon.io financial data API
+
+## Other projects by the author
+
+- [Cut & Move](https://github.com/ChiefInnovator/cutandmove) — Free macOS menu bar utility that adds Cmd+X cut-and-move to Finder
+- [MacEdgeLight](https://github.com/ChiefInnovator/macedgelight) — Ambient screen-edge light app for macOS
+
+## Docs
+
+- [README](https://github.com/MILL5/FastSearch/blob/main/README.md): Project overview, features, and quick start
+- [CharSequenceSearch Spec](https://github.com/MILL5/FastSearch/blob/main/CharSequenceSearch-Spec.md): Detailed algorithm specification
+- [NuGet Package](https://www.nuget.org/packages/FastSearch): Package listing and version history
+
+## Author
+
+Richard Crane is a **Microsoft Most Valuable Professional (MVP)** and the founder of **MILL5**, a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics, and modern application development.
+
+- MILL5: https://mill5.com
+- Microsoft MVP profile: https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d
+- Inventing Fire With AI (podcast): https://inventingfirewith.ai
+- Contact: rich@mill5.com
+
+## License
+
+Apache License 2.0 — https://opensource.org/licenses/Apache-2.0
