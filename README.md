@@ -32,6 +32,20 @@ We welcome contributions! Please feel free to submit issues or pull requests.
 ### **License**
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.
 
+## Credits
+
+Created by **[Richard Crane](https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d)** — Microsoft MVP and founder of **[MILL5](https://mill5.com)**.
+
+- **MILL5:** [mill5.com](https://mill5.com)
+- **Microsoft MVP profile:** [mvp.microsoft.com/…/Richard-Crane](https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d)
+- **Podcast — _Inventing Fire with AI_:** [inventingfirewith.ai](https://inventingfirewith.ai)
+- **Support:** [rich@mill5.com](mailto:rich@mill5.com)
+
 ---
+
+Powered by [MILL5](https://www.mill5.com)
+Explore [Richard Crane on Microsoft MVP](https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d)
+Listen to the [Inventing Fire with AI](https://inventingfirewith.ai) podcast for insights on technology and innovation.
+For support, contact: [rich@mill5.com](mailto:rich@mill5.com)
 
 <sub>Powered by [RepoBeacon](https://repobeacon.com)</sub>
