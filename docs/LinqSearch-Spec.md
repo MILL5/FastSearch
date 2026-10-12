@@ -20,9 +20,9 @@ A non-empty query is lowercased, then runs `AsParallel().WithDegreeOfParallelism
 
 - PLINQ is unordered here; source result order is not guaranteed.
 - There is no deduplication: two matching fields on one item produce two results, and repeated source occurrences also remain separate.
-- Null or empty queries return a shared mutable empty list; treat it as read-only. Null fields are skipped; empty fields cannot match a non-empty query.
+- Null or empty queries return a shared empty array that rejects collection mutation. Misses return a new mutable list. Null fields are skipped; empty fields cannot match a non-empty query.
 - Collection and text changes after construction do not change matching. Returned objects are the original references, so their current properties may differ from indexed text. Rebuild to refresh.
-- The wrapper list is read-only after construction. Concurrent searches require safe access to the parallelism configuration; do not mutate the shared empty result.
+- The wrapper list is read-only after construction. Concurrent searches require safe access to the parallelism configuration.
 
 ## Costs and use
 

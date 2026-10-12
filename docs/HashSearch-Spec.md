@@ -22,12 +22,12 @@ A per-occurrence `HashSet<ValueEntry>` using reference equality prevents repeate
 
 Queries are lowercased and hashed. Binary search finds the hash bucket, then a linear ordinal-ignore-case value comparison finds the matching substring. Successful queries return a read-only wrapper over that value's postings.
 
-- Null or empty queries and misses return a shared mutable empty list; treat it as read-only.
+- Null or empty queries and misses return a shared empty array that rejects collection mutation.
 - Null fields are skipped; empty fields generate no substrings.
 - An occurrence appears once per value, even across multiple matching fields. Repeating the same reference as separate source occurrences can repeat it in results. Different objects with equal text remain separate.
 - Parallel insertion determines postings order; input ordering is not guaranteed.
 - Indexed text is a construction-time snapshot; collection or field changes require rebuilding. Results retain original object references.
-- Completed index state is only read by queries, allowing concurrent searches. Do not mutate shared empty results.
+- Completed index state is only read by queries, allowing concurrent searches.
 
 ## Costs and use
 

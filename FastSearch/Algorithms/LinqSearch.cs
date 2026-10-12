@@ -7,7 +7,7 @@ namespace FastSearch
 {
     public class LinqSearch<T> : ISearch<T> where T : class
     {
-        private static readonly List<T> Empty = new();
+        private static readonly T[] Empty = Array.Empty<T>();
 
         internal class ObjectWrapper
         {

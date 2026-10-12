@@ -38,7 +38,7 @@ namespace FastSearch
 
         internal IList<HashIndexEntry> _rootmap = null!; // assigned by BuildIndex
 
-        private static readonly List<T> Empty = new();
+        private static readonly T[] Empty = Array.Empty<T>();
 
         private static string?[] IndexThis(T instance)
         {

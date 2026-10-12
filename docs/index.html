@@ -704,9 +704,9 @@
       <span class="cmt">// 3. Search: case-insensitive, input order, no duplicates</span><br>
       <span class="kw">var</span> results = search.<span class="fn">Search</span>(<span class="str">"cat"</span>);<br>
       <span class="cmt">// results: ["Catherine"]</span><br><br>
-      <span class="cmt">// Search several fields of any class with an index function:</span><br>
-      <span class="kw">var</span> people = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">Person</span>&gt;(<br>
-      &nbsp;&nbsp;persons,<br>
+      <span class="cmt">// Given your existing people collection, index several fields:</span><br>
+      <span class="kw">var</span> peopleSearch = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">Person</span>&gt;(<br>
+      &nbsp;&nbsp;people,<br>
       &nbsp;&nbsp;p =&gt; <span class="kw">new</span>[] { p.FirstName, p.LastName, p.Email }<br>
       );
     </div>

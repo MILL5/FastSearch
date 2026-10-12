@@ -50,7 +50,7 @@ namespace FastSearch
             }
         }
 
-        private static readonly List<T> Empty = new();
+        private static readonly T[] Empty = Array.Empty<T>();
         private IDictionary<char, CharSequence> _rootmap = null!; // assigned by BuildIndex
         private readonly bool _enableExactMatch;
         private readonly Func<T, string?[]> _indexWithThis;

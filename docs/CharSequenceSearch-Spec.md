@@ -25,12 +25,12 @@ Exact mode inserts only the path starting at position zero. It stores prefix can
 
 Queries are lowercased, then walk from the root through successive child lists. A missing character returns empty. Substring queries return a read-only wrapper over the terminal node's postings without copying. Exact queries invoke the index function again and return a new filtered list.
 
-- Null or empty queries return a shared mutable empty list; treat it as read-only.
+- Null or empty queries and misses return a shared empty array that rejects collection mutation.
 - Null fields are skipped. Empty fields contribute no nodes in substring mode. **In exact mode an empty indexed field currently throws `IndexOutOfRangeException` during construction**; omit empty fields when using that mode.
 - Each input occurrence contributes at most once to a matching node. Repeating the same object in the source can repeat it in results. Distinct objects with identical text remain separate results.
 - Parallel build insertion order determines result order; input ordering is not guaranteed.
 - The index snapshots field text at construction and retains original object references. Source collection changes require rebuilding. Exact filtering rereads fields, but its candidate trie remains the original snapshot, so property changes can make results inconsistent until rebuilt.
-- Normal queries read a completed index and may run concurrently. Exact-mode callers must also make their index function and objects safe for concurrent reads. Do not mutate shared empty results.
+- Normal queries read a completed index and may run concurrently. Exact-mode callers must also make their index function and objects safe for concurrent reads.
 
 ## Costs and trade-offs
 

@@ -142,6 +142,7 @@ All numbers are apples-to-apples. Every algorithm indexes the same items (the fi
 - **Exact-match case bug:** `CharSequenceSearch` exact-match mode compared mixed-case source strings to the lowercased query and missed matches. The comparison is now case-insensitive.
 - **Read-only results:** `CharSequenceSearch` and `HashSearch` used to return their internal mutable lists, so a caller could corrupt the index. They now return read-only views.
 - **Consistent empty queries:** all six algorithms return no results for null or empty queries.
+- **Protected empty results:** the trie, hash, and LINQ implementations use fixed empty arrays, so callers cannot corrupt later searches by adding to a shared empty result.
 - **Concurrent cache updates:** `SuffixArraySearch` synchronizes cache eviction and insertion to keep retained item references within its budget.
 - **Sample selection:** the WPF sample times the selected algorithm and checks its result count against `StringSearch` outside the timed loop.
 

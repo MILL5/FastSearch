@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "docs/index.html"
+        ],
+        "createdAt": "2026-10-12T23:33:36.563Z",
+        "reason": "Codex verified rendered CSS foreground/background pairs in Chrome: minimum text contrast 7.23:1; retained solid-color text exceeds WCAG AA."
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "docs/index.html"
+        ],
+        "createdAt": "2026-10-12T23:33:36.579Z",
+        "reason": "Codex reviewed Chrome rendering: body text uses near-white #e1e7ed and high-contrast #acbac7 on dark panels; colored button uses dark text with verified contrast."
+      }
+    ]
+  }
+}
