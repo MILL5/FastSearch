@@ -183,7 +183,7 @@
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Install the package", "text": "Run: dotnet add package FastSearch" },
       { "@type": "HowToStep", "position": 2, "name": "Build the index", "text": "Create an index once: var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email });" },
-      { "@type": "HowToStep", "position": 3, "name": "Search", "text": "Call search.Search(\"phoe\") to get every matching item, case-insensitive, in input order with no duplicates." }
+      { "@type": "HowToStep", "position": 3, "name": "Search", "text": "Call search.Search("phoe") to get every matching item, case-insensitive, in input order with no duplicates." }
     ]
   }
   </script>
@@ -668,11 +668,11 @@
     </div>
     <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries average 2,000 warm calls (20 for scans), including enumeration of every result. Heap after queries is measured after both workloads and excludes input strings. These charts reuse the recorded results; performance depends on hardware, data, queries, and cache state. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
     <figure>
-      <img src=\"images/search-performance.png?v=1.1.0\" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
+      <img src="images/search-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
       <figcaption>Average cold Search-call time over 1,000 random substrings at 999,998 items (log scale; excludes enumeration).</figcaption>
     </figure>
     <figure>
-      <img src=\"images/indexing-cost.png?v=1.1.0\" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
+      <img src="images/indexing-cost.png?v=1.1.0" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
       <figcaption>Build time and retained heap at 999,998 items (log scales; lower is better).</figcaption>
     </figure>
     <figure>
@@ -680,11 +680,11 @@
       <figcaption>How index build time changes with collection size.</figcaption>
     </figure>
     <figure>
-      <img src=\"images/search-latency.png?v=1.1.0\" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
+      <img src="images/search-latency.png?v=1.1.0" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
       <figcaption>Warm latency including enumeration by query at 999,998 items.</figcaption>
     </figure>
     <figure>
-      <img src=\"images/optimizations.png?v=1.1.0\" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
+      <img src="images/optimizations.png?v=1.1.0" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
       <figcaption>Optimizations used by each algorithm.</figcaption>
     </figure>
   </section>
