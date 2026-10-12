@@ -64,15 +64,15 @@ ICollection<Customer> hits = search.Search("phoe"); // case-insensitive substrin
 
 ### **Performance & Memory (v1.1, .NET 10)**
 
-![Search performance: average of 1,000 random substring searches over 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/search_performance.png)
+![Search performance: average of 1,000 random substring searches over 1M items](search_performance.png)
 
-![Indexing cost vs. search speed at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/speeds.png)
+![Indexing cost vs. search speed at 1M items](speeds.png)
 
-![Index build time across 10k, 100k, and 999,998 items](https://raw.githubusercontent.com/MILL5/FastSearch/main/index_performance.png)
+![Index build time across 10k, 100k, and 999,998 items](index_performance.png)
 
-![Search latency by query at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/searchresults.png)
+![Search latency by query at 1M items](searchresults.png)
 
-![Optimizations used by each algorithm](https://raw.githubusercontent.com/MILL5/FastSearch/main/optimizations.png)
+![Optimizations used by each algorithm](optimizations.png)
 
 All numbers are apples-to-apples. Every algorithm indexes the same items (the first *N* entries of the bundled 1M-password list, 7.5 characters on average) on the same machine with the same method, and each measurement runs in its own process.
 

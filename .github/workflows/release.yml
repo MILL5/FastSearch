@@ -34,6 +34,9 @@ jobs:
       - name: Test
         run: dotnet test FastSearch.UnitTests -c Release
 
+      - name: Prepare release-pinned NuGet README links
+        run: python3 scripts/prepare_package_readme.py
+
       - name: Pack
         run: dotnet pack FastSearch/FastSearch.csproj -c Release -o artifacts
 

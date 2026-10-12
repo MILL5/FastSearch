@@ -23,11 +23,11 @@
   <meta property="og:title" content="FastSearch — Fast, Low-Memory Substring Search for .NET 10">
   <meta property="og:description" content="Free, open-source C# substring search. NGramSearch indexes 1M items in ~1 s with 47 MiB and answers typical queries in ~5 µs: 30× less memory than a suffix trie. Six algorithms, one interface. Available on NuGet.">
   <meta property="og:url" content="https://mill5.github.io/FastSearch/">
-  <meta property="og:image" content="https://raw.githubusercontent.com/MILL5/FastSearch/main/docs/og-image.png">
+  <meta property="og:image" content="https://mill5.github.io/FastSearch/og-image.png?v=1.1.0">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="FastSearch — Lightning-Fast String Searching for .NET by MILL5">
+  <meta property="og:image:alt" content="FastSearch 1.1 — .NET 10 substring search: NGramSearch 47.37 MiB, 1.18 s build, 5.28 µs cold Search call">
   <meta property="og:locale" content="en_US">
   <meta property="og:updated_time" content="2026-10-12">
 
@@ -35,8 +35,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FastSearch — Fast, Low-Memory Substring Search for .NET 10">
   <meta name="twitter:description" content="Open-source C# substring search: 1M items indexed in ~1 s with 47 MiB, ~5 µs typical query. NGram, suffix array, trie, hash and LINQ algorithms behind one interface.">
-  <meta name="twitter:image" content="https://raw.githubusercontent.com/MILL5/FastSearch/main/docs/og-image.png">
-  <meta name="twitter:image:alt" content="FastSearch — Lightning-Fast String Searching for .NET by MILL5">
+  <meta name="twitter:image" content="https://mill5.github.io/FastSearch/og-image.png?v=1.1.0">
+  <meta name="twitter:image:alt" content="FastSearch 1.1 — .NET 10 substring search: NGramSearch 47.37 MiB, 1.18 s build, 5.28 µs cold Search call">
 
   <!-- Structured Data: SoftwareApplication + SoftwareSourceCode -->
   <script type="application/ld+json">
@@ -208,8 +208,8 @@
       --border: rgba(255, 255, 255, 0.08);
       --border-strong: rgba(255, 255, 255, 0.14);
       --text: #f5f5f7;
-      --text-dim: #a1a1aa;
-      --text-faint: #6b6b76;
+      --text-dim: #e1e7ed;
+      --text-faint: #acbac7;
       --accent: #10b981;
       --accent-2: #34d399;
       --accent-grad: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
@@ -278,10 +278,7 @@
       margin: 0 auto 18px;
     }
     .hero h1 .gradient {
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent-2);
     }
     .hero p {
       max-width: 560px;
@@ -300,9 +297,9 @@
     }
     .btn:hover { transform: translateY(-1px); }
     .btn-primary {
-      background: var(--accent-grad);
-      color: #fff;
-      box-shadow: 0 4px 24px var(--glow);
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
     .btn-secondary {
       background: var(--panel);
@@ -369,7 +366,7 @@
     }
     .algo-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 32px var(--glow);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
     .algo-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
     .algo-card .tag {
@@ -420,8 +417,8 @@
       display: flex; align-items: center; justify-content: center;
       width: 36px; height: 36px;
       border-radius: 50%;
-      background: var(--accent-grad);
-      color: #fff;
+      background: var(--accent);
+      color: var(--bg);
       font-weight: 700;
       font-size: 0.95rem;
       margin-bottom: 14px;
@@ -444,10 +441,7 @@
     .stat .num {
       font-size: 2rem;
       font-weight: 800;
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent-2);
     }
     .stat .lbl { color: var(--text-dim); font-size: 0.82rem; margin-top: 2px; }
 
@@ -577,7 +571,7 @@
       <div class="stat"><div class="num">~1 s</div><div class="lbl">To index 1M items</div></div>
       <div class="stat"><div class="num">15K+</div><div class="lbl">NuGet downloads</div></div>
     </div>
-    <p style="text-align:center;color:var(--text-faint);font-size:0.78rem;">Measured on 1,000,000 passwords (7.5 M characters), .NET 10, one thread. One dependency: <a href="https://www.nuget.org/packages/Pineapple" style="color:var(--text-faint);">Pineapple</a> (MILL5’s core utilities).</p>
+    <p style="text-align:center;color:var(--text-faint);font-size:0.78rem;">Recorded v1.1 results on 999,998 nonblank passwords, .NET 10. Sequential query calls; LINQ uses parallel workers. One dependency: <a href="https://www.nuget.org/packages/Pineapple" style="color:var(--text-faint);">Pineapple</a> (MILL5’s core utilities).</p>
   </section>
 
   <!-- KEY FACTS (answer-first summary for search and AI engines) -->
@@ -674,19 +668,23 @@
     </div>
     <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries average 2,000 warm calls (20 for scans), including enumeration of every result. Heap after queries is measured after both workloads and excludes input strings. These charts reuse the recorded results; performance depends on hardware, data, queries, and cache state. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
     <figure>
-      <img src="images/search-performance.png" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
+      <img src=\"images/search-performance.png?v=1.1.0\" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
       <figcaption>Average cold Search-call time over 1,000 random substrings at 999,998 items (log scale; excludes enumeration).</figcaption>
     </figure>
     <figure>
-      <img src="images/indexing-cost.png" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
-      <figcaption>Indexing cost vs. search speed at 1M items.</figcaption>
+      <img src=\"images/indexing-cost.png?v=1.1.0\" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
+      <figcaption>Build time and retained heap at 999,998 items (log scales; lower is better).</figcaption>
     </figure>
     <figure>
-      <img src="images/search-latency.png" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
+      <img src="images/index-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Build time across 10,000, 100,000 and 999,998 items for all six algorithms. StringSearch reports zero build time; the trie and hash indexes have the highest build cost.">
+      <figcaption>How index build time changes with collection size.</figcaption>
+    </figure>
+    <figure>
+      <img src=\"images/search-latency.png?v=1.1.0\" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
       <figcaption>Warm latency including enumeration by query at 999,998 items.</figcaption>
     </figure>
     <figure>
-      <img src="images/optimizations.png" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
+      <img src=\"images/optimizations.png?v=1.1.0\" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
       <figcaption>Optimizations used by each algorithm.</figcaption>
     </figure>
   </section>

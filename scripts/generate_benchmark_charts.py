@@ -18,6 +18,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+from matplotlib.patches import FancyBboxPatch
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,7 +142,7 @@ def main():
     ax.grid(alpha=0.18)
     ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1), frameon=False)
     fig.subplots_adjust(left=0.1, right=0.75, top=0.87, bottom=0.23)
-    save(fig, "index_performance.png", note="Lower is better. StringSearch build time is reported as 0 ms at each size; zero is shown without substitution.")
+    save(fig, "index_performance.png", "index-performance.png", note="Lower is better. StringSearch build time is reported as 0 ms at each size; zero is shown without substitution.")
 
     features = ["Pre-normalized text", "Parallel index build", "Parallel query scan", "All-substring index", "Prefix range tables", "Bounded query cache", "Compressed postings", "Lazy posting results"]
     # Code-backed properties, not performance measurements or a quality ranking.
@@ -166,7 +167,31 @@ def main():
         spine.set_visible(False)
     fig.subplots_adjust(left=0.18, right=0.98, top=0.86, bottom=0.36)
     save(fig, "optimizations.png", "optimizations.png", "Lazy posting results apply to indexed short grams; longer n-gram queries verify candidates.", source="Source: FastSearch/Algorithms/*.cs • implementation properties, not performance measurements")
-    print("Regenerated five root charts and four matching docs/images charts from README.md.")
+
+    # Branded social preview; use the same README measurements as the charts.
+    background, accent, white, muted = "#0a0a0f", "#3de0b4", "#f3f5f8", "#a6abb9"
+    fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=background)
+    fig.text(0.06, 0.9, "OPEN SOURCE · C# / .NET 10", fontsize=12, weight="bold", color=accent)
+    fig.text(0.94, 0.9, "MILL5", fontsize=17, weight="bold", ha="right", color=white)
+    fig.text(0.055, 0.74, "FastSearch", fontsize=54, weight="bold", color=white)
+    fig.text(0.06, 0.64, "Case-insensitive substring search. Six algorithms.", fontsize=21, color=muted)
+    fig.text(0.06, 0.53, f"NGramSearch benchmark · {size_text}", fontsize=16, weight="bold", color=white)
+    stats = [("INDEX HEAP", latest_mem["NGramSearch"][3]),
+             ("BUILD TIME", latest_mem["NGramSearch"][2]),
+             ("COLD SEARCH CALL", latest_lat["NGramSearch"][-1])]
+    for x, (label, value) in zip([0.06, 0.365, 0.67], stats):
+        fig.patches.append(FancyBboxPatch((x, 0.285), 0.27, 0.19,
+            boxstyle="round,pad=0.01,rounding_size=0.012", transform=fig.transFigure,
+            facecolor="#14151e", edgecolor="#252939", linewidth=1))
+        fig.text(x + 0.015, 0.423, label, fontsize=10, weight="bold", color=muted)
+        fig.text(x + 0.015, 0.332, value, fontsize=29, weight="bold", color=accent)
+    fig.text(0.06, 0.22, "Cold metric: 1,000 random Search calls averaged; excludes result enumeration.", fontsize=11, color=muted)
+    fig.text(0.06, 0.155, "NGramSearch  ·  SuffixArraySearch  ·  CharSequenceSearch", fontsize=12, color=white)
+    fig.text(0.06, 0.112, "HashSearch  ·  LinqSearch  ·  StringSearch", fontsize=12, color=white)
+    fig.text(0.06, 0.043, "Source: README.md · v1.1 / .NET 10 · bundled password data · DOTNET_TieredCompilation=0", fontsize=8, color=muted)
+    fig.savefig(ROOT / "docs/og-image.png", dpi=100, facecolor=background)
+    plt.close(fig)
+    print("Regenerated five root charts, five matching docs/images charts, and docs/og-image.png from README.md.")
 
 
 if __name__ == "__main__":
