@@ -1,51 +1,78 @@
 # FastSearch
 
-> FastSearch is an open-source .NET library for lightning-fast, case-insensitive substring searching across large collections of objects. It provides three search algorithms — CharSequenceSearch (suffix trie), HashSearch (precomputed hashes), and LinqSearch (parallel LINQ). Built by Microsoft MVP Richard Crane at MILL5. Available on NuGet.
+> FastSearch is a free, open-source C# library for fast, low-memory, case-insensitive substring ("contains") search over in-memory collections of objects. Its recommended algorithm, NGramSearch, indexes 1 million items in about 1 second using 47 MiB of memory and answers a typical query in about 5 µs. It targets .NET 10, is licensed under Apache 2.0, and is published on NuGet as `FastSearch`. Built by Microsoft MVP Richard Crane at MILL5.
 
 ## About
 
 - **Name:** FastSearch
-- **Version:** 1.0.16
-- **Platform:** .NET Standard 2.1 (.NET Core 3.0+, .NET 5–9+)
+- **Version:** 1.1.0
+- **Platform:** .NET 10 (`net10.0`) on Windows, macOS and Linux. Version 1.1 drops .NET Standard 2.1; use 1.0.16 for older runtimes.
 - **Price:** Free, open source (Apache 2.0)
 - **Language:** C#
+- **Install:** `dotnet add package FastSearch`
 - **NuGet:** https://www.nuget.org/packages/FastSearch
 - **Repository:** https://github.com/MILL5/FastSearch
+- **Website:** https://mill5.github.io/FastSearch/
 - **Author:** Richard Crane (Microsoft MVP, Founder of MILL5)
 - **MVP profile:** https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d
 - **MILL5:** https://mill5.com
 - **Podcast:** *Inventing Fire with AI* — https://inventingfirewith.ai
 - **Support:** rich@mill5.com
+- **Last updated:** 2026-10-12
+
+## Quick answer: which algorithm should I use?
+
+- **NGramSearch (recommended):** the best all-round choice, with the smallest memory, a fast build and fast queries.
+- **SuffixArraySearch:** the fastest enumeration of very broad results (1–2 character queries over millions of items).
+- **CharSequenceSearch:** the lowest latency on narrow queries, when memory is no concern (small lists).
+- **LinqSearch:** no index at all, for small or constantly changing lists.
 
 ## Algorithms
 
-FastSearch provides three search algorithms, all implementing `ISearch<T>`:
+All six algorithms implement `ISearch<T>` (`ICollection<T> Search(string search)`). Results are case-insensitive.
 
-### CharSequenceSearch (Recommended)
-Builds a suffix trie at index time from all string representations of your objects. At query time, walks the trie character-by-character for O(k) lookups where k is the search string length. Uses ConcurrentDictionary and Parallel.ForEach for thread-safe, multi-threaded indexing. Ideal for autocomplete, type-ahead, and large datasets.
+### NGramSearch (new in 1.1, recommended)
+Every distinct 1-, 2- and 3-character substring of an item, plus every 4-character substring shared by 16 or more items, maps to a sorted list of item ids. The lists are delta + varint compressed (about 1–2 bytes per entry), or stored as bitmaps when that is smaller. Queries of up to 3 characters are answered from one list: no sort, no de-duplication, no cache, and a lazy read-only result whose Count is known up front. Longer queries intersect the rarest lists and verify the remaining candidates against a compact lowercased copy of the text. Results are in input order with no duplicates. Memory is about 7 bytes per indexed character (on 100k+ items) and doesn't grow with queries.
+
+### SuffixArraySearch (new in 1.1)
+A generalized suffix array with a 1/2/3-character prefix table, plus binary search for longer queries. Memory is O(N·L). Broad results are memoized in a cache capped at one reference per indexed character. Results are in input order.
+
+### CharSequenceSearch
+A suffix trie with a precomputed result list at every node. Fastest for narrow queries, but memory is O(N·L²).
 
 ### HashSearch
-Precomputes hash values for every substring during indexing. Delivers constant-time hash lookups at query time. Best for fixed-length search patterns and high-throughput batch scenarios.
+A precomputed hash of every substring. Speed is similar to the trie, and it uses the most memory.
 
 ### LinqSearch
-Uses Parallel LINQ to search collections concurrently at query time. No upfront indexing cost. Good for smaller or frequently-changing collections.
+A parallel LINQ scan over lowercased copies of the strings, with no index.
 
-## How it works
+### StringSearch
+A single-threaded `string.Contains` scan with no index. Used as the correctness baseline.
 
-1. **Install** FastSearch from NuGet: `dotnet add package FastSearch`
-2. **Create** a search instance with your collection: `var search = new CharSequenceSearch<string>(items);`
-3. **Search** with any substring: `var results = search.Search("query");` — returns matching items instantly.
+## Benchmarks (1,000,000 passwords, 7.5 M characters, .NET 10, single thread)
 
-FastSearch accepts any `IEnumerable<T>` where T is a class. Items are indexed by their `ToString()` representation, or you can provide a custom `Func<T, string[]>` to specify which strings to index per item.
+| Algorithm | Build | Index memory | After 1,000 queries | Random query avg | `a` (370k hits) | `love` (3,297) | `catherine` (5) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| NGramSearch | 1.2 s | 47.4 MiB | 47.4 MiB | 5.28 µs | 1.6 ms | 13.7 µs | 0.59 µs |
+| SuffixArraySearch | 0.64 s | 83.2 MiB | 120.9 MiB | 103 µs | 0.70 ms | 6.23 µs | 0.15 µs |
+| CharSequenceSearch | 12.1 s | 1.54 GiB | 1.54 GiB | 1.51 µs | 1.5 ms | 13.1 µs | 0.08 µs |
+| HashSearch | 20.3 s | 1.79 GiB | 1.78 GiB | 2.22 µs | 1.5 ms | 14.9 µs | 0.13 µs |
+| LinqSearch | 92 ms | 78.9 MiB | 78.9 MiB | 4.0 ms | 12.3 ms | 3.2 ms | 1.8 ms |
+| StringSearch | — | 0 | 0 | 36.7 ms | 37.6 ms | 35.5 ms | 20.2 ms |
 
-## Technical details
+The random query is the average of 1,000 cold searches of 1–8 characters and times the Search call only. The named queries are warm averages that include enumerating every result.
 
-- **Indexing complexity:** O(N × L²) where N = number of items, L = average string length
-- **Search complexity:** O(k × C) where k = search string length, C = average matches per trie node
-- **Concurrency model:** ConcurrentDictionary for trie nodes, Parallel.ForEach for indexing, fine-grained locks (Interlocked operations) for node updates
-- **Data structure:** Suffix trie with CharSequence nodes containing Character, NextCharacters (ConcurrentDictionary), and Items (HashSet with ReferenceEqualityComparer)
-- **Case handling:** All strings lowercased at index time for case-insensitive matching
-- **Thread safety:** Indexing is thread-safe via concurrent data structures; queries are inherently thread-safe on the read-only trie
+## How to use
+
+```csharp
+// dotnet add package FastSearch
+using FastSearch;
+
+var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email });
+ICollection<Customer> hits = search.Search("phoe"); // case-insensitive, input order, no duplicates
+```
+
+Items are indexed by `ToString()` unless you pass a `Func<T, string[]>` that returns the strings to index for each item. All indexes are read-only after construction, so concurrent searches are thread-safe.
 
 ## Use cases
 
@@ -75,7 +102,9 @@ FastSearch accepts any `IEnumerable<T>` where T is a class. Items are indexed by
 ## Docs
 
 - [README](https://github.com/MILL5/FastSearch/blob/main/README.md): Project overview, features, and quick start
-- [CharSequenceSearch Spec](https://github.com/MILL5/FastSearch/blob/main/CharSequenceSearch-Spec.md): Detailed algorithm specification
+- [CharSequenceSearch Spec](https://github.com/MILL5/FastSearch/blob/main/CharSequenceSearch-Spec.md): Detailed suffix-trie algorithm specification
+- [NGramSearch source](https://github.com/MILL5/FastSearch/blob/main/FastSearch/Algorithms/NGramSearch.cs): Recommended algorithm implementation
+- [Benchmarks](https://github.com/MILL5/FastSearch#performance--memory-v11-net-10): Full tables for 10k, 100k and 1M items
 - [NuGet Package](https://www.nuget.org/packages/FastSearch): Package listing and version history
 
 ## Author

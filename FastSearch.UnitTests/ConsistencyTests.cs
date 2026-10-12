@@ -66,25 +66,24 @@ namespace FastSearch.UnitTests
         [TestMethod]
         public void SearchForHashCollisions()
         {
-            var hs = new HashSearch<string>(_passwords);
+            // A deliberately weak hash forces many substrings into each bucket, so collision handling is
+            // always exercised (string.GetHashCode is randomized per process, which made this test flaky).
+            var sample = _passwords.Take(1000).ToList();
+            var hs = new HashSearch<string>(sample, null, null, s => s.Length * 31 + s[0] % 4);
+            var oracle = new StringSearch<string>(sample);
 
             var collisions = hs._rootmap.Where(x => x.Items.Count > 1).ToList();
+            collisions.Count.ShouldBeGreaterThan(0);
 
-            if (collisions.Count > 0)
+            foreach (var hashIndexEntry in collisions)
             {
-                foreach (var hashIndexEntry in collisions)
+                foreach (var valueEntry in hashIndexEntry.Items.Take(5))
                 {
-                    foreach (var valueEntry in hashIndexEntry.Items)
-                    {
-                        var found = hs.Search(valueEntry.Value);
+                    var found = hs.Search(valueEntry.Value);
 
-                        found.Count.ShouldBe(valueEntry.Items.Count);
-                    }
+                    found.Count.ShouldBe(valueEntry.Items.Count);
+                    found.Count.ShouldBe(oracle.Search(valueEntry.Value).Count);
                 }
-            }
-            else
-            {
-                Assert.Inconclusive("No collisions found.");
             }
         }
     }

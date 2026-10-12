@@ -8,12 +8,15 @@ using static PasswordSearch.Benchmark.BenchmarkShared;
 
 namespace PasswordSearch.Benchmark
 {
+    [MemoryDiagnoser]
     public class BenchmarkSearching
     {
         private static StringSearch<string> _stringSearch;
         private static CharSequenceSearch<string> _charSequenceSearch;
         private static HashSearch<string> _hashSearch;
         private static LinqSearch<string> _linqSearch;
+        private static SuffixArraySearch<string> _suffixArraySearch;
+        private static NGramSearch<string> _nGramSearch;
 
         static BenchmarkSearching()
         {
@@ -23,6 +26,8 @@ namespace PasswordSearch.Benchmark
             _charSequenceSearch = new CharSequenceSearch<string>(Passwords);
             _hashSearch = new HashSearch<string>(Passwords);
             _linqSearch = new LinqSearch<string>(Passwords);
+            _suffixArraySearch = new SuffixArraySearch<string>(Passwords);
+            _nGramSearch = new NGramSearch<string>(Passwords);
         }
 
         [Benchmark]
@@ -118,6 +123,56 @@ namespace PasswordSearch.Benchmark
         public ICollection<string> LinqSearchForPHOENIX()
         {
             return _linqSearch.Search("PHOENIX");
+        }
+
+        [Benchmark]
+        public ICollection<string> SuffixArraySearchFora()
+        {
+            return _suffixArraySearch.Search("a");
+        }
+
+        [Benchmark]
+        public ICollection<string> SuffixArraySearchForcatherine()
+        {
+            return _suffixArraySearch.Search("catherine");
+        }
+
+        [Benchmark]
+        public ICollection<string> SuffixArraySearchForphoenix()
+        {
+            return _suffixArraySearch.Search("phoenix");
+        }
+
+        [Benchmark]
+        public ICollection<string> SuffixArraySearchForPHOENIX()
+        {
+            return _suffixArraySearch.Search("PHOENIX");
+        }
+
+        // NGramSearch answers 1-3 character queries with a lazy view that decodes on enumeration, so these
+        // numbers time the Search call only. HeapBenchmark ("heap ngram <items>") includes enumeration.
+        [Benchmark]
+        public ICollection<string> NGramSearchFora()
+        {
+            return _nGramSearch.Search("a");
+        }
+
+        [Benchmark]
+        public ICollection<string> NGramSearchForcatherine()
+        {
+            return _nGramSearch.Search("catherine");
+        }
+
+        [Benchmark]
+        public ICollection<string> NGramSearchForphoenix()
+        {
+            return _nGramSearch.Search("phoenix");
+        }
+
+        [Benchmark]
+        public ICollection<string> NGramSearchForPHOENIX()
+        {
+            return _nGramSearch.Search("PHOENIX");
         }
     }
 }

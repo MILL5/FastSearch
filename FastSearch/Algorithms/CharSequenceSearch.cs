@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
 {
@@ -21,7 +20,7 @@ namespace FastSearch
 
             public char Character { get; }
 
-            public CharSequence FindNextCharacter(char character)
+            public CharSequence? FindNextCharacter(char character)
             {
                 for (int i = 0; i < NextCharacters.Count; i++)
                 {
@@ -40,7 +39,7 @@ namespace FastSearch
 
             public List<T> Items { get; }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is CharSequence other && Character == other.Character;
             }
@@ -52,18 +51,18 @@ namespace FastSearch
         }
 
         private static readonly List<T> Empty = new();
-        private IDictionary<char, CharSequence> _rootmap;
+        private IDictionary<char, CharSequence> _rootmap = null!; // assigned by BuildIndex
         private readonly bool _enableExactMatch;
-        private readonly Func<T, string[]> _indexWithThis;
+        private readonly Func<T, string?[]> _indexWithThis;
 
-        private static string[] IndexThis(T instance)
+        private static string?[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public CharSequenceSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null, bool enableExactMatch = false)
+        public CharSequenceSearch(IEnumerable<T> items, Func<T, string?[]>? indexFunc = null, IParallelism? parallelism = null, bool enableExactMatch = false)
         {
-            CheckIsNotNull(nameof(items), items);
+            ArgumentNullException.ThrowIfNull(items);
             
             _enableExactMatch = enableExactMatch;
 
@@ -74,7 +73,7 @@ namespace FastSearch
             BuildIndex(items, _indexWithThis, parallelism, _enableExactMatch);
         }
 
-        public ICollection<T> Search(string search)
+        public ICollection<T> Search(string? search)
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -101,10 +100,13 @@ namespace FastSearch
                 return Empty;
             }
 
-            return _enableExactMatch ? current.Items.Where(x => _indexWithThis(x).Contains(searchToUse)).ToList() : current.Items;
+            // Exact match compares case-insensitively (the index is lowercased; the source strings are not).
+            return _enableExactMatch
+                ? current.Items.Where(x => _indexWithThis(x).Any(s => string.Equals(s, search, StringComparison.OrdinalIgnoreCase))).ToList()
+                : current.Items.AsReadOnly(); // never hand out the index's own mutable list
         }
 
-        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism, bool enableExactMatch)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string?[]> indexWithThis, IParallelism parallelism, bool enableExactMatch)
         {
             var map = new ConcurrentDictionary<char, CharSequence>(parallelism.MaxDegreeOfParallelism,
                                                                    50);
@@ -113,8 +115,14 @@ namespace FastSearch
               {
                   var values = indexWithThis(item);
 
+                  // Nodes this item has already been added to. Item-local, so O(1) dedupe without
+                  // scanning node.Items (which made the build quadratic in the number of items).
+                  var visited = new HashSet<CharSequence>(new ReferenceEqualityComparer<CharSequence>());
+
                   foreach (var s in values)
                   {
+                      if (s is null) continue;
+
                       var value = s.ToLowerInvariant()
                                    .ToArray();
 
@@ -136,7 +144,7 @@ namespace FastSearch
 
                           lock (lockObject)
                           {
-                              if (!currentSequence.Items.Contains(item))
+                              if (visited.Add(currentSequence))
                               {
                                   currentSequence.Items.Add(item);
                               }
@@ -156,11 +164,7 @@ namespace FastSearch
                                       currentSequence.NextCharacters.Add(nextSequence);
                                   }
 
-                                  var exists = nextSequence
-                                              .Items
-                                              .SingleOrDefault(x => ReferenceEquals(x, item));
-
-                                  if (exists == null)
+                                  if (visited.Add(nextSequence))
                                   {
                                       nextSequence.Items.Add(item);
                                   }

@@ -4,6 +4,6 @@ namespace FastSearch
 {
     public interface ISearch<T> where T : class
     {
-        ICollection<T> Search(string search);
+        ICollection<T> Search(string? search);
     }
 }

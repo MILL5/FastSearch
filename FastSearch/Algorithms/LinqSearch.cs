@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
 {
@@ -22,7 +21,7 @@ namespace FastSearch
 
             public T Instance { get; }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is ObjectWrapper other && _s == other._s;
             }
@@ -41,14 +40,14 @@ namespace FastSearch
         private readonly IEnumerable<ObjectWrapper> _items;
         private readonly IParallelism _parallelism;
 
-        private static string[] IndexThis(T instance)
+        private static string?[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public LinqSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
+        public LinqSearch(IEnumerable<T> items, Func<T, string?[]>? indexFunc = null, IParallelism? parallelism = null)
         {
-            CheckIsNotNull(nameof(items), items);
+            ArgumentNullException.ThrowIfNull(items);
 
             var indexWithThis = indexFunc ?? IndexThis;
             _parallelism = parallelism ?? new Parallelism();
@@ -59,6 +58,7 @@ namespace FastSearch
             {
                 foreach (var s in indexWithThis(item))
                 {
+                    if (s is null) continue;
                     temp.Add(new ObjectWrapper(item, s));
                 }
             }
@@ -66,7 +66,7 @@ namespace FastSearch
             _items = temp;
         }
 
-        public ICollection<T> Search(string search)
+        public ICollection<T> Search(string? search)
         {
             if (string.IsNullOrEmpty(search))
             {

@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Pineapple.Common.Preconditions;
 
 namespace FastSearch
 {
@@ -37,18 +36,28 @@ namespace FastSearch
             public List<T> Items { get; }
         }
 
-        internal IList<HashIndexEntry> _rootmap;
+        internal IList<HashIndexEntry> _rootmap = null!; // assigned by BuildIndex
 
         private static readonly List<T> Empty = new();
 
-        private static string[] IndexThis(T instance)
+        private static string?[] IndexThis(T instance)
         {
             return new[] { instance.ToString() };
         }
 
-        public HashSearch(IEnumerable<T> items, Func<T, string[]> indexFunc = null, IParallelism parallelism = null)
+        private readonly Func<string, int> _hash;
+
+        public HashSearch(IEnumerable<T> items, Func<T, string?[]>? indexFunc = null, IParallelism? parallelism = null)
+            : this(items, indexFunc, parallelism, static s => s.GetHashCode())
         {
-            CheckIsNotNull(nameof(items), items);
+        }
+
+        // The hash function is injectable so tests can force collisions deterministically
+        // (string.GetHashCode is randomized per process).
+        internal HashSearch(IEnumerable<T> items, Func<T, string?[]>? indexFunc, IParallelism? parallelism, Func<string, int> hash)
+        {
+            ArgumentNullException.ThrowIfNull(items);
+            _hash = hash;
 
             var indexWithThis = indexFunc ?? IndexThis;
             parallelism ??= new Parallelism();
@@ -56,7 +65,7 @@ namespace FastSearch
             BuildIndex(items, indexWithThis, parallelism);
         }
 
-        public ICollection<T> Search(string search)
+        public ICollection<T> Search(string? search)
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -64,9 +73,9 @@ namespace FastSearch
             }
 
             var searchToUse = search.ToLowerInvariant();
-            var hashCodeToUse = searchToUse.GetHashCode();
+            var hashCodeToUse = _hash(searchToUse);
 
-            HashIndexEntry hashIndexEntry = _rootmap.Find(hashCodeToUse);
+            HashIndexEntry? hashIndexEntry = _rootmap.Find(hashCodeToUse);
 
             if (hashIndexEntry != null)
             {
@@ -75,23 +84,28 @@ namespace FastSearch
                 
                 if (valueEntry != null)
                 {
-                    return valueEntry.Items;
+                    return valueEntry.Items.AsReadOnly(); // never hand out the index's own mutable list
                 }
             }
              
             return Empty;
         }
 
-        private void BuildIndex(IEnumerable<T> items, Func<T, string[]> indexWithThis, IParallelism parallelism)
+        private void BuildIndex(IEnumerable<T> items, Func<T, string?[]> indexWithThis, IParallelism parallelism)
         {
             var map = new ConcurrentDictionary<int, HashIndexEntry>(parallelism.MaxDegreeOfParallelism, 50);
 
             // For each item ...
             _ = Parallel.ForEach(items, parallelism.Options, (item) =>
               {
+                  // Entries this item has already been added to (item-local O(1) dedupe).
+                  var visited = new HashSet<ValueEntry>(new ReferenceEqualityComparer<ValueEntry>());
+
                   // We can have multiple strings that represent an item
                   foreach (var s in indexWithThis(item))
                   {
+                      if (s is null) continue;
+
                       // We are case insensitive
                       var valueAsString = s.ToLowerInvariant();
 
@@ -102,7 +116,7 @@ namespace FastSearch
                           for (int j = 0; j < valueToIndex.Length; j++)
                           {
                               var valueToAdd = valueToIndex.Substring(0, j + 1);
-                              var hashCodeToAdd = valueToAdd.GetHashCode();
+                              var hashCodeToAdd = _hash(valueToAdd);
 
                               var hashIndexEntry = map.GetOrAdd(hashCodeToAdd, (hc) =>
                               {
@@ -111,7 +125,7 @@ namespace FastSearch
 
                               lock (hashIndexEntry)
                               {
-                                  ValueEntry valueEntry = null;
+                                  ValueEntry? valueEntry = null;
 
                                   foreach (var entry in hashIndexEntry.Items)
                                   {
@@ -128,10 +142,7 @@ namespace FastSearch
                                       hashIndexEntry.Items.Add(valueEntry);
                                   }
 
-                                  var found = valueEntry.Items
-                                                .SingleOrDefault(x => ReferenceEquals(x, item));
-
-                                  if (found == null)
+                                  if (visited.Add(valueEntry))
                                       valueEntry.Items.Add(item);
                               }
                           }

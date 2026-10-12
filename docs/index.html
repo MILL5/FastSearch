@@ -6,20 +6,22 @@
   <meta name="color-scheme" content="dark">
 
   <!-- Primary SEO -->
-  <title>FastSearch — Lightning-Fast String Searching for .NET</title>
-  <meta name="description" content="FastSearch is an open-source .NET library for lightning-fast, case-insensitive substring searching across large collections. Features suffix trie, hash, and parallel LINQ algorithms. Built by Microsoft MVP Richard Crane at MILL5.">
-  <meta name="keywords" content="fastsearch, fast search, .net search library, substring search, string search algorithm, suffix trie, case insensitive search, autocomplete, type-ahead, nuget, C#, dotnet, richard crane, microsoft mvp, mill5, parallel search, hash search, linq search">
+  <title>FastSearch — Fast, Low-Memory Substring Search Library for .NET 10 (C#)</title>
+  <meta name="description" content="FastSearch is a free, open-source C# library for case-insensitive substring (contains) search over in-memory collections. NGramSearch indexes 1 million items in about 1 second with 47 MiB of memory and answers typical queries in about 5 µs. Targets .NET 10.">
+  <meta name="keywords" content="fastsearch, .net substring search, c# contains search, fast string search .net, n-gram index c#, suffix array c#, suffix trie, autocomplete .net, type-ahead search c#, in-memory search library, nuget search library, .net 10, richard crane, mill5">
   <meta name="author" content="Richard Crane">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="theme-color" content="#0a0a0c">
   <meta name="application-name" content="FastSearch">
   <link rel="canonical" href="https://mill5.github.io/FastSearch/">
+  <link rel="alternate" type="text/plain" href="https://mill5.github.io/FastSearch/llms.txt" title="FastSearch summary for AI assistants (llms.txt)">
+  <link rel="sitemap" type="application/xml" href="https://mill5.github.io/FastSearch/sitemap.xml">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FastSearch by MILL5">
-  <meta property="og:title" content="FastSearch — Lightning-Fast String Searching for .NET">
-  <meta property="og:description" content="An open-source .NET library for lightning-fast, case-insensitive substring searching across large collections. Suffix trie, hash, and parallel LINQ algorithms. Available on NuGet.">
+  <meta property="og:title" content="FastSearch — Fast, Low-Memory Substring Search for .NET 10">
+  <meta property="og:description" content="Free, open-source C# substring search. NGramSearch indexes 1M items in ~1 s with 47 MiB and answers typical queries in ~5 µs: 30× less memory than a suffix trie. Six algorithms, one interface. Available on NuGet.">
   <meta property="og:url" content="https://mill5.github.io/FastSearch/">
   <meta property="og:image" content="https://raw.githubusercontent.com/MILL5/FastSearch/main/docs/og-image.png">
   <meta property="og:image:type" content="image/png">
@@ -27,54 +29,81 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="FastSearch — Lightning-Fast String Searching for .NET by MILL5">
   <meta property="og:locale" content="en_US">
+  <meta property="og:updated_time" content="2026-10-12">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="FastSearch — Lightning-Fast String Searching for .NET">
-  <meta name="twitter:description" content="Open-source .NET library for lightning-fast, case-insensitive substring searching. Suffix trie, hash, and LINQ algorithms. NuGet package by MILL5.">
+  <meta name="twitter:title" content="FastSearch — Fast, Low-Memory Substring Search for .NET 10">
+  <meta name="twitter:description" content="Open-source C# substring search: 1M items indexed in ~1 s with 47 MiB, ~5 µs typical query. NGram, suffix array, trie, hash and LINQ algorithms behind one interface.">
   <meta name="twitter:image" content="https://raw.githubusercontent.com/MILL5/FastSearch/main/docs/og-image.png">
   <meta name="twitter:image:alt" content="FastSearch — Lightning-Fast String Searching for .NET by MILL5">
 
-  <!-- Structured Data: SoftwareApplication -->
+  <!-- Structured Data: SoftwareApplication + SoftwareSourceCode -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "FastSearch",
-    "alternateName": "MILL5 FastSearch",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": ".NET Standard 2.1+",
-    "description": "FastSearch is an open-source .NET library for lightning-fast, case-insensitive substring searching across large object collections. It provides three algorithms — CharSequenceSearch (suffix trie), HashSearch, and LinqSearch (parallel LINQ) — for autocomplete, type-ahead, and full-text search use cases.",
-    "url": "https://mill5.github.io/FastSearch/",
-    "downloadUrl": "https://www.nuget.org/packages/FastSearch",
-    "softwareVersion": "1.0.16",
-    "datePublished": "2021-01-01",
-    "dateModified": "2022-11-17",
-    "license": "https://opensource.org/licenses/Apache-2.0",
-    "programmingLanguage": "C#",
-    "codeRepository": "https://github.com/MILL5/FastSearch",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "author": {
-      "@type": "Person",
-      "name": "Richard Crane",
-      "url": "https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d",
-      "jobTitle": "Microsoft MVP",
-      "worksFor": {
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://mill5.github.io/FastSearch/#software",
+        "name": "FastSearch",
+        "alternateName": "MILL5 FastSearch",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Search library",
+        "operatingSystem": "Windows, macOS, Linux (.NET 10)",
+        "description": "FastSearch is a free, open-source C# library for case-insensitive substring search over in-memory collections. Its recommended NGramSearch algorithm indexes 1 million items in about 1 second using 47 MiB of memory and answers typical queries in about 5 microseconds. It also includes SuffixArraySearch, CharSequenceSearch (suffix trie), HashSearch, LinqSearch and StringSearch behind one ISearch<T> interface.",
+        "url": "https://mill5.github.io/FastSearch/",
+        "downloadUrl": "https://www.nuget.org/packages/FastSearch",
+        "installUrl": "https://www.nuget.org/packages/FastSearch",
+        "softwareVersion": "1.1.0",
+        "softwareRequirements": ".NET 10",
+        "datePublished": "2021-01-01",
+        "dateModified": "2026-10-12",
+        "license": "https://opensource.org/licenses/Apache-2.0",
+        "isAccessibleForFree": true,
+        "featureList": [
+          "Case-insensitive substring (contains) search",
+          "NGramSearch: compressed n-gram posting lists, about 7 bytes per indexed character",
+          "Results in input order with no duplicates",
+          "Custom index function per object (search several fields at once)",
+          "Thread-safe concurrent searches",
+          "Six interchangeable algorithms behind ISearch<T>"
+        ],
+        "screenshot": "https://mill5.github.io/FastSearch/images/search-performance.png",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@id": "https://mill5.github.io/FastSearch/#author" },
+        "publisher": { "@id": "https://mill5.github.io/FastSearch/#mill5" }
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "name": "FastSearch source code",
+        "codeRepository": "https://github.com/MILL5/FastSearch",
+        "programmingLanguage": "C#",
+        "runtimePlatform": ".NET 10",
+        "license": "https://opensource.org/licenses/Apache-2.0",
+        "targetProduct": { "@id": "https://mill5.github.io/FastSearch/#software" },
+        "author": { "@id": "https://mill5.github.io/FastSearch/#author" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://mill5.github.io/FastSearch/#author",
+        "name": "Richard Crane",
+        "url": "https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d",
+        "jobTitle": "Microsoft MVP, Founder of MILL5",
+        "sameAs": [
+          "https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d",
+          "https://inventingfirewith.ai"
+        ],
+        "worksFor": { "@id": "https://mill5.github.io/FastSearch/#mill5" }
+      },
+      {
         "@type": "Organization",
+        "@id": "https://mill5.github.io/FastSearch/#mill5",
         "name": "MILL5",
-        "url": "https://mill5.com"
+        "url": "https://mill5.com",
+        "description": "MILL5 is a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics, and modern application development."
       }
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "MILL5",
-      "url": "https://mill5.com",
-      "description": "MILL5 is a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics, and modern application development."
-    }
+    ]
   }
   </script>
 
@@ -87,59 +116,74 @@
       {
         "@type": "Question",
         "name": "What is FastSearch?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "FastSearch is an open-source .NET library that provides lightning-fast, case-insensitive substring searching across large collections of objects. It includes three algorithms: CharSequenceSearch (suffix trie), HashSearch (precomputed hashes), and LinqSearch (parallel LINQ). It targets .NET Standard 2.1 and is available on NuGet."
-        }
+        "acceptedAnswer": { "@type": "Answer", "text": "FastSearch is a free, open-source C# library for case-insensitive substring (contains) search over in-memory collections of objects. It provides six algorithms behind one ISearch<T> interface. The recommended one, NGramSearch, indexes 1 million items in about 1 second using 47 MiB of memory and answers typical queries in about 5 µs." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the fastest way to search for a substring across a large list in C#?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Build an index once instead of calling string.Contains on every item. On 1 million strings, a Contains scan takes about 37 ms per query and parallel LINQ about 4 ms. A FastSearch index answers the same queries in microseconds: about 5 µs on average with NGramSearch, and about 1.5 µs with the CharSequenceSearch suffix trie, which needs 1.5 GiB of memory to do it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which FastSearch algorithm should I use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch when the list changes constantly and you don't want an index." }
+      },
+      {
+        "@type": "Question",
+        "name": "How much memory does FastSearch use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after its query cache fills), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch." }
+      },
+      {
+        "@type": "Question",
+        "name": "How does NGramSearch work?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NGramSearch maps every 1-, 2- and 3-character substring (and every common 4-character substring) to a delta- and varint-compressed list of the items that contain it. Queries of up to 3 characters are answered directly from one list, already in input order. Longer queries intersect the rarest lists and verify the few remaining candidates against a compact lowercased copy of the text." }
       },
       {
         "@type": "Question",
         "name": "How do I install FastSearch?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Install FastSearch from NuGet using: dotnet add package FastSearch, or Install-Package FastSearch in the Package Manager Console, or search for 'FastSearch' in the NuGet Package Manager in Visual Studio."
-        }
+        "acceptedAnswer": { "@type": "Answer", "text": "Run dotnet add package FastSearch, or Install-Package FastSearch in the Visual Studio Package Manager Console, or search for FastSearch in the NuGet UI." }
       },
       {
         "@type": "Question",
-        "name": "What search algorithms does FastSearch support?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "FastSearch provides three search algorithms: CharSequenceSearch builds a suffix trie at index time for O(k) query-time lookups (where k is the search string length). HashSearch uses precomputed hash values for rapid substring matching. LinqSearch leverages Parallel LINQ for concurrent searching across collections."
-        }
+        "name": "Which .NET versions does FastSearch support?",
+        "acceptedAnswer": { "@type": "Answer", "text": "FastSearch 1.1 targets .NET 10, the current long-term support release. It no longer targets .NET Standard 2.1, because every .NET runtime that used it (.NET Core 3.x through .NET 9) is out of support or reaches end of support in November 2026. If you need an older runtime, use FastSearch 1.0.16." }
       },
       {
         "@type": "Question",
-        "name": "What .NET versions does FastSearch support?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "FastSearch targets .NET Standard 2.1, which means it is compatible with .NET Core 3.0+, .NET 5, .NET 6, .NET 7, .NET 8, .NET 9, and later versions."
-        }
+        "name": "Is FastSearch thread-safe?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every index is read-only once it is built, so any number of threads can call Search at the same time." }
       },
       {
         "@type": "Question",
-        "name": "Who built FastSearch?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "FastSearch was built by Richard Crane, a Microsoft Most Valuable Professional (MVP) and founder of MILL5, a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics, and modern application development."
-        }
+        "name": "Can I search custom objects and several fields at once?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Override ToString() on your class, or pass a Func<T, string[]> that returns the strings to index for each item, such as name, email and company. A match in any field returns the object once." }
       },
       {
         "@type": "Question",
         "name": "Is FastSearch free and open source?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. FastSearch is free and open source under the Apache License 2.0. The source code is available on GitHub at https://github.com/MILL5/FastSearch and the NuGet package is at https://www.nuget.org/packages/FastSearch."
-        }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. FastSearch is licensed under Apache 2.0. The source is at github.com/MILL5/FastSearch and the package is on NuGet." }
       },
       {
         "@type": "Question",
-        "name": "How does CharSequenceSearch work?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "CharSequenceSearch builds a suffix trie at index time. For each item's string representation, it generates all suffixes and inserts them into a concurrent trie structure. At query time, it walks the trie character-by-character, achieving O(k) lookup time where k is the search string length. Indexing is parallelized for performance on large datasets."
-        }
+        "name": "Who built FastSearch?",
+        "acceptedAnswer": { "@type": "Answer", "text": "FastSearch was built by Richard Crane, a Microsoft Most Valuable Professional (MVP) and founder of MILL5, a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics and modern application development." }
       }
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: HowTo (AEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to add fast substring search to a .NET app with FastSearch",
+    "totalTime": "PT5M",
+    "tool": [{ "@type": "HowToTool", "name": ".NET 10 SDK" }],
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "Install the package", "text": "Run: dotnet add package FastSearch" },
+      { "@type": "HowToStep", "position": 2, "name": "Build the index", "text": "Create an index once: var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email });" },
+      { "@type": "HowToStep", "position": 3, "name": "Search", "text": "Call search.Search(\"phoe\") to get every matching item, case-insensitive, in input order with no duplicates." }
     ]
   }
   </script>
@@ -437,6 +481,28 @@
     }
     .faq-a { color: var(--text-dim); font-size: 0.92rem; }
 
+
+    /* ---- KEY FACTS / TABLES / FIGURES ---- */
+    .facts { list-style: none; display: grid; gap: 10px; max-width: 760px; }
+    .facts li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text-dim); font-size: 0.93rem; }
+    .facts li strong { color: var(--text); }
+    .table-wrap { overflow-x: auto; margin: 8px 0 32px; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    caption { text-align: left; padding: 14px 16px 4px; color: var(--text-dim); font-size: 0.85rem; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    thead th { color: var(--text); font-weight: 600; background: var(--bg-elev); white-space: normal; vertical-align: bottom; }
+    th, td { padding-left: 10px; padding-right: 10px; }
+    td { color: var(--text-dim); }
+    tr.hl td { color: var(--text); background: rgba(16, 185, 129, 0.08); }
+    tr.hl td:first-child { font-weight: 700; }
+    .choose td, .choose th { white-space: normal; text-align: left; }
+    figure { margin: 0 0 36px; }
+    figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); background: #fcfcfb; }
+    figcaption { color: var(--text-faint); font-size: 0.82rem; margin-top: 8px; }
+    .faq-q { font-size: 1.02rem; }
+    p.note { color: var(--text-faint); font-size: 0.82rem; margin-top: -16px; margin-bottom: 32px; }
+
     /* ---- FOOTER ---- */
     footer {
       border-top: 1px solid var(--border);
@@ -463,37 +529,38 @@
   <nav class="top-bar" aria-label="Primary navigation">
     <div class="top-bar-inner">
       <a href="#" class="brand" aria-label="FastSearch home">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span>FastSearch</span>
       </a>
       <div class="nav-links">
         <a href="#algorithms">Algorithms</a>
+        <a href="#benchmarks">Benchmarks</a>
         <a href="#quickstart">Quick Start</a>
         <a href="#how-it-works">How It Works</a>
-        <a href="#ecosystem">Ecosystem</a>
         <a href="#faq">FAQ</a>
         <a href="https://github.com/MILL5/FastSearch">GitHub</a>
       </div>
     </div>
   </nav>
 
+  <main>
   <!-- HERO -->
   <header class="hero">
-    <div class="badge">Open Source &middot; .NET Standard 2.1 &middot; Apache 2.0</div>
+    <div class="badge">New in 1.1 &middot; NGramSearch &middot; .NET 10 &middot; Apache 2.0</div>
     <h1>
-      <span class="gradient">Lightning-Fast</span> String Searching for .NET
+      <span class="gradient">Fast, low-memory</span> substring search for .NET
     </h1>
     <p>
-      FastSearch indexes your objects once, then delivers sub-millisecond, case-insensitive
-      substring searches across millions of items. Three algorithms. One NuGet install. Zero fuss.
+      FastSearch is a free, open-source C# library for case-insensitive “contains” search over in-memory
+      collections. Index a million items in about a second with 47 MiB, then search them in microseconds.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="https://www.nuget.org/packages/FastSearch">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Install from NuGet
       </a>
       <a class="btn btn-secondary" href="https://github.com/MILL5/FastSearch">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.75c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.33 3.3 1.23a11.38 11.38 0 016 0c2.3-1.56 3.3-1.23 3.3-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.24 3.22c0 4.61-2.81 5.63-5.48 5.93a2.86 2.86 0 01.82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.75c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.33 3.3 1.23a11.38 11.38 0 016 0c2.3-1.56 3.3-1.23 3.3-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.24 3.22c0 4.61-2.81 5.63-5.48 5.93a2.86 2.86 0 01.82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
         View on GitHub
       </a>
     </div>
@@ -503,80 +570,164 @@
   </header>
 
   <!-- STATS -->
-  <section aria-label="Project statistics">
+  <section aria-label="Key numbers">
     <div class="stats-row">
-      <div class="stat"><div class="num">15K+</div><div class="lbl">NuGet Downloads</div></div>
-      <div class="stat"><div class="num">3</div><div class="lbl">Search Algorithms</div></div>
-      <div class="stat"><div class="num">O(k)</div><div class="lbl">Query Time</div></div>
-      <div class="stat"><div class="num">0</div><div class="lbl">Dependencies*</div></div>
+      <div class="stat"><div class="num">47 MiB</div><div class="lbl">Index for 1M items</div></div>
+      <div class="stat"><div class="num">~5 µs</div><div class="lbl">Typical query, 1M items</div></div>
+      <div class="stat"><div class="num">~1 s</div><div class="lbl">To index 1M items</div></div>
+      <div class="stat"><div class="num">15K+</div><div class="lbl">NuGet downloads</div></div>
     </div>
-    <p style="text-align:center;color:var(--text-faint);font-size:0.78rem;">* Depends only on <a href="https://www.nuget.org/packages/Pineapple" style="color:var(--text-faint);">Pineapple</a> (MILL5's core utilities) and <a href="https://www.nuget.org/packages/System.Collections.Immutable" style="color:var(--text-faint);">System.Collections.Immutable</a> (Microsoft first-party; enables <code style="color:var(--text-faint);">FrozenDictionary</code> on .NET Standard 2.1).</p>
+    <p style="text-align:center;color:var(--text-faint);font-size:0.78rem;">Measured on 1,000,000 passwords (7.5 M characters), .NET 10, one thread. One dependency: <a href="https://www.nuget.org/packages/Pineapple" style="color:var(--text-faint);">Pineapple</a> (MILL5’s core utilities).</p>
+  </section>
+
+  <!-- KEY FACTS (answer-first summary for search and AI engines) -->
+  <section id="summary" aria-labelledby="summary-h">
+    <span class="section-label">At a glance</span>
+    <h2 id="summary-h">FastSearch in 30 seconds</h2>
+    <ul class="facts">
+      <li><strong>What it is:</strong> a C# library for case-insensitive substring search over in-memory lists of objects: autocomplete, type-ahead, filtering and lookup.</li>
+      <li><strong>Recommended algorithm:</strong> <code>NGramSearch</code>. On 1M items it uses 47 MiB (30× less than a suffix trie), builds in about 1.2 s and averages about 5 µs per query.</li>
+      <li><strong>Results:</strong> every match, in the original input order, with no duplicates. Searching is thread-safe.</li>
+      <li><strong>Platform:</strong> .NET 10 on Windows, macOS and Linux. Free under Apache 2.0.</li>
+      <li><strong>Install:</strong> <code>dotnet add package FastSearch</code></li>
+    </ul>
   </section>
 
   <!-- ALGORITHMS -->
-  <section id="algorithms">
+  <section id="algorithms" aria-labelledby="algorithms-h">
     <span class="section-label">Algorithms</span>
-    <h2>Three engines. One interface.</h2>
-    <p class="subtitle">All algorithms implement <code style="color:var(--accent-2);">ISearch&lt;T&gt;</code> — swap them freely without changing application code.</p>
+    <h2 id="algorithms-h">Six engines. One interface.</h2>
+    <p class="subtitle">All algorithms implement <code style="color:var(--accent-2);">ISearch&lt;T&gt;</code>, so you can swap them without changing application code.</p>
     <div class="algo-grid">
-      <div class="algo-card">
-        <span class="tag">Recommended</span>
+      <article class="algo-card">
+        <span class="tag">Recommended &middot; new in 1.1</span>
+        <h3>NGramSearch</h3>
+        <p>Compressed n-gram posting lists. The smallest index (about 7 bytes per character), about 1 s to build 1M items, and single-digit-microsecond queries. Results come back in input order with no cache.</p>
+      </article>
+      <article class="algo-card">
+        <span class="tag">New in 1.1</span>
+        <h3>SuffixArraySearch</h3>
+        <p>A generalized suffix array with a 1/2/3-character prefix table. Fastest at handing back very broad results, which it memoizes in a bounded cache.</p>
+      </article>
+      <article class="algo-card">
+        <span class="tag">Suffix trie</span>
         <h3>CharSequenceSearch</h3>
-        <p>Builds a suffix trie at index time. Walks the trie at query time for <strong>O(k)</strong> lookups, where <em>k</em> is the search string length. Ideal for autocomplete and type-ahead with large datasets. Thread-safe concurrent indexing.</p>
-      </div>
-      <div class="algo-card">
-        <span class="tag">Hash-Based</span>
+        <p>Stores a precomputed answer at every trie node, so narrow queries are the fastest of all (about 0.1 µs). Memory grows as O(N·L²): 1.5 GiB for 1M items.</p>
+      </article>
+      <article class="algo-card">
+        <span class="tag">Hash-based</span>
         <h3>HashSearch</h3>
-        <p>Precomputes hash values for every substring during indexing. Delivers constant-time hash lookups at query time. Best for fixed-length search patterns and high-throughput batch scenarios.</p>
-      </div>
-      <div class="algo-card">
-        <span class="tag">Parallel LINQ</span>
+        <p>Precomputes a hash of every substring. Query speed is similar to the trie, and it uses the most memory of any algorithm.</p>
+      </article>
+      <article class="algo-card">
+        <span class="tag">No index</span>
         <h3>LinqSearch</h3>
-        <p>Leverages Parallel LINQ to search collections concurrently at query time. No upfront indexing cost. Perfect for smaller collections or when items change frequently.</p>
-      </div>
+        <p>A parallel LINQ scan over lowercased copies of the strings. Nothing to build, so it suits small or constantly changing lists.</p>
+      </article>
+      <article class="algo-card">
+        <span class="tag">Baseline</span>
+        <h3>StringSearch</h3>
+        <p>A single-threaded <code>Contains</code> scan with no index. It’s the reference that every other algorithm is tested against.</p>
+      </article>
     </div>
   </section>
 
+  <!-- CHOOSING -->
+  <section id="choose" aria-labelledby="choose-h">
+    <span class="section-label">Choosing</span>
+    <h2 id="choose-h">Which algorithm should I use?</h2>
+    <div class="table-wrap">
+      <table class="choose">
+        <thead><tr><th scope="col">If you need…</th><th scope="col">Use</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>The best all-round choice: small memory, fast build, fast queries</td><td>NGramSearch</td></tr>
+          <tr><td>The fastest enumeration of very broad results (1–2 character queries over millions of items)</td><td>SuffixArraySearch</td></tr>
+          <tr><td>The lowest latency on narrow queries, and memory is no concern (small lists)</td><td>CharSequenceSearch</td></tr>
+          <tr><td>No index at all (small or constantly changing lists)</td><td>LinqSearch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BENCHMARKS -->
+  <section id="benchmarks" aria-labelledby="benchmarks-h">
+    <span class="section-label">Benchmarks</span>
+    <h2 id="benchmarks-h">Benchmarks: 1 million items</h2>
+    <p class="subtitle">Every algorithm indexes the same 1,000,000 passwords on the same machine, each in its own process, with fully optimized JIT.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>Build time, index memory and search latency at 1M items (lower is better)</caption>
+        <thead>
+          <tr><th scope="col">Algorithm</th><th scope="col">Build</th><th scope="col">Index memory</th><th scope="col">After 1,000 queries</th><th scope="col">Random query (avg)</th><th scope="col"><code>a</code> (370k hits)</th><th scope="col"><code>love</code> (3,297)</th><th scope="col"><code>catherine</code> (5)</th></tr>
+        </thead>
+        <tbody>
+            <tr class="hl"><td>NGramSearch (new)</td><td>1.2 s</td><td>47.4 MiB</td><td>47.4 MiB</td><td>5.28 µs</td><td>1.6 ms</td><td>13.7 µs</td><td>0.59 µs</td></tr>
+            <tr><td>SuffixArraySearch (new)</td><td>0.64 s</td><td>83.2 MiB</td><td>120.9 MiB</td><td>103 µs</td><td>0.70 ms</td><td>6.23 µs</td><td>0.15 µs</td></tr>
+            <tr><td>CharSequenceSearch (trie)</td><td>12.1 s</td><td>1.54 GiB</td><td>1.54 GiB</td><td>1.51 µs</td><td>1.5 ms</td><td>13.1 µs</td><td>0.08 µs</td></tr>
+            <tr><td>HashSearch</td><td>20.3 s</td><td>1.79 GiB</td><td>1.78 GiB</td><td>2.22 µs</td><td>1.5 ms</td><td>14.9 µs</td><td>0.13 µs</td></tr>
+            <tr><td>LinqSearch</td><td>92 ms</td><td>78.9 MiB</td><td>78.9 MiB</td><td>4.0 ms</td><td>12.3 ms</td><td>3.2 ms</td><td>1.8 ms</td></tr>
+            <tr><td>StringSearch (Contains)</td><td>—</td><td>0</td><td>0</td><td>36.7 ms</td><td>37.6 ms</td><td>35.5 ms</td><td>20.2 ms</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries are warm averages that include enumerating every result. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
+    <figure>
+      <img src="images/search-performance.png" width="1500" height="900" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
+      <figcaption>Average of 1,000 random substring searches over 1M items (log scale).</figcaption>
+    </figure>
+    <figure>
+      <img src="images/indexing-cost.png" width="2216" height="680" loading="lazy" decoding="async" alt="Table comparing index build time, index memory, memory after 1,000 queries and average search time for six algorithms at 1 million items. NGramSearch uses the least memory: 47.4 MiB.">
+      <figcaption>Indexing cost vs. search speed at 1M items.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/search-latency.png" width="2216" height="833" loading="lazy" decoding="async" alt="Table of search latency per query (a, 12, love, phoenix, catherine, and 1,000 random substrings) for six algorithms at 1 million items.">
+      <figcaption>Latency by query at 1M items.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/optimizations.png" width="2008" height="915" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: case-insensitive matching, index data structure, hashing, binary search, parallel indexing, parallel search, linear memory, compressed index, input-order results, and no query cache.">
+      <figcaption>Optimizations used by each algorithm.</figcaption>
+    </figure>
+  </section>
+
   <!-- QUICK START -->
-  <section id="quickstart">
+  <section id="quickstart" aria-labelledby="quickstart-h">
     <span class="section-label">Quick Start</span>
-    <h2>Searching in three lines of C#</h2>
-    <p class="subtitle">Install the NuGet package, create a search instance with your collection, and call <code style="color:var(--accent-2);">.Search()</code>.</p>
+    <h2 id="quickstart-h">Searching in three lines of C#</h2>
+    <p class="subtitle">Install the NuGet package, index your collection once, and call <code style="color:var(--accent-2);">Search()</code>.</p>
     <div class="code-block">
       <span class="cmt">// 1. Install: dotnet add package FastSearch</span><br><br>
       <span class="kw">using</span> FastSearch;<br><br>
       <span class="cmt">// 2. Index your collection (one-time cost)</span><br>
       <span class="kw">var</span> names = <span class="kw">new</span> <span class="type">List</span>&lt;<span class="type">string</span>&gt; { <span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Catherine"</span>, <span class="str">"Phoenix"</span> };<br>
-      <span class="kw">var</span> search = <span class="kw">new</span> <span class="type">CharSequenceSearch</span>&lt;<span class="type">string</span>&gt;(names);<br><br>
-      <span class="cmt">// 3. Search — case-insensitive, sub-millisecond</span><br>
+      <span class="kw">var</span> search = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">string</span>&gt;(names);<br><br>
+      <span class="cmt">// 3. Search: case-insensitive, input order, no duplicates</span><br>
       <span class="kw">var</span> results = search.<span class="fn">Search</span>(<span class="str">"cat"</span>);<br>
       <span class="cmt">// results: ["Catherine"]</span><br><br>
-      <span class="cmt">// Works with any class — just override ToString()</span><br>
-      <span class="cmt">// Or provide a custom index function:</span><br>
-      <span class="kw">var</span> search2 = <span class="kw">new</span> <span class="type">CharSequenceSearch</span>&lt;<span class="type">Person</span>&gt;(<br>
-      &nbsp;&nbsp;people,<br>
+      <span class="cmt">// Search several fields of any class with an index function:</span><br>
+      <span class="kw">var</span> people = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">Person</span>&gt;(<br>
+      &nbsp;&nbsp;persons,<br>
       &nbsp;&nbsp;p =&gt; <span class="kw">new</span>[] { p.FirstName, p.LastName, p.Email }<br>
       );
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section id="how-it-works">
+  <section id="how-it-works" aria-labelledby="how-h">
     <span class="section-label">How it works</span>
-    <h2>Index once. Search instantly.</h2>
-    <p class="subtitle">FastSearch's CharSequenceSearch algorithm builds a suffix trie for blazing-fast substring lookups.</p>
+    <h2 id="how-h">How NGramSearch stays small and fast</h2>
+    <p class="subtitle">It stores which items contain each short substring, compressed, instead of every possible answer.</p>
     <div class="steps-list">
       <div class="step-item">
-        <h3>Provide Your Collection</h3>
-        <p>Pass any <code>IEnumerable&lt;T&gt;</code> to the constructor. FastSearch accepts strings, domain objects, DTOs — anything.</p>
+        <h3>Index short substrings</h3>
+        <p>Every 1-, 2- and 3-character substring, plus every 4-character substring shared by 16 or more items, maps to the sorted list of items that contain it.</p>
       </div>
       <div class="step-item">
-        <h3>Parallel Indexing</h3>
-        <p>FastSearch builds a concurrent suffix trie from all string representations. Multi-threaded by default. Index millions of items in seconds.</p>
+        <h3>Compress the lists</h3>
+        <p>Each list stores the gaps between item ids as variable-length integers (about 1–2 bytes per entry), or a bitmap for very common substrings. The index never grows after it is built.</p>
       </div>
       <div class="step-item">
-        <h3>Sub-Millisecond Queries</h3>
-        <p>Type a search string. FastSearch walks the trie character-by-character and returns matching items instantly. No scanning. No regex. Just trie traversal.</p>
+        <h3>Intersect and verify</h3>
+        <p>Short queries read one list directly. Longer queries intersect the rarest lists, then check the few candidates left against a compact copy of the text.</p>
       </div>
     </div>
   </section>
@@ -621,52 +772,70 @@
   </section>
 
   <!-- FAQ -->
-  <section id="faq">
+  <section id="faq" aria-labelledby="faq-h">
     <span class="section-label">FAQ</span>
-    <h2>Frequently asked questions</h2>
+    <h2 id="faq-h">Frequently asked questions</h2>
     <div class="faq-list">
       <div class="faq-item">
-        <div class="faq-q">What is FastSearch?</div>
-        <div class="faq-a">FastSearch is an open-source .NET library that provides lightning-fast, case-insensitive substring searching across large collections of objects. It includes three algorithms — CharSequenceSearch (suffix trie), HashSearch (precomputed hashes), and LinqSearch (parallel LINQ). It targets .NET Standard 2.1 and is available on NuGet.</div>
+        <h3 class="faq-q">What is FastSearch?</h3>
+        <p class="faq-a">FastSearch is a free, open-source C# library for case-insensitive substring (contains) search over in-memory collections of objects. It provides six algorithms behind one ISearch&lt;T&gt; interface. The recommended one, NGramSearch, indexes 1 million items in about 1 second using 47 MiB of memory and answers typical queries in about 5 µs.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">How do I install FastSearch?</div>
-        <div class="faq-a">Run <code style="color:var(--accent-2);">dotnet add package FastSearch</code> in your terminal, or use <code style="color:var(--accent-2);">Install-Package FastSearch</code> in the NuGet Package Manager Console, or search for "FastSearch" in Visual Studio's NuGet UI.</div>
+        <h3 class="faq-q">What is the fastest way to search for a substring across a large list in C#?</h3>
+        <p class="faq-a">Build an index once instead of calling string.Contains on every item. On 1 million strings, a Contains scan takes about 37 ms per query and parallel LINQ about 4 ms. A FastSearch index answers the same queries in microseconds: about 5 µs on average with NGramSearch, and about 1.5 µs with the CharSequenceSearch suffix trie, which needs 1.5 GiB of memory to do it.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">What search algorithms does FastSearch support?</div>
-        <div class="faq-a">CharSequenceSearch builds a suffix trie at index time for O(k) query-time lookups. HashSearch uses precomputed hash values for rapid substring matching. LinqSearch leverages Parallel LINQ for concurrent searching without upfront indexing.</div>
+        <h3 class="faq-q">Which FastSearch algorithm should I use?</h3>
+        <p class="faq-a">Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch when the list changes constantly and you don't want an index.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">What .NET versions are supported?</div>
-        <div class="faq-a">FastSearch targets .NET Standard 2.1, making it compatible with .NET Core 3.0+, .NET 5 through .NET 9, and later versions.</div>
+        <h3 class="faq-q">How much memory does FastSearch use?</h3>
+        <p class="faq-a">NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after its query cache fills), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">Is FastSearch thread-safe?</div>
-        <div class="faq-a">Indexing uses ConcurrentDictionary and fine-grained locks for thread-safe parallel construction. The resulting trie is read-only at query time, so searches are inherently thread-safe.</div>
+        <h3 class="faq-q">How does NGramSearch work?</h3>
+        <p class="faq-a">NGramSearch maps every 1-, 2- and 3-character substring (and every common 4-character substring) to a delta- and varint-compressed list of the items that contain it. Queries of up to 3 characters are answered directly from one list, already in input order. Longer queries intersect the rarest lists and verify the few remaining candidates against a compact lowercased copy of the text.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">Can I search custom objects, not just strings?</div>
-        <div class="faq-a">Yes. Either override <code style="color:var(--accent-2);">ToString()</code> on your class, or provide a custom <code style="color:var(--accent-2);">Func&lt;T, string[]&gt;</code> index function that returns the strings to index for each item.</div>
+        <h3 class="faq-q">How do I install FastSearch?</h3>
+        <p class="faq-a">Run dotnet add package FastSearch, or Install-Package FastSearch in the Visual Studio Package Manager Console, or search for FastSearch in the NuGet UI.</p>
       </div>
       <div class="faq-item">
-        <div class="faq-q">Who built FastSearch?</div>
-        <div class="faq-a">FastSearch was built by Richard Crane, a Microsoft Most Valuable Professional (MVP) and founder of <a href="https://mill5.com">MILL5</a>, a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics, and modern application development.</div>
+        <h3 class="faq-q">Which .NET versions does FastSearch support?</h3>
+        <p class="faq-a">FastSearch 1.1 targets .NET 10, the current long-term support release. It no longer targets .NET Standard 2.1, because every .NET runtime that used it (.NET Core 3.x through .NET 9) is out of support or reaches end of support in November 2026. If you need an older runtime, use FastSearch 1.0.16.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-q">Is FastSearch thread-safe?</h3>
+        <p class="faq-a">Yes. Every index is read-only once it is built, so any number of threads can call Search at the same time.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-q">Can I search custom objects and several fields at once?</h3>
+        <p class="faq-a">Yes. Override ToString() on your class, or pass a Func&lt;T, string[]&gt; that returns the strings to index for each item, such as name, email and company. A match in any field returns the object once.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-q">Is FastSearch free and open source?</h3>
+        <p class="faq-a">Yes. FastSearch is licensed under Apache 2.0. The source is at github.com/MILL5/FastSearch and the package is on NuGet.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-q">Who built FastSearch?</h3>
+        <p class="faq-a">FastSearch was built by Richard Crane, a Microsoft Most Valuable Professional (MVP) and founder of MILL5, a Boston-based Microsoft Gold Partner specializing in cloud, AI, IoT, data analytics and modern application development.</p>
       </div>
     </div>
   </section>
+  </main>
 
   <!-- FOOTER -->
   <footer>
     <div class="footer-links">
       <a href="https://github.com/MILL5/FastSearch">GitHub</a>
       <a href="https://www.nuget.org/packages/FastSearch">NuGet</a>
+      <a href="llms.txt">llms.txt</a>
       <a href="https://mill5.com">MILL5</a>
       <a href="https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d">Microsoft MVP</a>
       <a href="https://inventingfirewith.ai/">Inventing Fire with AI</a>
       <a href="mailto:rich@mill5.com">Contact</a>
     </div>
-    <p>&copy; 2025 <a href="https://mill5.com">MILL5, LLC</a>. FastSearch is licensed under <a href="https://opensource.org/licenses/Apache-2.0">Apache 2.0</a>.</p>
+    <p>&copy; 2021–2026 <a href="https://mill5.com">MILL5, LLC</a>. FastSearch is licensed under <a href="https://opensource.org/licenses/Apache-2.0">Apache 2.0</a>. Last updated <time datetime="2026-10-12">October 12, 2026</time>.</p>
     <p style="margin-top:6px;">Powered by <a href="https://mill5.com">MILL5</a> &middot; Built by <a href="https://mvp.microsoft.com/en-US/MVP/profile/10ce0bc0-7536-43f6-b28c-e9601a4a0d0d">Richard Crane</a>, Microsoft MVP</p>
   </footer>
 
