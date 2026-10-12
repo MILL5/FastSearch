@@ -1,23 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Title>FastSearch</Title>
-		<TargetFramework>netstandard2.1</TargetFramework>
-		<LangVersion>9.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<IsAotCompatible>true</IsAotCompatible>
+		<IsTrimmable>true</IsTrimmable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591</NoWarn>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Company>MILL5</Company>
 		<Copyright>Copyright © MILL5, LLC 2021</Copyright>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/MILL5/FastSearch</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/MILL5/FastSearch</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReleaseNotes>This is fast searching for objects based on their string value(s).</PackageReleaseNotes>
+		<PackageReleaseNotes>1.1.0: adds NGramSearch (compressed n-gram posting lists: ~47 MiB and ~1 s to index 1M items, ~5 µs typical query) and SuffixArraySearch (O(N·L) memory); targets net10.0 only (netstandard2.1 dropped); fixes quadratic indexing in CharSequenceSearch/HashSearch and case handling in exact-match mode.</PackageReleaseNotes>
 		<Authors>MILL5</Authors>
-		<Description>This is fast searching for objects based on their string value(s).</Description>
-		<PackageTags>fast;search;string;algorithm;hash;lookups</PackageTags>
+		<Description>Fast, low-memory, case-insensitive substring (contains) search over in-memory collections of objects. NGramSearch indexes 1M items in about 1 s with 47 MiB and answers typical queries in about 5 µs.</Description>
+		<PackageTags>fast;search;string;substring;contains;autocomplete;typeahead;ngram;suffix-array;trie;algorithm;hash;lookups</PackageTags>
 		<PackageIcon>fastsearch.png</PackageIcon>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Version>1.0.16</Version>
+		<Version>1.1.0</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
@@ -31,9 +36,14 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Only for the IParallelism parameter on CharSequenceSearch, HashSearch and LinqSearch (kept for API compatibility). -->
 		<PackageReference Include="Pineapple" Version="1.0.41" />
 	</ItemGroup>
 

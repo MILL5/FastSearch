@@ -6,18 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using FastSearch;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PasswordSearch
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ObservableObject
     {
         private readonly StringBuilder _sb = new();
         private volatile ISearch<string> _stringSearch;
         private volatile ISearch<string> _linqSearch;
         private volatile ISearch<string> _hashSearch;
         private volatile ISearch<string> _charSequenceSearch;
+        private volatile ISearch<string> _suffixArraySearch;
+        private volatile ISearch<string> _nGramSearch;
 
         public MainViewModel()
         {
@@ -43,7 +45,9 @@ namespace PasswordSearch
             return _stringSearch != null &&
                    _charSequenceSearch != null &&
                    _hashSearch != null &&
-                   _linqSearch != null;
+                   _linqSearch != null &&
+                   _suffixArraySearch != null &&
+                   _nGramSearch != null;
         }
 
         private async Task SearchAsync()
@@ -62,55 +66,32 @@ namespace PasswordSearch
 
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                RaisePropertyChanged(() => Output);
-                SearchCommand.RaiseCanExecuteChanged();
+                OnPropertyChanged(nameof(Output));
+                SearchCommand.NotifyCanExecuteChanged();
             });
         }
 
         private StringBuilder Search(int searchLimit, string searchForThis)
         {
-            int linqResult = 0,
-                stringResult = 0,
-                hashResult = 0,
-                charSequenceResult = 0;
+            var (search, algorithm) = UseString ? (_stringSearch, "String Contains") :
+                UseLinq ? (_linqSearch, "LINQ") :
+                UseHash ? (_hashSearch, "Hash") :
+                UseCharSequence ? (_charSequenceSearch, "Character Tree") :
+                UseSuffixArray ? (_suffixArraySearch, "Suffix Array") :
+                (_nGramSearch, "N-Gram");
+            int result = 0;
 
             var sb = new StringBuilder();
 
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using String Contains"))
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using {algorithm}"))
             {
                 for (int i = 0; i < searchLimit; i++)
                 {
-                    stringResult = _stringSearch.Search(searchForThis).Count;
+                    result = search.Search(searchForThis).Count;
                 }
             }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    linqResult = _linqSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Hash"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    hashResult = _hashSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Character Tree"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    charSequenceResult = _charSequenceSearch.Search(searchForThis).Count;
-                }
-            }
-
-            if (linqResult != stringResult &&
-                linqResult != hashResult &&
-                linqResult != charSequenceResult)
+            // Validate the selected implementation outside its timed loop.
+            if (result != _stringSearch.Search(searchForThis).Count)
             {
                 sb.Clear();
                 sb.Insert(0, $"Validation for results failed.");
@@ -126,7 +107,7 @@ namespace PasswordSearch
 
             using (new TimerScope(_sb, "Load 10M passwords"))
             {
-                using (var s = new StreamReader(@"10-million-password-list-top-1000000.txt"))
+                using (var s = new StreamReader(Path.Combine(AppContext.BaseDirectory, "10-million-password-list-top-1000000.txt")))
                 {
                     while (s.Peek() > 0)
                     {
@@ -151,8 +132,8 @@ namespace PasswordSearch
 
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                RaisePropertyChanged(() => Output);
-                SearchCommand.RaiseCanExecuteChanged();
+                OnPropertyChanged(nameof(Output));
+                SearchCommand.NotifyCanExecuteChanged();
             });
         }
 
@@ -180,6 +161,16 @@ namespace PasswordSearch
                 _charSequenceSearch = new CharSequenceSearch<string>(passwords);
             }
 
+            using (new TimerScope(sb, $"Suffix Array indexed {limit}"))
+            {
+                _suffixArraySearch = new SuffixArraySearch<string>(passwords);
+            }
+
+            using (new TimerScope(sb, $"N-Gram indexed {limit}"))
+            {
+                _nGramSearch = new NGramSearch<string>(passwords);
+            }
+
             return sb;
         }
 
@@ -189,6 +180,8 @@ namespace PasswordSearch
         public bool UseLinq { get; set; }
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }
+        public bool UseSuffixArray { get; set; }
+        public bool UseNGram { get; set; } = true;
 
         public int NumberOfEntries { get; set; } = 10000;
         public int NumberOfSearches { get; set; } = 10000;

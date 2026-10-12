@@ -7,6 +7,13 @@ namespace PasswordSearch.Benchmark
     {
         static void Main(string[] args)
         {
+            // dotnet run -c Release -- heap <algorithm> <items>   : heap/latency harness (see HeapBenchmark.cs)
+            if (args.Length > 0 && args[0] == "heap")
+            {
+                HeapBenchmark.Run(args);
+                return;
+            }
+
             var config = new BenchmarkConfig();
 
             //var b = new BenchmarkIndexing();

@@ -92,8 +92,8 @@ namespace FastSearch.UnitTests
             var r2 = s2.Search("evetS");
 
             Assert.AreEqual(r1.Count, r2.Count);
-            Assert.AreEqual(r1.Count, 1);
-            Assert.AreEqual(r2.Count, 1);
+            Assert.AreEqual(1, r1.Count);
+            Assert.AreEqual(1, r2.Count);
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace FastSearch.UnitTests
             var s = new CharSequenceSearch<string>(lines, enableExactMatch : true);
 
             var result = s.Search("corpERation");
-            Assert.AreEqual(result.Single(), "corperation");
+            Assert.AreEqual("corperation", result.Single());
         }
 
         [TestMethod]
@@ -181,7 +181,7 @@ namespace FastSearch.UnitTests
             var s = new CharSequenceSearch<string>(lines, enableExactMatch : false);
 
             var result = s.Search("orperation");
-            Assert.AreEqual(result.Single(), "corperation");
+            Assert.AreEqual("corperation", result.Single());
         }
 
         [TestMethod]
@@ -195,7 +195,7 @@ namespace FastSearch.UnitTests
             var s = new CharSequenceSearch<string>(lines, enableExactMatch: false);
 
             var result = s.Search("corperation");
-            Assert.AreEqual(result.Single(), "corperation");
+            Assert.AreEqual("corperation", result.Single());
         }
 
         [TestMethod]
@@ -209,7 +209,7 @@ namespace FastSearch.UnitTests
             var s = new CharSequenceSearch<string>(lines, enableExactMatch: true);
 
             var result = s.Search("co");
-            Assert.AreEqual(result.Count, 0);
+            Assert.AreEqual(0, result.Count);
         }
     }
 }

@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="README.md" />
+    <File Path="docs/NGramSearch-Spec.md" />
+    <File Path="docs/SuffixArraySearch-Spec.md" />
+    <File Path="docs/CharSequenceSearch-Spec.md" />
+    <File Path="docs/HashSearch-Spec.md" />
+    <File Path="docs/LinqSearch-Spec.md" />
+    <File Path="docs/StringSearch-Spec.md" />
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/release.yml" />
+  </Folder>
+  <Project Path="FastSearch.UnitTests/FastSearch.UnitTests.csproj" />
+  <Project Path="FastSearch/FastSearch.csproj" />
+  <Project Path="PasswordSearch.Benchmark/PasswordSearch.Benchmark.csproj" />
+  <Project Path="PasswordSearch/PasswordSearch.csproj" />
+</Solution>
