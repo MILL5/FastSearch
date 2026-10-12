@@ -156,7 +156,7 @@
       {
         "@type": "Question",
         "name": "Can I search custom objects and several fields at once?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Override ToString() on your class, or pass a Func<T, string[]> that returns the strings to index for each item, such as name, email and company. A match in any field returns the object once." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Override ToString() on your class, or pass a Func<T, string[]> that returns the strings to index for each item, such as name, email and company. With NGramSearch, matching fields return each input position once. LinqSearch can return duplicates for multiple matching fields; ordering and duplicate behavior depend on the algorithm." }
       },
       {
         "@type": "Question",
@@ -183,7 +183,7 @@
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Install the package", "text": "Run: dotnet add package FastSearch" },
       { "@type": "HowToStep", "position": 2, "name": "Build the index", "text": "Create an index once: var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email });" },
-      { "@type": "HowToStep", "position": 3, "name": "Search", "text": "Call search.Search("phoe") to get every matching item, case-insensitive, in input order with no duplicates." }
+      { "@type": "HowToStep", "position": 3, "name": "Search", "text": "Call search.Search(\"phoe\") to get every matching item, case-insensitive, in input order with no duplicates." }
     ]
   }
   </script>
@@ -581,7 +581,7 @@
     <ul class="facts">
       <li><strong>What it is:</strong> a C# library for case-insensitive substring search over in-memory lists of objects: autocomplete, type-ahead, filtering and lookup.</li>
       <li><strong>Recommended algorithm:</strong> <code>NGramSearch</code>. On 1M items it uses 47 MiB (30× less than a suffix trie), builds in about 1.2 s and averages about 5 µs per query.</li>
-      <li><strong>Results:</strong> every match, in the original input order, with no duplicates. Searching is thread-safe.</li>
+      <li><strong>NGramSearch results:</strong> each matching input position once, in input order. Concurrent searches are safe.</li>
       <li><strong>Platform:</strong> .NET 10 on Windows, macOS and Linux. Free under Apache 2.0.</li>
       <li><strong>Install:</strong> <code>dotnet add package FastSearch</code></li>
     </ul>
@@ -811,7 +811,7 @@
       </div>
       <div class="faq-item">
         <h3 class="faq-q">Can I search custom objects and several fields at once?</h3>
-        <p class="faq-a">Yes. Override ToString() on your class, or pass a Func&lt;T, string[]&gt; that returns the strings to index for each item, such as name, email and company. A match in any field returns the object once.</p>
+        <p class="faq-a">Yes. Override ToString() on your class, or pass a Func&lt;T, string[]&gt; that returns the strings to index for each item, such as name, email and company. With NGramSearch, matching fields return each input position once. LinqSearch can return duplicates for multiple matching fields; ordering and duplicate behavior depend on the algorithm.</p>
       </div>
       <div class="faq-item">
         <h3 class="faq-q">Is FastSearch free and open source?</h3>
