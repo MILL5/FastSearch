@@ -15,10 +15,8 @@ namespace PasswordSearch.Benchmark
     {
         public BenchmarkConfig()
         {
+            // Runs on the host runtime/architecture (net10.0; x64 or arm64).
             AddJob(Job.Default
-                .WithRuntime(CoreRuntime.Core50)
-                .WithPlatform(Platform.X64)
-                .WithJit(Jit.Default)
                 .WithGcServer(true));
 
             AddExporter(DefaultExporters.AsciiDoc);

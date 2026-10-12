@@ -1,0 +1,19 @@
+<Project>
+  <!-- Shared settings for every project in the solution. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <!-- Lets the WPF sample restore and build on macOS/Linux (it still only runs on Windows). -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- One shared copy of the 1M-password test data, copied next to each consumer's output. -->
+  <ItemGroup Condition="'$(UsesPasswordData)' == 'true'">
+    <Content Include="$(MSBuildThisFileDirectory)data/10-million-password-list-top-1000000.txt"
+             Link="10-million-password-list-top-1000000.txt"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

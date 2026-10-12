@@ -8,6 +8,7 @@ using static PasswordSearch.Benchmark.BenchmarkShared;
 
 namespace PasswordSearch.Benchmark
 {
+    [MemoryDiagnoser]
     public class BenchmarkIndexing
     {
         static BenchmarkIndexing()
@@ -31,6 +32,18 @@ namespace PasswordSearch.Benchmark
         public HashSearch<string> HashSearchIndexing()
         {
             return new HashSearch<string>(Passwords);
+        }
+
+        [Benchmark]
+        public SuffixArraySearch<string> SuffixArraySearchIndexing()
+        {
+            return new SuffixArraySearch<string>(Passwords);
+        }
+
+        [Benchmark]
+        public NGramSearch<string> NGramSearchIndexing()
+        {
+            return new NGramSearch<string>(Passwords);
         }
 
         [Benchmark]

@@ -1,0 +1,47 @@
+name: CI
+
+# Development happens on release/* branches, which reach develop and then main only through pull requests.
+on:
+  push:
+    branches: [ "release/**", develop, main ]
+  pull_request:
+    branches: [ develop, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore FastSearch.slnx
+
+      - name: Build
+        run: dotnet build FastSearch.slnx -c Release --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test FastSearch.UnitTests -c Release --no-build --logger "trx;LogFileName=results.trx"
+
+      - name: Pack (validation)
+        run: dotnet pack FastSearch/FastSearch.csproj -c Release --no-build -o artifacts
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-output
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+            FastSearch.UnitTests/TestResults/*.trx

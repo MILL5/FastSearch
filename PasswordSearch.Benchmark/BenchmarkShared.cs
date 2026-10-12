@@ -16,7 +16,7 @@ namespace PasswordSearch.Benchmark
         {
             var passwords = new List<string>(10000000);
 
-            using (var s = new StreamReader(@"10-million-password-list-top-1000000.txt"))
+            using (var s = new StreamReader(Path.Combine(AppContext.BaseDirectory, "10-million-password-list-top-1000000.txt")))
             {
                 while (s.Peek() > 0)
                 {
