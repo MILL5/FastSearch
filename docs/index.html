@@ -126,12 +126,12 @@
       {
         "@type": "Question",
         "name": "Which FastSearch algorithm should I use?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch when the list changes constantly and you don't want an index." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch for a parallel scan over a text snapshot, or StringSearch to read the source on every query." }
       },
       {
         "@type": "Question",
         "name": "How much memory does FastSearch use?",
-        "acceptedAnswer": { "@type": "Answer", "text": "NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after its query cache fills), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch." }
+        "acceptedAnswer": { "@type": "Answer", "text": "NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after the measured query workload), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch." }
       },
       {
         "@type": "Question",
@@ -151,7 +151,7 @@
       {
         "@type": "Question",
         "name": "Is FastSearch thread-safe?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every index is read-only once it is built, so any number of threads can call Search at the same time." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Concurrent searches can share the completed indexes. Keep source objects and custom index functions safe for concurrent use: StringSearch reads them on every query, and CharSequenceSearch exact-match mode rechecks source fields. SuffixArraySearch synchronizes its result cache." }
       },
       {
         "@type": "Question",
@@ -622,7 +622,7 @@
       <article class="algo-card">
         <span class="tag">No index</span>
         <h3>LinqSearch</h3>
-        <p>A parallel LINQ scan over lowercased copies of the strings. Nothing to build, so it suits small or constantly changing lists.</p>
+        <p>A parallel LINQ scan over lowercased copies made at construction. It has no substring index, but retains a text snapshot that must be rebuilt when indexed data changes.</p>
       </article>
       <article class="algo-card">
         <span class="tag">Baseline</span>
@@ -643,7 +643,9 @@
           <tr class="hl"><td>The best all-round choice: small memory, fast build, fast queries</td><td>NGramSearch</td></tr>
           <tr><td>The fastest enumeration of very broad results (1–2 character queries over millions of items)</td><td>SuffixArraySearch</td></tr>
           <tr><td>The lowest latency on narrow queries, and memory is no concern (small lists)</td><td>CharSequenceSearch</td></tr>
-          <tr><td>No index at all (small or constantly changing lists)</td><td>LinqSearch</td></tr>
+          <tr><td>A parallel scan over a text snapshot, without a substring index</td><td>LinqSearch</td></tr>
+          <tr><td>A simple scan that reads source data on every query</td><td>StringSearch</td></tr>
+          <tr><td>Precomputed substring answers using hash lookup, when memory is no concern</td><td>HashSearch</td></tr>
         </tbody>
       </table>
     </div>
@@ -653,12 +655,12 @@
   <section id="benchmarks" aria-labelledby="benchmarks-h">
     <span class="section-label">Benchmarks</span>
     <h2 id="benchmarks-h">Benchmarks: 1 million items</h2>
-    <p class="subtitle">Every algorithm indexes the same 1,000,000 passwords on the same machine, each in its own process, with fully optimized JIT.</p>
+    <p class="subtitle">Recorded v1.1 results: every algorithm uses the same 999,998 nonblank passwords on the same Apple-silicon Mac with .NET 10 and workstation GC, each in its own process with DOTNET_TieredCompilation=0. Query calls are sequential; LinqSearch uses parallel workers.</p>
     <div class="table-wrap">
       <table>
         <caption>Build time, index memory and search latency at 1M items (lower is better)</caption>
         <thead>
-          <tr><th scope="col">Algorithm</th><th scope="col">Build</th><th scope="col">Index memory</th><th scope="col">After 1,000 queries</th><th scope="col">Random query (avg)</th><th scope="col"><code>a</code> (370k hits)</th><th scope="col"><code>love</code> (3,297)</th><th scope="col"><code>catherine</code> (5)</th></tr>
+          <tr><th scope="col">Algorithm</th><th scope="col">Build</th><th scope="col">Index memory</th><th scope="col">Heap after queries</th><th scope="col">Random query (avg)</th><th scope="col"><code>a</code> (370k hits)</th><th scope="col"><code>love</code> (3,297)</th><th scope="col"><code>catherine</code> (5)</th></tr>
         </thead>
         <tbody>
             <tr class="hl"><td>NGramSearch (new)</td><td>1.2 s</td><td>47.4 MiB</td><td>47.4 MiB</td><td>5.28 µs</td><td>1.6 ms</td><td>13.7 µs</td><td>0.59 µs</td></tr>
@@ -670,21 +672,21 @@
         </tbody>
       </table>
     </div>
-    <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries are warm averages that include enumerating every result. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
+    <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries average 2,000 warm calls (20 for scans), including enumeration of every result. Heap after queries is measured after both workloads and excludes input strings. These charts reuse the recorded results; performance depends on hardware, data, queries, and cache state. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
     <figure>
-      <img src="images/search-performance.png" width="1500" height="900" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
-      <figcaption>Average of 1,000 random substring searches over 1M items (log scale).</figcaption>
+      <img src="images/search-performance.png" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
+      <figcaption>Average cold Search-call time over 1,000 random substrings at 999,998 items (log scale; excludes enumeration).</figcaption>
     </figure>
     <figure>
-      <img src="images/indexing-cost.png" width="2216" height="680" loading="lazy" decoding="async" alt="Table comparing index build time, index memory, memory after 1,000 queries and average search time for six algorithms at 1 million items. NGramSearch uses the least memory: 47.4 MiB.">
+      <img src="images/indexing-cost.png" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
       <figcaption>Indexing cost vs. search speed at 1M items.</figcaption>
     </figure>
     <figure>
-      <img src="images/search-latency.png" width="2216" height="833" loading="lazy" decoding="async" alt="Table of search latency per query (a, 12, love, phoenix, catherine, and 1,000 random substrings) for six algorithms at 1 million items.">
-      <figcaption>Latency by query at 1M items.</figcaption>
+      <img src="images/search-latency.png" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
+      <figcaption>Warm latency including enumeration by query at 999,998 items.</figcaption>
     </figure>
     <figure>
-      <img src="images/optimizations.png" width="2008" height="915" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: case-insensitive matching, index data structure, hashing, binary search, parallel indexing, parallel search, linear memory, compressed index, input-order results, and no query cache.">
+      <img src="images/optimizations.png" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
       <figcaption>Optimizations used by each algorithm.</figcaption>
     </figure>
   </section>
@@ -694,6 +696,7 @@
     <span class="section-label">Quick Start</span>
     <h2 id="quickstart-h">Searching in three lines of C#</h2>
     <p class="subtitle">Install the NuGet package, index your collection once, and call <code style="color:var(--accent-2);">Search()</code>.</p>
+    <p>Algorithm specifications: <a href="https://github.com/MILL5/FastSearch/blob/main/docs/NGramSearch-Spec.md">NGramSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/SuffixArraySearch-Spec.md">SuffixArraySearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/CharSequenceSearch-Spec.md">CharSequenceSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/HashSearch-Spec.md">HashSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/LinqSearch-Spec.md">LinqSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/StringSearch-Spec.md">StringSearch</a>.</p>
     <div class="code-block">
       <span class="cmt">// 1. Install: dotnet add package FastSearch</span><br><br>
       <span class="kw">using</span> FastSearch;<br><br>
@@ -786,11 +789,11 @@
       </div>
       <div class="faq-item">
         <h3 class="faq-q">Which FastSearch algorithm should I use?</h3>
-        <p class="faq-a">Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch when the list changes constantly and you don't want an index.</p>
+        <p class="faq-a">Use NGramSearch for almost everything: it has the smallest index (47 MiB for 1M items), builds in about a second, and keeps typical queries in single-digit microseconds. Use SuffixArraySearch if you mostly run 1–2 character queries over millions of items, CharSequenceSearch for the lowest latency on narrow queries over small lists, and LinqSearch for a parallel scan over a text snapshot, or StringSearch to read the source on every query.</p>
       </div>
       <div class="faq-item">
         <h3 class="faq-q">How much memory does FastSearch use?</h3>
-        <p class="faq-a">NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after its query cache fills), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch.</p>
+        <p class="faq-a">NGramSearch uses about 7 bytes per indexed character on lists of 100,000 items or more, and that doesn't grow as you search. For 1 million passwords (7.5 million characters) that is 47 MiB, compared with 83 MiB for SuffixArraySearch (121 MiB after the measured query workload), 1.54 GiB for CharSequenceSearch and 1.79 GiB for HashSearch.</p>
       </div>
       <div class="faq-item">
         <h3 class="faq-q">How does NGramSearch work?</h3>
@@ -806,7 +809,7 @@
       </div>
       <div class="faq-item">
         <h3 class="faq-q">Is FastSearch thread-safe?</h3>
-        <p class="faq-a">Yes. Every index is read-only once it is built, so any number of threads can call Search at the same time.</p>
+        <p class="faq-a">Concurrent searches can share the completed indexes. Keep source objects and custom index functions safe for concurrent use: StringSearch reads them on every query, and CharSequenceSearch exact-match mode rechecks source fields. SuffixArraySearch synchronizes its result cache.</p>
       </div>
       <div class="faq-item">
         <h3 class="faq-q">Can I search custom objects and several fields at once?</h3>

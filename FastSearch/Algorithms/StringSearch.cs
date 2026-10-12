@@ -24,7 +24,7 @@ namespace FastSearch
 
         public ICollection<T> Search(string? search)
         {
-            if (search is null) return new List<T>();
+            if (string.IsNullOrEmpty(search)) return new List<T>();
 
             var items = _items;
             var found = new List<T>(items.Count());

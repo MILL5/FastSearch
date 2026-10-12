@@ -35,6 +35,7 @@ namespace FastSearch
         private readonly int _cacheThreshold;
         private readonly long _cacheBudget;   // max item references held by the cache (= suffix count)
         private long _cachedRefs;
+        private readonly object _cacheLock = new object();
         private readonly ConcurrentDictionary<string, ICollection<T>> _cache = new ConcurrentDictionary<string, ICollection<T>>();
 
         private readonly struct Range
@@ -145,12 +146,16 @@ namespace FastSearch
             // character). When the budget is exceeded the cache is reset, so hot queries re-enter quickly.
             if (collected.Length <= _cacheBudget)
             {
-                if (System.Threading.Interlocked.Add(ref _cachedRefs, collected.Length) > _cacheBudget)
+                lock (_cacheLock)
                 {
-                    _cache.Clear();
-                    System.Threading.Interlocked.Exchange(ref _cachedRefs, collected.Length);
+                    if (_cache.TryGetValue(key, out cached)) return cached;
+                    if (_cachedRefs + collected.Length > _cacheBudget)
+                    {
+                        _cache.Clear();
+                        _cachedRefs = 0;
+                    }
+                    if (_cache.TryAdd(key, result)) _cachedRefs += collected.Length;
                 }
-                if (!_cache.TryAdd(key, result)) System.Threading.Interlocked.Add(ref _cachedRefs, -collected.Length);
             }
             return result;
         }

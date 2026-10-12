@@ -73,69 +73,25 @@ namespace PasswordSearch
 
         private StringBuilder Search(int searchLimit, string searchForThis)
         {
-            int linqResult = 0,
-                stringResult = 0,
-                hashResult = 0,
-                charSequenceResult = 0,
-                suffixArrayResult = 0,
-                nGramResult = 0;
+            var (search, algorithm) = UseString ? (_stringSearch, "String Contains") :
+                UseLinq ? (_linqSearch, "LINQ") :
+                UseHash ? (_hashSearch, "Hash") :
+                UseCharSequence ? (_charSequenceSearch, "Character Tree") :
+                UseSuffixArray ? (_suffixArraySearch, "Suffix Array") :
+                (_nGramSearch, "N-Gram");
+            int result = 0;
 
             var sb = new StringBuilder();
 
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using String Contains"))
+            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using {algorithm}"))
             {
                 for (int i = 0; i < searchLimit; i++)
                 {
-                    stringResult = _stringSearch.Search(searchForThis).Count;
+                    result = search.Search(searchForThis).Count;
                 }
             }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using LINQ"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    linqResult = _linqSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Hash"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    hashResult = _hashSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Character Tree"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    charSequenceResult = _charSequenceSearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using Suffix Array"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    suffixArrayResult = _suffixArraySearch.Search(searchForThis).Count;
-                }
-            }
-
-            using (new TimerScope(sb, $"Search for {searchForThis} {searchLimit} times using N-Gram"))
-            {
-                for (int i = 0; i < searchLimit; i++)
-                {
-                    nGramResult = _nGramSearch.Search(searchForThis).Count;
-                }
-            }
-
-            // Every algorithm must agree with the String Contains baseline.
-            if (linqResult != stringResult ||
-                hashResult != stringResult ||
-                charSequenceResult != stringResult ||
-                suffixArrayResult != stringResult ||
-                nGramResult != stringResult)
+            // Validate the selected implementation outside its timed loop.
+            if (result != _stringSearch.Search(searchForThis).Count)
             {
                 sb.Clear();
                 sb.Insert(0, $"Validation for results failed.");
@@ -225,7 +181,7 @@ namespace PasswordSearch
         public bool UseHash { get; set; }
         public bool UseCharSequence { get; set; }
         public bool UseSuffixArray { get; set; }
-        public bool UseNGram { get; set; }
+        public bool UseNGram { get; set; } = true;
 
         public int NumberOfEntries { get; set; } = 10000;
         public int NumberOfSearches { get; set; } = 10000;

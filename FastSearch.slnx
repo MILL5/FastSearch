@@ -4,8 +4,12 @@
     <File Path="AGENTS.md" />
     <File Path="Directory.Build.props" />
     <File Path="README.md" />
-    <File Path="NGramSearch-Spec.md" />
-    <File Path="CharSequenceSearch-Spec.md" />
+    <File Path="docs/NGramSearch-Spec.md" />
+    <File Path="docs/SuffixArraySearch-Spec.md" />
+    <File Path="docs/CharSequenceSearch-Spec.md" />
+    <File Path="docs/HashSearch-Spec.md" />
+    <File Path="docs/LinqSearch-Spec.md" />
+    <File Path="docs/StringSearch-Spec.md" />
     <File Path=".github/workflows/ci.yml" />
     <File Path=".github/workflows/release.yml" />
   </Folder>

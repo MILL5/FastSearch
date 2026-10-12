@@ -1,17 +1,17 @@
 name: Release
 
 # Publishes to NuGet when a version tag (v1.2.3) is pushed. Tag commits on main, after develop -> main is merged.
-# Requires the repository secret NUGET_API_KEY.
+# Uses NuGet.org Trusted Publishing for MILL5/FastSearch, release.yml.
 on:
   push:
     tags: [ "v*.*.*" ]
 
-permissions:
-  contents: write
-
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -37,8 +37,14 @@ jobs:
       - name: Pack
         run: dotnet pack FastSearch/FastSearch.csproj -c Release -o artifacts
 
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: richcrane
+
       - name: Push to NuGet
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: GitHub release
         env:

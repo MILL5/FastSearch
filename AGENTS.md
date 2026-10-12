@@ -16,4 +16,4 @@
 - The library targets `net10.0` only, with nullable enabled, AOT/trim compatible, zero warnings.
 - Every algorithm implements `ISearch<T>` and must match `StringSearch<T>` (the oracle) on the consistency tests; new algorithms need the same coverage.
 - Test data lives once in `data/` and is linked into projects that set `<UsesPasswordData>true</UsesPasswordData>` (see `Directory.Build.props`).
-- When benchmark numbers change, update them everywhere together: README tables, the four chart PNGs (root and `docs/images/`), `docs/index.html` (table, FAQ text and JSON-LD), `docs/llms.txt`, and `NGramSearch-Spec.md`.
+- When benchmark numbers change, update them everywhere together: README tables, the chart PNGs (root and `docs/images/`), `docs/index.html` (table, FAQ text and JSON-LD), `docs/llms.txt`, `docs/*-Spec.md`, and the current benchmark sheets in `archive/*.xlsx`. Regenerate charts with `uv run scripts/generate_benchmark_charts.py`; PNG filenames are lowercase.

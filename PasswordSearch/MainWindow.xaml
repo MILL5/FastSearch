@@ -31,6 +31,7 @@
                 <RadioButton IsChecked="{Binding UseCharSequence}" Margin="5" Grid.Row="1" Grid.Column="0" GroupName="Implementation">Character Sequence</RadioButton>
                 <RadioButton IsChecked="{Binding UseSuffixArray}" Margin="5" Grid.Row="1" Grid.Column="1" GroupName="Implementation">Suffix Array</RadioButton>
                 <RadioButton IsChecked="{Binding UseNGram}" Margin="5" Grid.Row="2" Grid.Column="0" GroupName="Implementation">N-Gram</RadioButton>
+                <RadioButton IsChecked="{Binding UseString}" Margin="5" Grid.Row="2" Grid.Column="1" GroupName="Implementation">String Contains</RadioButton>
             </Grid>
             <Grid VerticalAlignment="Center">
                 <Grid.RowDefinitions>

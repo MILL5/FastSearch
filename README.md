@@ -39,7 +39,20 @@ ICollection<Customer> hits = search.Search("phoe"); // case-insensitive substrin
 | The best all-round choice: small memory, fast build, fast queries | **NGramSearch** |
 | The fastest enumeration of very broad results (1–2 character queries over millions of items) | SuffixArraySearch |
 | The lowest latency on narrow queries, and memory is no concern (small lists) | CharSequenceSearch |
-| No index at all (small or constantly changing lists) | LinqSearch |
+| A parallel scan over a snapshot, without a substring index | LinqSearch |
+| A simple scan that reads the source and indexed fields on every query | StringSearch |
+| Precomputed substring answers with hash lookup, when memory is no concern | HashSearch |
+
+`NGramSearch`, `SuffixArraySearch`, `CharSequenceSearch`, `HashSearch`, and `LinqSearch` capture indexed text at construction. Rebuild them when the source collection or indexed fields change. `LinqSearch` still allocates lowercased string copies; its lack of a substring index does not mean zero memory.
+
+### **Algorithm specifications**
+
+- [NGramSearch](docs/NGramSearch-Spec.md): compressed posting lists and candidate verification.
+- [SuffixArraySearch](docs/SuffixArraySearch-Spec.md): sorted suffixes, prefix tables, and bounded result caching.
+- [CharSequenceSearch](docs/CharSequenceSearch-Spec.md): suffix trie and optional exact matching.
+- [HashSearch](docs/HashSearch-Spec.md): substring hashes with collision checking.
+- [LinqSearch](docs/LinqSearch-Spec.md): parallel scan over lowercased text snapshots.
+- [StringSearch](docs/StringSearch-Spec.md): direct scan and correctness baseline.
 
 ### **How NGramSearch works**
 
@@ -47,28 +60,30 @@ ICollection<Customer> hits = search.Search("phoe"); // case-insensitive substrin
 - **Short queries (1–3 characters, and common 4-character ones):** answered exactly from a single list. There's no sorting, no de-duplication and no cache. The result is a lazy read-only view; its `Count` is known up front and items are decoded as you enumerate them.
 - **Longer queries:** intersect the rarest gram lists, then verify the few remaining candidates against a compact lowercased copy of the text (1 byte per character for Latin-1 text).
 - **Guarantees:** results come back in input order with no duplicates, the index never grows after it's built, and concurrent searches are safe.
-- **Full details:** [NGramSearch-Spec.md](NGramSearch-Spec.md). The suffix trie is described in [CharSequenceSearch-Spec.md](CharSequenceSearch-Spec.md).
+- **Full details:** [NGramSearch-Spec.md](docs/NGramSearch-Spec.md). The suffix trie is described in [CharSequenceSearch-Spec.md](docs/CharSequenceSearch-Spec.md).
 
 ### **Performance & Memory (v1.1, .NET 10)**
 
 ![Search performance: average of 1,000 random substring searches over 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/search_performance.png)
 
-![Indexing cost vs. search speed at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/Speeds.png)
+![Indexing cost vs. search speed at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/speeds.png)
 
-![Search latency by query at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/SearchResults.png)
+![Index build time across 10k, 100k, and 999,998 items](https://raw.githubusercontent.com/MILL5/FastSearch/main/index_performance.png)
+
+![Search latency by query at 1M items](https://raw.githubusercontent.com/MILL5/FastSearch/main/searchresults.png)
 
 ![Optimizations used by each algorithm](https://raw.githubusercontent.com/MILL5/FastSearch/main/optimizations.png)
 
 All numbers are apples-to-apples. Every algorithm indexes the same items (the first *N* entries of the bundled 1M-password list, 7.5 characters on average) on the same machine with the same method, and each measurement runs in its own process.
 
 - **Index heap:** `GC.GetTotalMemory(true)` after the build minus before it, with the input strings already loaded so they aren't counted for any algorithm.
-- **Heap after 1,000 queries:** the same measurement taken after the query workload. It includes `SuffixArraySearch`'s result cache, which is capped at one reference per indexed character. `NGramSearch` has no cache, so it doesn't grow.
+- **Heap after queries:** the same measurement taken after the 1,000 random queries and the warm named-query workload. It includes `SuffixArraySearch`'s bounded result cache. `NGramSearch` has no cache, so it doesn't retain query results.
 - **Latency:** the named queries are averaged over 2,000 warm calls (20 for the scans) and include enumerating every result. The random mix is 1,000 cold queries of 1–8 characters and times the `Search` call only.
 - **JIT:** all runs use `DOTNET_TieredCompilation=0`, so every algorithm runs fully optimized code from the first call.
 
 **Memory vs. items stored**
 
-| Items | Algorithm | Build time | Index heap | Bytes / char | Heap after 1,000 queries |
+| Items | Algorithm | Build time | Index heap | Bytes / char | Heap after queries |
 |---:|---|---:|---:|---:|---:|
 | 10,000 | **NGramSearch (new)** | 13 ms | 0.92 MiB | 14.4 | 0.92 MiB |
 | 10,000 | SuffixArraySearch | 9 ms | 1.10 MiB | 17.3 | 1.51 MiB |
@@ -89,7 +104,7 @@ All numbers are apples-to-apples. Every algorithm indexes the same items (the fi
 | 999,998 | LinqSearch | 92 ms | 78.87 MiB | 11.0 | 78.93 MiB |
 | 999,998 | StringSearch | 0 ms | 0.00 MiB | 0.0 | 0.00 MiB |
 
-**Search latency** (single thread)
+**Search latency** (sequential query calls; `LinqSearch` uses parallel workers)
 
 | Items | Algorithm | `a` | `12` | `love` | `phoenix` | `catherine` | 1,000 random substrings (avg) |
 |---:|---|---:|---:|---:|---:|---:|---:|
@@ -126,8 +141,11 @@ All numbers are apples-to-apples. Every algorithm indexes the same items (the fi
 - **Faster indexing:** `CharSequenceSearch` and `HashSearch` checked for duplicates by scanning a `List` on every insert, which made indexing quadratic in the number of items. They now use an O(1) per-item visited set.
 - **Exact-match case bug:** `CharSequenceSearch` exact-match mode compared mixed-case source strings to the lowercased query and missed matches. The comparison is now case-insensitive.
 - **Read-only results:** `CharSequenceSearch` and `HashSearch` used to return their internal mutable lists, so a caller could corrupt the index. They now return read-only views.
+- **Consistent empty queries:** all six algorithms return no results for null or empty queries.
+- **Concurrent cache updates:** `SuffixArraySearch` synchronizes cache eviction and insertion to keep retained item references within its budget.
+- **Sample selection:** the WPF sample times the selected algorithm and checks its result count against `StringSearch` outside the timed loop.
 
-**Test machine:** Apple-silicon Mac, .NET 10.0, workstation GC. Absolute times will differ on other hardware, but the ratios hold.
+**Test machine:** Apple-silicon Mac, .NET 10.0, workstation GC. These are the recorded v1.1 results, not a new benchmark run. Absolute times and relative performance depend on hardware, data, query distribution, and cache state.
 
 **Reproduce**
 
@@ -137,6 +155,16 @@ export DOTNET_TieredCompilation=0
 dotnet run -c Release -- heap ngram 1000000   # string | linq | hash | charseq | suffixarray | ngram
 dotnet run -c Release                         # BenchmarkDotNet suite (10k items, with MemoryDiagnoser)
 ```
+
+**Regenerate documentation charts** from the README benchmark tables:
+
+```bash
+uv run scripts/generate_benchmark_charts.py
+```
+
+The generator updates the root benchmark PNGs and matching images in `docs/images/`. Update the README tables first when recording new measurements, then keep the website, specifications, and spreadsheets in sync.
+
+**Excel workbooks:** [FastSearch.xlsx](archive/FastSearch.xlsx) and [Search Results.xlsx](archive/Search%20Results.xlsx) include current benchmarks for all six algorithms at 10k, 100k, and 999,998 items, algorithm guidance, and measurement notes. Their original sheets retain historical results separately.
 
 ### **Why Choose FastSearch?**
 - **User-Friendly**: Designed with developers in mind, enabling you to integrate powerful search functionality with ease.

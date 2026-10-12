@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace FastSearch.UnitTests
 {
@@ -87,6 +90,38 @@ namespace FastSearch.UnitTests
             Assert.AreSame(first, second);
             Assert.IsTrue(first.IsReadOnly);
             Assert.ThrowsExactly<NotSupportedException>(() => first.Clear());
+        }
+
+        [TestMethod]
+        public void ConcurrentCacheEvictionKeepsReferenceBudgetAndAccountingConsistent()
+        {
+            var items = Enumerable.Repeat("abcdefgh", 128).ToArray();
+            var sa = new SuffixArraySearch<string>(items, cacheThreshold: 1);
+            var queries = new List<string>();
+            for (int start = 0; start < 8; start++)
+                for (int length = 1; length <= 8 - start; length++)
+                    queries.Add(items[0].Substring(start, length));
+
+            const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic;
+            var cache = (ConcurrentDictionary<string, ICollection<string>>)typeof(SuffixArraySearch<string>)
+                .GetField("_cache", fields)!.GetValue(sa)!;
+            var budget = (long)typeof(SuffixArraySearch<string>).GetField("_cacheBudget", fields)!.GetValue(sa)!;
+            var countField = typeof(SuffixArraySearch<string>).GetField("_cachedRefs", fields)!;
+
+            // Every query matches all input positions. Only eight distinct queries fit in the
+            // reference budget, forcing frequent eviction and competing duplicate insertions.
+            for (int round = 0; round < 20; round++)
+            {
+                Parallel.For(0, 16, worker =>
+                {
+                    for (int i = 0; i < 100; i++)
+                        Assert.AreEqual(items.Length, sa.Search(queries[(worker * 7 + i) % queries.Count]).Count);
+                });
+
+                long retained = cache.Values.Sum(result => (long)result.Count);
+                Assert.IsTrue(retained <= budget, "Cached item references exceed the budget.");
+                Assert.AreEqual(retained, (long)countField.GetValue(sa)!, "Cache accounting differs from retained references.");
+            }
         }
 
         [TestMethod]

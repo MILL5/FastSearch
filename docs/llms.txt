@@ -22,14 +22,16 @@
 
 ## Quick answer: which algorithm should I use?
 
-- **NGramSearch (recommended):** the best all-round choice, with the smallest memory, a fast build and fast queries.
+- **NGramSearch (recommended):** the best all-round choice, with the smallest substring index in the measured workload, a fast build and fast queries.
 - **SuffixArraySearch:** the fastest enumeration of very broad results (1–2 character queries over millions of items).
 - **CharSequenceSearch:** the lowest latency on narrow queries, when memory is no concern (small lists).
-- **LinqSearch:** no index at all, for small or constantly changing lists.
+- **LinqSearch:** a parallel scan over a lowercased text snapshot; rebuild when indexed data changes.
+- **StringSearch:** a direct scan that reads the source and indexed fields on every query.
+- **HashSearch:** precomputed substring answers using hash lookup, at high memory cost.
 
 ## Algorithms
 
-All six algorithms implement `ISearch<T>` (`ICollection<T> Search(string search)`). Results are case-insensitive.
+All six algorithms implement `ISearch<T>` (`ICollection<T> Search(string? search)`). Results are case-insensitive.
 
 ### NGramSearch (new in 1.1, recommended)
 Every distinct 1-, 2- and 3-character substring of an item, plus every 4-character substring shared by 16 or more items, maps to a sorted list of item ids. The lists are delta + varint compressed (about 1–2 bytes per entry), or stored as bitmaps when that is smaller. Queries of up to 3 characters are answered from one list: no sort, no de-duplication, no cache, and a lazy read-only result whose Count is known up front. Longer queries intersect the rarest lists and verify the remaining candidates against a compact lowercased copy of the text. Results are in input order with no duplicates. Memory is about 7 bytes per indexed character (on 100k+ items) and doesn't grow with queries.
@@ -49,9 +51,9 @@ A parallel LINQ scan over lowercased copies of the strings, with no index.
 ### StringSearch
 A single-threaded `string.Contains` scan with no index. Used as the correctness baseline.
 
-## Benchmarks (1,000,000 passwords, 7.5 M characters, .NET 10, single thread)
+## Benchmarks (999,998 nonblank passwords, approximately 7.5 M characters, .NET 10)
 
-| Algorithm | Build | Index memory | After 1,000 queries | Random query avg | `a` (370k hits) | `love` (3,297) | `catherine` (5) |
+| Algorithm | Build | Index memory | Heap after queries | Random query avg | `a` (370k hits) | `love` (3,297) | `catherine` (5) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | NGramSearch | 1.2 s | 47.4 MiB | 47.4 MiB | 5.28 µs | 1.6 ms | 13.7 µs | 0.59 µs |
 | SuffixArraySearch | 0.64 s | 83.2 MiB | 120.9 MiB | 103 µs | 0.70 ms | 6.23 µs | 0.15 µs |
@@ -60,7 +62,7 @@ A single-threaded `string.Contains` scan with no index. Used as the correctness 
 | LinqSearch | 92 ms | 78.9 MiB | 78.9 MiB | 4.0 ms | 12.3 ms | 3.2 ms | 1.8 ms |
 | StringSearch | — | 0 | 0 | 36.7 ms | 37.6 ms | 35.5 ms | 20.2 ms |
 
-The random query is the average of 1,000 cold searches of 1–8 characters and times the Search call only. The named queries are warm averages that include enumerating every result.
+The random query is the average of 1,000 cold searches of 1–8 characters and times the Search call only. The named queries average 2,000 warm calls (20 for scans), including enumeration of every result. Query calls are sequential; LinqSearch uses parallel workers. Heap excludes input strings and is measured after both workloads. These are the recorded v1.1 results on an Apple-silicon Mac with workstation GC and DOTNET_TieredCompilation=0, not new measurements; hardware, data and query distribution affect the results.
 
 ## How to use
 
@@ -72,7 +74,7 @@ var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email }
 ICollection<Customer> hits = search.Search("phoe"); // case-insensitive, input order, no duplicates
 ```
 
-Items are indexed by `ToString()` unless you pass a `Func<T, string[]>` that returns the strings to index for each item. All indexes are read-only after construction, so concurrent searches are thread-safe.
+Items are indexed by `ToString()` unless you pass a `Func<T, string[]>` that returns the strings to index for each item. The indexed algorithms capture text at construction; rebuild when source items or indexed fields change. LinqSearch also captures text even though it has no substring index. StringSearch reads its retained source on each call, so callers must keep that source and the index function safe during concurrent use. NGramSearch and SuffixArraySearch preserve input position order; do not assume that every algorithm has the same ordering or duplicate behavior for multiple indexed fields.
 
 ## Use cases
 
@@ -102,7 +104,12 @@ Items are indexed by `ToString()` unless you pass a `Func<T, string[]>` that ret
 ## Docs
 
 - [README](https://github.com/MILL5/FastSearch/blob/main/README.md): Project overview, features, and quick start
-- [CharSequenceSearch Spec](https://github.com/MILL5/FastSearch/blob/main/CharSequenceSearch-Spec.md): Detailed suffix-trie algorithm specification
+- [NGramSearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/NGramSearch-Spec.md): Algorithm behavior, implementation and trade-offs
+- [SuffixArraySearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/SuffixArraySearch-Spec.md): Algorithm behavior, implementation and trade-offs
+- [CharSequenceSearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/CharSequenceSearch-Spec.md): Algorithm behavior, implementation and trade-offs
+- [HashSearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/HashSearch-Spec.md): Algorithm behavior, implementation and trade-offs
+- [LinqSearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/LinqSearch-Spec.md): Algorithm behavior, implementation and trade-offs
+- [StringSearch Spec](https://github.com/MILL5/FastSearch/blob/main/docs/StringSearch-Spec.md): Algorithm behavior, implementation and trade-offs
 - [NGramSearch source](https://github.com/MILL5/FastSearch/blob/main/FastSearch/Algorithms/NGramSearch.cs): Recommended algorithm implementation
 - [Benchmarks](https://github.com/MILL5/FastSearch#performance--memory-v11-net-10): Full tables for 10k, 100k and 1M items
 - [NuGet Package](https://www.nuget.org/packages/FastSearch): Package listing and version history

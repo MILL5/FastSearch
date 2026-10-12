@@ -2,7 +2,7 @@
 
 ## Overview
 
-`NGramSearch<T>` is FastSearch's recommended algorithm. It answers case-insensitive substring ("contains") queries over an in-memory collection, returning every matching item once, in input order.
+`NGramSearch<T>` is FastSearch's recommended algorithm. It answers case-insensitive substring ("contains") queries over an in-memory collection, returning each matching input position once, in input order.
 
 Instead of storing every possible answer (as the suffix trie in [CharSequenceSearch](CharSequenceSearch-Spec.md) does), it stores, for each short substring (an *n-gram*), the compressed list of items that contain it. Memory is O(N·L), about 7 bytes per indexed character on lists of 100k items or more, and the index never grows after construction.
 
@@ -12,7 +12,7 @@ Instead of storing every possible answer (as the suffix trie in [CharSequenceSea
 | Build time | ~1.2 s for 1M items, single thread |
 | Query, 1–3 chars | O(1) to return, O(hits) to enumerate; no sort, no de-dup, no cache |
 | Query, 4+ chars | Intersect the rarest gram lists, then verify the survivors; typically < 1 µs for narrow queries |
-| Result order | Input order, no duplicates |
+| Result order | Input order; one result per matching input position |
 | Thread safety | Immutable after construction; any number of concurrent `Search` calls |
 
 ---
@@ -37,7 +37,7 @@ A gram of 1–4 characters is packed into a `ulong`, 16 bits per character: `key
 ### Which grams are indexed
 
 - **Every** distinct 1-, 2- and 3-character gram gets a list.
-- A 4-character gram gets a list only when **16 or more** items contain it (`MinLongGramCount`). Of 724k distinct 4-grams in the 1M password list, 94% occur in 16 or fewer items. Their directory entries (about 36 bytes each) would cost more than the 3-gram intersection they save.
+- A 4-character gram gets a list only when **16 or more** items contain it (`MinLongGramCount`). Of 724k distinct 4-grams in the 1M password list, 94% occur in fewer than 16 items. Their directory entries (about 36 bytes each) would cost more than the 3-gram intersection they save.
 
 ### Posting list encoding
 
@@ -120,9 +120,17 @@ Look up the gram and return a `PostingView`: a read-only `ICollection<T>` over t
 | `catherine` (5 hits, enumerated) | 0.59 µs | 0.15 µs | 0.08 µs |
 | `a` (370k hits, enumerated) | 1.6 ms | 0.70 ms | 1.5 ms |
 
-See the [README](README.md#performance--memory-v11-net-10) for the method and the full tables.
+See the [README](../README.md#performance--memory-v11-net-10) for the method and the full tables.
 
 ---
+
+## Result and source semantics
+
+- The constructor snapshots the input sequence and indexed text; later collection or property changes require a new index. Returned objects remain the original references.
+- Repeated matches and multiple matching fields for one input position produce one result. If the same object appears at multiple input positions, it can appear multiple times.
+- Null or empty indexed strings are skipped; null or empty queries return empty. A null input collection throws `ArgumentNullException`. Supply non-null items and an index function that returns a non-null array.
+- Short-query posting views are read-only. Long queries return fresh arrays; changing their elements does not change the index. Index state is immutable after construction, allowing concurrent searches.
+- Implementation: [NGramSearch.cs](../FastSearch/Algorithms/NGramSearch.cs).
 
 ## Known Trade-offs
 
