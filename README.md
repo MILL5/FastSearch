@@ -9,7 +9,7 @@
 
 FastSearch is an open-source C# library for case-insensitive substring search ("contains" search) over in-memory collections of objects: autocomplete, type-ahead, filtering, and lookups across millions of items.
 
-**Current release:** [FastSearch 1.1.1](https://www.nuget.org/packages/FastSearch/1.1.1). This patch updates the documentation; the algorithms and recorded benchmark measurements are unchanged from 1.1.0.
+**Current release:** [FastSearch 1.1.3](https://www.nuget.org/packages/FastSearch/1.1.3). This patch updates the desktop sample and documentation; the algorithms and recorded benchmark measurements are unchanged from 1.1.0.
 
 ✨ **Features**
 - **Effortless searching:** case-insensitive substring matches across large lists of objects through one interface, `ISearch<T>`.
@@ -23,7 +23,7 @@ FastSearch is an open-source C# library for case-insensitive substring search ("
 - **Customizable object representation:** override `ToString()` or pass a custom index function that returns the strings to index for each item.
 
 🚀 **Quick Start**
-1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch --version 1.1.1`.
+1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch --version 1.1.3`.
 2. Override `ToString()` on your objects, or pass an index function.
 3. Create an `NGramSearch` with your `IEnumerable<T>`, then call `Search`.
 
@@ -37,7 +37,7 @@ ICollection<Customer> hits = search.Search("phoe"); // case-insensitive; each ma
 
 The example assumes your existing `customers` collection and `Customer` class. Null or empty queries return no results across all six algorithms. Result ordering and duplicate handling vary by algorithm; `NGramSearch` returns each matching input position once, even when several fields match. Repeating an object at multiple input positions can return that object more than once.
 
-**Targets:** `net10.0` (.NET 10 LTS). Version 1.1 drops `netstandard2.1`, because every .NET runtime it served (.NET Core 3.x through .NET 9) is out of support or reaches end of support in November 2026. Stay on FastSearch 1.0.16 if you need an older runtime. The tests, benchmarks and the WPF sample also target .NET 10.
+**Targets:** `net10.0` (.NET 10 LTS). Version 1.1 drops `netstandard2.1`, because every .NET runtime it served (.NET Core 3.x through .NET 9) is out of support or reaches end of support in November 2026. Stay on FastSearch 1.0.16 if you need an older runtime. The tests, benchmarks and the .NET MAUI desktop sample also target .NET 10.
 
 ### **Which algorithm should I use?**
 
@@ -161,7 +161,7 @@ All numbers are apples-to-apples. Every algorithm indexes the same items (the fi
 - **Consistent empty queries:** all six algorithms return no results for null or empty queries.
 - **Protected empty results:** the trie, hash, and LINQ implementations use fixed empty arrays, so callers cannot corrupt later searches by adding to a shared empty result.
 - **Concurrent cache updates:** `SuffixArraySearch` synchronizes cache eviction and insertion to keep retained item references within its budget.
-- **Sample selection:** the WPF sample times the selected algorithm and checks its result count against `StringSearch` outside the timed loop.
+- **Sample selection:** the .NET MAUI desktop sample times the selected algorithm and checks its result count against `StringSearch` outside the timed loop.
 
 **Test machine:** Apple-silicon Mac, .NET 10.0, workstation GC. These are the recorded v1.1 results, not a new benchmark run. Absolute times and relative performance depend on hardware, data, query distribution, and cache state.
 
@@ -176,7 +176,7 @@ dotnet run -c Release                         # BenchmarkDotNet suite (10k items
 
 <a id="interactive-sample"></a>
 
-**Interactive sample:** `PasswordSearch` is a .NET MAUI desktop app (Mac Catalyst and Windows) that loads the password list, builds every index, and times searches side by side. It needs the `maui` workload (`dotnet workload install maui`).
+**Interactive sample:** `PasswordSearch` is a .NET MAUI desktop app (Mac Catalyst and Windows) that loads the password list, compares indexing times for all six algorithms, and times searches with the selected algorithm. It needs the `maui` workload (`dotnet workload install maui`).
 
 ```bash
 dotnet build PasswordSearch -t:Run -f net10.0-maccatalyst          # macOS
