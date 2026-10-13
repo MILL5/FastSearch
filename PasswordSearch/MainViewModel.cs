@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using FastSearch;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,7 +22,7 @@ namespace PasswordSearch
 
         public MainViewModel()
         {
-            LoadFileCommand = new RelayCommand(LoadFileCommandMethod);
+            LoadFileCommand = new RelayCommand(LoadFileCommandMethod, () => !IsBusy);
             SearchCommand = new RelayCommand(SearchCommandMethod, CanExecuteSearch);
         }
 
@@ -32,17 +31,57 @@ namespace PasswordSearch
 
         private void LoadFileCommandMethod()
         {
-            Task.Run(LoadFileAsync);
+            _ = RunOperationAsync(LoadFileAsync, "Loading and indexing dataset…", "Dataset ready. Run a search to measure performance.");
         }
 
         private void SearchCommandMethod()
         {
-            Task.Run(SearchAsync);
+            _ = RunOperationAsync(SearchAsync, "Running search benchmark…", "Search complete. Results appear below.");
+        }
+
+        private bool _isBusy;
+        private string _status = "Load a dataset to get started.";
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            private set => SetProperty(ref _isBusy, value);
+        }
+
+        public string Status
+        {
+            get => _status;
+            private set => SetProperty(ref _status, value);
+        }
+
+        private async Task RunOperationAsync(Func<Task> operation, string runningStatus, string completedStatus)
+        {
+            IsBusy = true;
+            Status = runningStatus;
+            LoadFileCommand.NotifyCanExecuteChanged();
+            SearchCommand.NotifyCanExecuteChanged();
+            try
+            {
+                await Task.Run(operation);
+                Status = completedStatus;
+            }
+            catch (Exception ex)
+            {
+                Status = "Operation failed. Check the results and try again.";
+                _sb.Insert(0, $"{ex.Message}{Environment.NewLine}");
+                OnPropertyChanged(nameof(Output));
+            }
+            finally
+            {
+                IsBusy = false;
+                LoadFileCommand.NotifyCanExecuteChanged();
+                SearchCommand.NotifyCanExecuteChanged();
+            }
         }
 
         private bool CanExecuteSearch()
         {
-            return _stringSearch != null &&
+            return !IsBusy && _stringSearch != null &&
                    _charSequenceSearch != null &&
                    _hashSearch != null &&
                    _linqSearch != null &&
@@ -64,7 +103,7 @@ namespace PasswordSearch
 
             _sb.Insert(0, lastlog);
 
-            await Application.Current.Dispatcher.InvokeAsync(() =>
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 OnPropertyChanged(nameof(Output));
                 SearchCommand.NotifyCanExecuteChanged();
@@ -107,12 +146,13 @@ namespace PasswordSearch
 
             using (new TimerScope(_sb, "Load 10M passwords"))
             {
-                using (var s = new StreamReader(Path.Combine(AppContext.BaseDirectory, "10-million-password-list-top-1000000.txt")))
+                // The list ships inside the app package (MauiAsset), so read it through FileSystem.
+                using (var s = new StreamReader(await FileSystem.OpenAppPackageFileAsync("10-million-password-list-top-1000000.txt")))
                 {
-                    while (s.Peek() > 0)
-                    {
-                        var line = await s.ReadLineAsync();
+                    string line;
 
+                    while ((line = await s.ReadLineAsync()) != null)
+                    {
                         if (!string.IsNullOrWhiteSpace(line))
                             passwords.Add(line);
                     }
@@ -130,7 +170,7 @@ namespace PasswordSearch
 
             _sb.Insert(0, lastlog);
 
-            await Application.Current.Dispatcher.InvokeAsync(() =>
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 OnPropertyChanged(nameof(Output));
                 SearchCommand.NotifyCanExecuteChanged();

@@ -174,6 +174,17 @@ dotnet run -c Release -- heap ngram 1000000   # string | linq | hash | charseq |
 dotnet run -c Release                         # BenchmarkDotNet suite (10k items, with MemoryDiagnoser)
 ```
 
+<a id="interactive-sample"></a>
+
+**Interactive sample:** `PasswordSearch` is a .NET MAUI desktop app (Mac Catalyst and Windows) that loads the password list, builds every index, and times searches side by side. It needs the `maui` workload (`dotnet workload install maui`).
+
+```bash
+dotnet build PasswordSearch -t:Run -f net10.0-maccatalyst          # macOS
+dotnet build PasswordSearch -t:Run -f net10.0-windows10.0.19041.0  # Windows
+```
+
+![FastSearch Password Search desktop app showing dataset controls, six search algorithms, and indexing results](docs/images/password-search-app.png)
+
 **Regenerate documentation charts** from the README benchmark tables:
 
 ```bash
