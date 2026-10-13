@@ -14,7 +14,7 @@
 		<RepositoryUrl>https://github.com/MILL5/FastSearch</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/MILL5/FastSearch</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReleaseNotes>1.1.1: updates README installation guidance, result semantics, chart descriptions, and release-pinned documentation links. Algorithms and recorded benchmark measurements are unchanged from 1.1.0.</PackageReleaseNotes>
+		<PackageReleaseNotes>1.1.2: replaces the WPF desktop sample with .NET MAUI for Mac Catalyst and Windows, improves its layout and operation status, and adds the sample screenshot to the README and documentation. Library algorithms and recorded benchmark measurements are unchanged.</PackageReleaseNotes>
 		<Authors>MILL5</Authors>
 		<Description>Fast, low-memory, case-insensitive substring (contains) search over in-memory collections of objects. NGramSearch indexes 1M items in about 1 s with 47 MiB and answers typical queries in about 5 µs.</Description>
 		<PackageTags>fast;search;string;substring;contains;autocomplete;typeahead;ngram;suffix-array;trie;algorithm;hash;lookups</PackageTags>
@@ -22,7 +22,7 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
