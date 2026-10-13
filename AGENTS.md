@@ -8,7 +8,8 @@
 - Resolve diverged branches with merge commits, never rebase.
 
 ## Build & test
-- `dotnet build FastSearch.slnx -c Release -warnaserror` (the WPF sample builds on macOS/Linux via `EnableWindowsTargeting`; it only runs on Windows).
+- `dotnet build FastSearch.slnx -c Release -warnaserror` on macOS or Windows (needs the `maui` workload for the `PasswordSearch` .NET MAUI sample, which targets Mac Catalyst on macOS and Windows on Windows). On Linux, build `FastSearch`, `FastSearch.UnitTests`, and `PasswordSearch.Benchmark` individually.
+- Run the sample on a Mac: `dotnet build PasswordSearch -t:Run -f net10.0-maccatalyst`.
 - `dotnet test FastSearch.UnitTests -c Release`
 - Heap/latency harness: `cd PasswordSearch.Benchmark && DOTNET_TieredCompilation=0 dotnet run -c Release -- heap <string|linq|hash|charseq|suffixarray|ngram> <items>`. Run one algorithm per process; keep `DOTNET_TieredCompilation=0` so every algorithm is measured with fully optimized code.
 

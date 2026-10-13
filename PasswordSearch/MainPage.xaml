@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:PasswordSearch"
+             x:Class="PasswordSearch.MainPage"
+             x:DataType="local:MainViewModel"
+             Title="FastSearch Password Search">
+    <ContentPage.BindingContext>
+        <local:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <FlexLayout Grid.Row="0" Wrap="Wrap" AlignItems="Center" Padding="10" MinimumHeightRequest="80"
+                    BackgroundColor="{AppThemeBinding Light=GhostWhite, Dark={StaticResource Gray900}}">
+            <Button Margin="10" WidthRequest="90" Text="Load" Command="{Binding LoadFileCommand}" />
+
+            <Grid Margin="10" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto" VerticalOptions="Center">
+                <RadioButton Grid.Row="0" Grid.Column="0" GroupName="Implementation" Content="LINQ" IsChecked="{Binding UseLinq, Mode=TwoWay}" />
+                <RadioButton Grid.Row="0" Grid.Column="1" GroupName="Implementation" Content="Hash" IsChecked="{Binding UseHash, Mode=TwoWay}" />
+                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Implementation" Content="Character Sequence" IsChecked="{Binding UseCharSequence, Mode=TwoWay}" />
+                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Implementation" Content="Suffix Array" IsChecked="{Binding UseSuffixArray, Mode=TwoWay}" />
+                <RadioButton Grid.Row="2" Grid.Column="0" GroupName="Implementation" Content="N-Gram" IsChecked="{Binding UseNGram, Mode=TwoWay}" />
+                <RadioButton Grid.Row="2" Grid.Column="1" GroupName="Implementation" Content="String Contains" IsChecked="{Binding UseString, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid Margin="10" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto" ColumnSpacing="5" RowSpacing="5" VerticalOptions="Center">
+                <Label Grid.Row="0" Grid.Column="0" Text="Size of List:" VerticalOptions="Center" />
+                <Entry Grid.Row="0" Grid.Column="1" MinimumWidthRequest="100" Keyboard="Numeric" Text="{Binding NumberOfEntries, Mode=TwoWay}" />
+                <Label Grid.Row="1" Grid.Column="0" Text="# of Searches:" VerticalOptions="Center" />
+                <Entry Grid.Row="1" Grid.Column="1" MinimumWidthRequest="100" IsReadOnly="True" IsEnabled="False" Text="{Binding NumberOfSearches, Mode=OneWay}" />
+            </Grid>
+
+            <Label Margin="10,0,5,0" Text="Search:" VerticalOptions="Center" />
+            <Entry Margin="0,0,5,0" MinimumWidthRequest="200" Text="{Binding SearchPhrase, Mode=TwoWay}" ReturnCommand="{Binding SearchCommand}" />
+            <Button Margin="10" WidthRequest="90" Text="Search" Command="{Binding SearchCommand}" />
+        </FlexLayout>
+
+        <Editor Grid.Row="1" IsReadOnly="True" Text="{Binding Output, Mode=OneWay}"
+                FontFamily="{OnPlatform MacCatalyst=Menlo, WinUI=Consolas}" FontSize="13" />
+    </Grid>
+</ContentPage>

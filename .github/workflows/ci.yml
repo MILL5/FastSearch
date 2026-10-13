@@ -25,11 +25,16 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The .NET MAUI sample has no Linux target; it is built by the sample job below.
       - name: Restore
-        run: dotnet restore FastSearch.slnx
+        run: |
+          dotnet restore FastSearch.UnitTests
+          dotnet restore PasswordSearch.Benchmark
 
       - name: Build
-        run: dotnet build FastSearch.slnx -c Release --no-restore -warnaserror
+        run: |
+          dotnet build FastSearch.UnitTests -c Release --no-restore -warnaserror
+          dotnet build PasswordSearch.Benchmark -c Release --no-restore -warnaserror
 
       - name: Test
         run: dotnet test FastSearch.UnitTests -c Release --no-build --logger "trx;LogFileName=results.trx"
@@ -45,3 +50,18 @@ jobs:
             artifacts/*.nupkg
             artifacts/*.snupkg
             FastSearch.UnitTests/TestResults/*.trx
+
+  sample:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Build PasswordSearch (Mac Catalyst)
+        run: dotnet build PasswordSearch/PasswordSearch.csproj -c Release -f net10.0-maccatalyst -warnaserror
