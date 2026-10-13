@@ -52,16 +52,18 @@ jobs:
             FastSearch.UnitTests/TestResults/*.trx
 
   sample:
-    runs-on: macos-latest
+    runs-on: macos-26
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 10.0.401
 
       - name: Install MAUI workload
-        run: dotnet workload install maui
+        run: dotnet workload install maui --version 10.0.401
 
       - name: Build PasswordSearch (Mac Catalyst)
         run: dotnet build PasswordSearch/PasswordSearch.csproj -c Release -f net10.0-maccatalyst -warnaserror
