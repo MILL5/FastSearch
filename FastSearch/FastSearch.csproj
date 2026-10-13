@@ -14,7 +14,7 @@
 		<RepositoryUrl>https://github.com/MILL5/FastSearch</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/MILL5/FastSearch</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReleaseNotes>1.1.0: adds NGramSearch (compressed n-gram posting lists: ~47 MiB and ~1 s to index 1M items, ~5 µs typical query) and SuffixArraySearch (O(N·L) memory); targets net10.0 only (netstandard2.1 dropped); fixes quadratic indexing in CharSequenceSearch/HashSearch and case handling in exact-match mode.</PackageReleaseNotes>
+		<PackageReleaseNotes>1.1.1: updates README installation guidance, result semantics, chart descriptions, and release-pinned documentation links. Algorithms and recorded benchmark measurements are unchanged from 1.1.0.</PackageReleaseNotes>
 		<Authors>MILL5</Authors>
 		<Description>Fast, low-memory, case-insensitive substring (contains) search over in-memory collections of objects. NGramSearch indexes 1M items in about 1 s with 47 MiB and answers typical queries in about 5 µs.</Description>
 		<PackageTags>fast;search;string;substring;contains;autocomplete;typeahead;ngram;suffix-array;trie;algorithm;hash;lookups</PackageTags>
@@ -22,7 +22,7 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
