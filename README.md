@@ -9,6 +9,8 @@
 
 FastSearch is an open-source C# library for case-insensitive substring search ("contains" search) over in-memory collections of objects: autocomplete, type-ahead, filtering, and lookups across millions of items.
 
+**Current release:** [FastSearch 1.1.1](https://www.nuget.org/packages/FastSearch/1.1.1). This patch updates the documentation; the algorithms and recorded benchmark measurements are unchanged from 1.1.0.
+
 ✨ **Features**
 - **Effortless searching:** case-insensitive substring matches across large lists of objects through one interface, `ISearch<T>`.
 - **Multiple search algorithms:**
@@ -21,14 +23,19 @@ FastSearch is an open-source C# library for case-insensitive substring search ("
 - **Customizable object representation:** override `ToString()` or pass a custom index function that returns the strings to index for each item.
 
 🚀 **Quick Start**
-1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch`.
+1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch --version 1.1.1`.
 2. Override `ToString()` on your objects, or pass an index function.
 3. Create an `NGramSearch` with your `IEnumerable<T>`, then call `Search`.
 
 ```csharp
+using System.Collections.Generic;
+using FastSearch;
+
 var search = new NGramSearch<Customer>(customers, c => new[] { c.Name, c.Email });
-ICollection<Customer> hits = search.Search("phoe"); // case-insensitive substring match, input order, no duplicates
+ICollection<Customer> hits = search.Search("phoe"); // case-insensitive; each matching input position once, in order
 ```
+
+The example assumes your existing `customers` collection and `Customer` class. Null or empty queries return no results across all six algorithms. Result ordering and duplicate handling vary by algorithm; `NGramSearch` returns each matching input position once, even when several fields match. Repeating an object at multiple input positions can return that object more than once.
 
 **Targets:** `net10.0` (.NET 10 LTS). Version 1.1 drops `netstandard2.1`, because every .NET runtime it served (.NET Core 3.x through .NET 9) is out of support or reaches end of support in November 2026. Stay on FastSearch 1.0.16 if you need an older runtime. The tests, benchmarks and the WPF sample also target .NET 10.
 
@@ -64,13 +71,23 @@ ICollection<Customer> hits = search.Search("phoe"); // case-insensitive substrin
 
 ### **Performance & Memory (v1.1, .NET 10)**
 
-![Search performance: average of 1,000 random substring searches over 1M items](search_performance.png)
+**Cold query calls:** average time for 1,000 random substring queries. This measures the `Search` call, excluding result enumeration.
 
-![Indexing cost vs. search speed at 1M items](speeds.png)
+![Average cold Search-call time over 999,998 items, excluding result enumeration](search_performance.png)
+
+**Indexing cost:** build time, index heap, and retained heap after the query workload. Input strings are excluded from heap measurements.
+
+![Build time, index heap, and heap after queries at 999,998 items](speeds.png)
+
+**Build scaling:** how construction time changes from 10k to 100k and 999,998 items.
 
 ![Index build time across 10k, 100k, and 999,998 items](index_performance.png)
 
-![Search latency by query at 1M items](searchresults.png)
+**Warm queries:** latency includes enumerating every result, so broad queries cost more than narrow ones.
+
+![Warm query latency including full result enumeration at 999,998 items](searchresults.png)
+
+**Implementation features:** which techniques each algorithm uses. This matrix describes implementation choices, not a performance ranking.
 
 ![Optimizations used by each algorithm](optimizations.png)
 
@@ -163,7 +180,7 @@ dotnet run -c Release                         # BenchmarkDotNet suite (10k items
 uv run scripts/generate_benchmark_charts.py
 ```
 
-The generator updates the root benchmark PNGs and matching images in `docs/images/`. Update the README tables first when recording new measurements, then keep the website, specifications, and spreadsheets in sync.
+The generator updates the root benchmark PNGs, matching images in `docs/images/`, and `docs/og-image.png`. README previews use local image paths; the publishing workflow converts package README links to absolute URLs pinned to the release tag. Update the README tables first when recording new measurements, then keep the website, specifications, and spreadsheets in sync.
 
 **Excel workbooks:** [FastSearch.xlsx](archive/FastSearch.xlsx) and [Search Results.xlsx](archive/Search%20Results.xlsx) include current benchmarks for all six algorithms at 10k, 100k, and 999,998 items, algorithm guidance, and measurement notes. Their original sheets retain historical results separately.
 
