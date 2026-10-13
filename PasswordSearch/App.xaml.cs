@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-
 namespace PasswordSearch
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            InitializeComponent();
+        }
+
+        protected override Window CreateWindow(IActivationState activationState)
+        {
+            return new Window(new MainPage())
+            {
+                Title = "FastSearch Password Search",
+                Width = 1024,
+                Height = 768
+            };
+        }
     }
 }

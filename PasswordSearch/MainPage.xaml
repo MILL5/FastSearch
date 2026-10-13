@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:PasswordSearch"
+             x:Class="PasswordSearch.MainPage"
+             x:DataType="local:MainViewModel"
+             Title="FastSearch Password Search">
+    <ContentPage.BindingContext>
+        <local:MainViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <Style x:Key="SectionHeading" TargetType="Label">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="SecondaryText" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light=#54545C, Dark=#B8B8C2}" />
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid Padding="24" RowDefinitions="Auto,*" RowSpacing="24">
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Password search" FontSize="26" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Compare search algorithms against the same password list." Style="{StaticResource SecondaryText}" />
+        </VerticalStackLayout>
+
+        <Grid x:Name="Workspace" Grid.Row="1" ColumnDefinitions="280,*" ColumnSpacing="24" SizeChanged="OnWorkspaceSizeChanged">
+            <ScrollView x:Name="SetupPanel">
+                <VerticalStackLayout Spacing="24" Padding="0,0,4,4">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Dataset" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
+                        <Label Text="Number of passwords" Style="{StaticResource SecondaryText}" />
+                        <Entry Keyboard="Numeric" Text="{Binding NumberOfEntries, Mode=TwoWay}"
+                               SemanticProperties.Description="Number of passwords to load" />
+                        <Button Text="Load dataset" Command="{Binding LoadFileCommand}" HorizontalOptions="Fill" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Search algorithm" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
+                        <RadioButton GroupName="Implementation" Content="N-Gram" IsChecked="{Binding UseNGram, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Suffix Array" IsChecked="{Binding UseSuffixArray, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Character Sequence" IsChecked="{Binding UseCharSequence, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Hash" IsChecked="{Binding UseHash, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="LINQ" IsChecked="{Binding UseLinq, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="String Contains" IsChecked="{Binding UseString, Mode=TwoWay}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Search benchmark" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
+                        <Entry Text="{Binding SearchPhrase, Mode=TwoWay}" Placeholder="Enter a search phrase"
+                               ReturnType="Search" ReturnCommand="{Binding SearchCommand}" SemanticProperties.Description="Search phrase" />
+                        <Label Text="{Binding NumberOfSearches, StringFormat='{0:N0} searches per run'}" Style="{StaticResource SecondaryText}" />
+                        <Button Text="Run search" Command="{Binding SearchCommand}" HorizontalOptions="Fill" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Grid x:Name="ResultsPanel" Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="12">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Results" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" WidthRequest="16" HeightRequest="16" />
+                        <Label Grid.Column="1" Text="{Binding Status}" Style="{StaticResource SecondaryText}" />
+                    </Grid>
+                </VerticalStackLayout>
+                <Border Grid.Row="1" Padding="12" Stroke="{AppThemeBinding Light=#D8D8E0, Dark=#42424A}"
+                        BackgroundColor="{AppThemeBinding Light=#F7F7FA, Dark=#18181C}" StrokeShape="RoundRectangle 8">
+                    <Editor IsReadOnly="True" Text="{Binding Output, Mode=OneWay}"
+                            Placeholder="Load a dataset to see indexing times. Then run a search to compare performance."
+                            PlaceholderColor="{AppThemeBinding Light=#54545C, Dark=#B8B8C2}"
+                            BackgroundColor="Transparent" TextColor="{AppThemeBinding Light=#202026, Dark=#EFEFF4}"
+                            FontFamily="{OnPlatform MacCatalyst=Menlo, WinUI=Consolas}" FontSize="13"
+                            SemanticProperties.Description="Benchmark results, newest run first" />
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>
