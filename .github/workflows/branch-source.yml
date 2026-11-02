@@ -1,0 +1,35 @@
+name: Branch source policy
+
+# Run trusted base-branch code only; never check out or execute the PR head.
+on:
+  pull_request_target:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  branch-source:
+    name: Branch source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate promotion source
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          base, head = os.environ["BASE_REF"], os.environ["HEAD_REF"]
+          same_repo = os.environ["HEAD_REPO"] == os.environ["BASE_REPO"]
+          valid = same_repo and (
+              (base == "main" and head == "develop") or
+              (base == "develop" and head.startswith("feature/") and len(head) > 8)
+          )
+          if not valid:
+              raise SystemExit("Only same-repository develop -> main and feature/* -> develop PRs are allowed.")
+          print(f"Allowed: {head} -> {base}")
+          PYTHON

@@ -1,9 +1,9 @@
 name: CI
 
-# Development happens on release/* branches, which reach develop and then main only through pull requests.
+# Development happens on feature/* branches, which reach develop and then main only through pull requests.
 on:
   push:
-    branches: [ "release/**", develop, main ]
+    branches: [ "feature/**", develop, main ]
   pull_request:
     branches: [ develop, main ]
   workflow_dispatch:
