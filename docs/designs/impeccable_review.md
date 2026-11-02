@@ -32,7 +32,7 @@ five large figures before the working example create a reading-effort valley.
 - P2: unconditional smooth scroll ignores reduced-motion. Override scroll-behavior
   to auto when requested, retaining useful state feedback.
 - P2: FAQ/note prose reaches about 97–144 characters per line on desktop. Cap
-  reading prose at 75ch, without constraining tables or images.
+  reading prose at 56ch, without constraining tables or images.
 - P3: eight redundant section-label kickers add an unnecessary typographic rung.
   Remove those duplicate labels, retaining headings and all substantive copy.
 - P3: uneven heading/paragraph endings. Use text-wrap:balance/pretty with fallback.
@@ -106,3 +106,16 @@ visible upfront. Loaded100 and searched123 with Character Sequence selected:
 actual11=oracle11; log and selection names match. This was the final rebuilt
 preview, not the first stale launch. Light appearance/Windows/stacked native
 visuals remain untested; no blanket native accessibility certification.
+
+Detector follow-up showed that CSS ch units did not equal average character
+count in this proportional font: 75ch still yielded about94–102 characters per
+line. Tightened FAQ/benchmark-note measure to56ch to target roughly75 actual
+characters; this is a measured readability correction, not a typography change.
+
+Final desktop rendered detector after the measured prose adjustment: one warning,
+radial-spotlight-glow, the explicitly preserved incumbent direction exception.
+No remaining line-length warnings. Static source retains two verified table-wrapper
+padding false positives and three auxiliary-color advisories; no broad waivers.
+Independent finish reviewer disposition: ship for the scored web fixes, with no
+visible regression in final desktop/mobile captures. This is not certification
+of every unexercised state/platform.

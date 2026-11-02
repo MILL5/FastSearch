@@ -354,7 +354,7 @@ Add first-in-body skip link to main#main-content tabindex=-1, explicit emerald
 scroll offsets. Name and tabindex both table wrappers and the code region.
 Add `.btn-primary:hover` canvas foreground; remove blanket contrast waivers from
 .impeccable/config.json. Add reduced-motion scroll:auto and heading/paragraph
-balance/pretty. Cap .faq-a/p.note at 75ch, keeping tables/figures full width.
+balance/pretty. Cap .faq-a/p.note at 56ch, keeping tables/figures full width.
 Remove duplicate .section-label elements/style and noninteractive .algo-card:hover.
 Link the five benchmark chart images and add full-size links in existing captions.
 Make the code sample pre/code with preserved whitespace, same highlighted text,
