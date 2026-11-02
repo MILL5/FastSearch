@@ -1,6 +1,6 @@
 name: Branch source policy
 
-# Run trusted base-branch code only; never check out or execute the PR head.
+# Run trusted repository workflow code only; never check out or execute the PR head.
 on:
   pull_request_target:
     branches: [develop, main]

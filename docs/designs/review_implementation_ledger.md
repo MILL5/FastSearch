@@ -62,3 +62,7 @@ JSON. Added `.github/rulesets/README.md` with exact API application and safe
 bootstrap ordering, clarified AGENTS, and retained full active payloads only as
 final desired state. The older-head missing-script finding was fixed in f0c1882;
 that head passed Linux and macOS CI. No manual review request was made.
+
+Verified current GitHub event documentation: pull_request_target uses trusted
+default-branch context (main here). Corrected workflow comment/operational wording;
+ordered bootstrap already waits for main before making source checks required.

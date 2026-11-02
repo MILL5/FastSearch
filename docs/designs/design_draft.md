@@ -98,7 +98,7 @@ resolved conversations, deletion prevention, and force-push prevention. Required
 checks will be `Branch source`, `build-test`, and `sample`, pinned to GitHub
 Actions. Use merge commits so promotion retains ancestry; never rebase.
 
-The `branch-source.yml` workflow uses `pull_request_target`, checks only GitHub
+The `branch-source.yml` workflow uses `pull_request_target` in the default-branch context, checks only GitHub
 event metadata, and never checks out or executes PR code. It accepts
 `develop -> main` or `feature/<nonempty-name> -> develop` only when head and base
 repository identities match. Handle opened, synchronize, reopened, edited,
@@ -146,7 +146,7 @@ changing public signatures, result ordering promises, or benchmark numbers.
 
 Classic branch protection alone cannot restrict PR head branches. A check in a
 normal pull_request workflow can be rewritten by a contributor, so use the
-trusted base workflow. A custom GitHub App would add service operation and tokens
+trusted default-branch workflow. A custom GitHub App would add service operation and tokens
 without a need. Requiring an extra human approval would block this solo-owner
 workflow; require CI and resolved conversations instead. A full interface redesign
 would replace the existing identity without a requested product benefit.
@@ -380,3 +380,5 @@ Create `docs/favicon.svg` from the existing navigation magnifier geometry and re
 Finish review: place release metadata below hero description and all six algorithm tags below their h3 headings; preserve text while removing the remaining eyebrow pattern.
 
 Create `.github/rulesets/README.md` to distinguish desired-state JSON from live API enforcement and document exact ordered bootstrap/provisioning commands.
+
+Current GitHub event reference specifies pull_request_target default-branch context. Main is the default branch, so final source enforcement is activated only after main contains the guard; the existing ordered bootstrap already follows this requirement.

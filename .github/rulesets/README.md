@@ -2,7 +2,7 @@
 
 `main.json` and `develop.json` are desired-state API payloads. GitHub does not load
 these files automatically. Their `enforcement: active` describes the final state;
-applying either full payload before its base branch contains branch-source.yml
+applying either full payload before the default branch contains branch-source.yml
 would block the initial promotion. They are not evidence of live enforcement.
 
 ## Ordered bootstrap
@@ -14,7 +14,7 @@ would block the initial promotion. They are not evidence of live enforcement.
    The develop ruleset also enables copilot_code_review, review_on_push=true,
    review_draft_pull_requests=false. Main has no Copilot rule.
 3. Merge the feature PR to develop after exact-head CI/review. Until the trusted
-   workflow reaches the bases, an operator verifies the same-repository source
+   workflow reaches the default branch, an operator verifies the same-repository source
    explicitly; PR-only settings alone do not enforce source restrictions.
 4. Open develop -> main. Verify its source repository and branch, wait for CI,
    and merge by PR. Do not apply main's full payload before this bootstrap merge.
@@ -44,8 +44,11 @@ gh api repos/MILL5/FastSearch/rules/branches/main
 gh api repos/MILL5/FastSearch/rules/branches/develop
 ```
 
-The source guard runs on pull_request_target using trusted base-branch workflow
-code and event metadata only. It never checks out/executes the PR head. Draft PRs
+The source guard runs on pull_request_target using trusted default-branch workflow
+code and event metadata only. GitHub's current
+[event reference](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target)
+specifies default-branch context; the default branch here is main. The guard is
+therefore bootstrapped through main before becoming required for either base. It never checks out/executes the PR head. Draft PRs
 still run this guard, while develop's Copilot rule excludes draft reviews.
 Repository/user/organization review settings are independent; these templates
 control this repository's branch-scoped automatic review rules.
