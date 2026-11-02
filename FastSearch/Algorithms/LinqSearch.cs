@@ -13,13 +13,15 @@ namespace FastSearch
         {
             private readonly string _s;
 
-            public ObjectWrapper(T instance, string value)
+            public ObjectWrapper(T instance, string value, int occurrenceId)
             {
                 Instance = instance;
+                OccurrenceId = occurrenceId;
                 _s = value.ToLowerInvariant();
             }
 
             public T Instance { get; }
+            public int OccurrenceId { get; }
 
             public override bool Equals(object? obj)
             {
@@ -39,6 +41,7 @@ namespace FastSearch
 
         private readonly IEnumerable<ObjectWrapper> _items;
         private readonly IParallelism _parallelism;
+        private readonly bool _hasMultipleFields;
 
         private static string?[] IndexThis(T instance)
         {
@@ -53,14 +56,20 @@ namespace FastSearch
             _parallelism = parallelism ?? new Parallelism();
 
             var temp = new List<ObjectWrapper>(items.Count());
+            var occurrenceId = 0;
 
             foreach (var item in items)
             {
+                var fieldCount = 0;
                 foreach (var s in indexWithThis(item))
                 {
                     if (s is null) continue;
-                    temp.Add(new ObjectWrapper(item, s));
+                    temp.Add(new ObjectWrapper(item, s, occurrenceId));
+                    fieldCount++;
                 }
+
+                _hasMultipleFields |= fieldCount > 1;
+                occurrenceId++;
             }
 
             _items = temp;
@@ -75,10 +84,18 @@ namespace FastSearch
 
             var searchToUse = search.ToLowerInvariant();
 
-            return _items
+            var matches = _items
                 .AsParallel()
                 .WithDegreeOfParallelism(_parallelism.MaxDegreeOfParallelism)
-                .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.ToString().Contains(searchToUse, StringComparison.OrdinalIgnoreCase));
+
+            if (_hasMultipleFields)
+            {
+                // Deduplicate fields, preserving repeated occurrences and value-equal instances.
+                matches = matches.GroupBy(x => x.OccurrenceId).Select(group => group.First());
+            }
+
+            return matches
                 .Select(x => x.Instance)
                 .ToList();
         }

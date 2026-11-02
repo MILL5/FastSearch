@@ -26,6 +26,9 @@ jobs:
           dotnet-version: 10.0.x
 
       # The .NET MAUI sample has no Linux target; it is built by the sample job below.
+      - name: Test branch promotion policy
+        run: python3 scripts/test_branch_source_policy.py
+
       - name: Restore
         run: |
           dotnet restore FastSearch.UnitTests

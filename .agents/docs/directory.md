@@ -1,5 +1,10 @@
 # Directory packages
 
+Upstream maintainer guide: commands in this document run in a checkout of
+[google/elephant-goldfish-model at 403d8881d620](https://github.com/google/elephant-goldfish-model/tree/403d8881d62022490637d740657b33f01e321ea8),
+not in FastSearch. Packaging scripts/manifests/tests are upstream development
+inputs and are not part of this installed runtime.
+
 Build a runtime folder and ZIP using only Python's standard library:
 
 ```sh

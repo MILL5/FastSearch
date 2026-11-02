@@ -1,5 +1,10 @@
 # Versioned releases
 
+Upstream maintainer guide: commands in this document run in a checkout of
+[google/elephant-goldfish-model at 403d8881d620](https://github.com/google/elephant-goldfish-model/tree/403d8881d62022490637d740657b33f01e321ea8),
+not in FastSearch. Packaging scripts/manifests/tests are upstream development
+inputs and are not part of this installed runtime.
+
 The canonical version is `plugin.json`'s `version`. Every host manifest that
 declares an EGM version must match it, including experimental adapters such as
 Cursor when present. Marketplace catalogs without a version field do not need

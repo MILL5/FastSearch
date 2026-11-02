@@ -27,7 +27,7 @@ AI assistants.
 We propose the **`egm-bootstrap`** skill for the EGM plugin. This
 skill automates the creation, correction, formatting, and correctness
 verification of
-[Design is the New Code (DNC)](../../README.md)
+[Design is the New Code (DNC)](https://github.com/google/elephant-goldfish-model/blob/403d8881d62022490637d740657b33f01e321ea8/README.md)
 compliant `README.md` files across a directory tree.
 
 *   **DNC Compliance**: Design is the New Code (DNC) is the EGM engineering

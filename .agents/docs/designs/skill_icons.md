@@ -13,7 +13,7 @@ reviewer permissions, installation, or the Elephant-Goldfish logo.
 
 ## Source and geometry
 
-Each `skills/egm_*/assets/icon.svg` is the canonical asset. Keep the SVGs
+Each installed `.agents/skills/egm-*/assets/icon.svg` is the canonical asset. Keep the SVGs
 self-contained, with a title and a 24 by 24 viewBox. Visible ink stays inside
 the 20 px keyline. Optical size and positioning corrections are part of the
 artwork; do not normalize individual bounding boxes or stroke widths.
@@ -34,11 +34,11 @@ artwork; do not normalize individual bounding boxes or stroke widths.
   Its `brand_color` matches the icon's base color. Host rendering is controlled
   by the host; metadata validation does not verify its picker UI.
 - Both runtime bundles include the canonical files through the existing
-  [package builder](../../scripts/pack_plugin.py). Regenerate
+  [package builder](https://github.com/google/elephant-goldfish-model/blob/403d8881d62022490637d740657b33f01e321ea8/scripts/pack_plugin.py). Regenerate
   `distributions/claude`; do not edit its copies independently. Claude's
   reviewer color keywords and the plugin-level logo stay unchanged.
-- The root README references the canonical paths directly. These relative
-  paths also resolve inside generated runtime packages.
+- The upstream EGM README references its canonical paths directly. FastSearch
+  installs picker metadata/assets only; its product README is not an icon consumer.
 - The website follow-up will import these SVGs at build time, keep circles
   in the presentation layer, and use adjacent labels for accessible names.
   Website layout, copy, deployment triggers, and captures belong to that PR.

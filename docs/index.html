@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
 
@@ -220,7 +221,15 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    :focus-visible { outline: 3px solid var(--accent-2); outline-offset: 4px; }
+    h1, h2, h3 { text-wrap: balance; }
+    p { text-wrap: pretty; }
+    ::selection { background: var(--accent-2); color: var(--bg); }
+    .skip-link { position: fixed; top: 8px; left: 16px; z-index: 200;
+      padding: 12px 16px; background: var(--panel); transform: translateY(-180%); }
+    .skip-link:focus { transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -244,12 +253,12 @@
     .top-bar-inner {
       max-width: var(--max-w); margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
-      height: 56px;
+      min-height: 56px;
     }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
     .brand svg { flex-shrink: 0; }
     .nav-links { display: flex; gap: 20px; font-size: 0.88rem; }
-    .nav-links a { color: var(--text-dim); }
+    .nav-links a { color: var(--text-dim); min-height: 24px; display: inline-flex; align-items: center; }
     .nav-links a:hover { color: var(--text); }
 
     /* ---- HERO ---- */
@@ -301,6 +310,7 @@
       color: var(--bg);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
+    .btn-primary:hover { color: var(--bg); }
     .btn-secondary {
       background: var(--panel);
       border: 1px solid var(--border-strong);
@@ -319,9 +329,11 @@
       font-size: 0.88rem;
       color: var(--accent-2);
       text-align: left;
-      user-select: all;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
     }
     .install-bar span { color: var(--text-faint); }
+    .install-bar code { font: inherit; user-select: all; }
+    .code-block code { font: inherit; }
 
     /* ---- SECTIONS ---- */
     section {
@@ -331,14 +343,6 @@
     }
     section + section { border-top: 1px solid var(--border); }
 
-    .section-label {
-      display: inline-block;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
     section h2 {
       font-size: 1.75rem;
       font-weight: 700;
@@ -363,10 +367,6 @@
       border-radius: var(--radius);
       padding: 28px 24px;
       transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .algo-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
     .algo-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
     .algo-card .tag {
@@ -473,7 +473,7 @@
       margin-bottom: 6px;
       cursor: default;
     }
-    .faq-a { color: var(--text-dim); font-size: 0.92rem; }
+    .faq-a { color: var(--text-dim); font-size: 0.92rem; max-width: 75ch; }
 
 
     /* ---- KEY FACTS / TABLES / FIGURES ---- */
@@ -495,7 +495,7 @@
     figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); background: #fcfcfb; }
     figcaption { color: var(--text-faint); font-size: 0.82rem; margin-top: 8px; }
     .faq-q { font-size: 1.02rem; }
-    p.note { color: var(--text-faint); font-size: 0.82rem; margin-top: -16px; margin-bottom: 32px; }
+    p.note { max-width: 75ch; color: var(--text-faint); font-size: 0.82rem; margin-top: -16px; margin-bottom: 32px; }
 
     /* ---- AUTHOR ---- */
     .author-block {
@@ -548,15 +548,24 @@
     .footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
 
     /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      html { scroll-padding-top: 176px; }
+      .top-bar-inner { flex-wrap: wrap; gap: 10px; padding: 12px 0; }
+      .nav-links { width: 100%; flex-wrap: wrap; gap: 8px 20px; }
+    }
     @media (max-width: 640px) {
+      .top-bar { padding: 0 16px; }
       .hero { padding: 64px 20px 48px; }
       section { padding: 56px 20px; }
-      .nav-links { gap: 14px; font-size: 0.82rem; }
+      .nav-links { gap: 8px 14px; font-size: 0.82rem; }
+      .install-bar { flex-wrap: wrap; overflow-wrap: anywhere; }
+      .algo-grid, .eco-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <!-- NAV -->
   <nav class="top-bar" aria-label="Primary navigation">
@@ -576,10 +585,9 @@
     </div>
   </nav>
 
-  <main>
+  <main id="main-content" tabindex="-1">
   <!-- HERO -->
   <header class="hero">
-    <div class="badge">New in 1.1 &middot; NGramSearch &middot; .NET 10 &middot; Apache 2.0</div>
     <h1>
       <span class="gradient">Fast, low-memory</span> substring search for .NET
     </h1>
@@ -587,6 +595,7 @@
       FastSearch is a free, open-source C# library for case-insensitive “contains” search over in-memory
       collections. Index a million items in about a second with 47 MiB, then search them in microseconds.
     </p>
+    <div class="badge">New in 1.1 &middot; NGramSearch &middot; .NET 10 &middot; Apache 2.0</div>
     <div class="hero-actions">
       <a class="btn btn-primary" href="https://www.nuget.org/packages/FastSearch">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -598,7 +607,8 @@
       </a>
     </div>
     <div class="install-bar">
-      <span>$</span> dotnet add package FastSearch
+      <span aria-hidden="true">$</span> <code>dotnet add package FastSearch</code>
+      <a href="#quickstart">Quick Start</a>
     </div>
   </header>
 
@@ -615,7 +625,6 @@
 
   <!-- KEY FACTS (answer-first summary for search and AI engines) -->
   <section id="summary" aria-labelledby="summary-h">
-    <span class="section-label">At a glance</span>
     <h2 id="summary-h">FastSearch in 30 seconds</h2>
     <ul class="facts">
       <li><strong>What it is:</strong> a C# library for case-insensitive substring search over in-memory lists of objects: autocomplete, type-ahead, filtering and lookup.</li>
@@ -628,38 +637,37 @@
 
   <!-- ALGORITHMS -->
   <section id="algorithms" aria-labelledby="algorithms-h">
-    <span class="section-label">Algorithms</span>
     <h2 id="algorithms-h">Six engines. One interface.</h2>
     <p class="subtitle">All algorithms implement <code style="color:var(--accent-2);">ISearch&lt;T&gt;</code>, so you can swap them without changing application code.</p>
     <div class="algo-grid">
       <article class="algo-card">
-        <span class="tag">Recommended &middot; new in 1.1</span>
         <h3>NGramSearch</h3>
+        <span class="tag">Recommended &middot; new in 1.1</span>
         <p>Compressed n-gram posting lists. The smallest index (about 7 bytes per character), about 1 s to build 1M items, and single-digit-microsecond queries. Results come back in input order with no cache.</p>
       </article>
       <article class="algo-card">
-        <span class="tag">New in 1.1</span>
         <h3>SuffixArraySearch</h3>
+        <span class="tag">New in 1.1</span>
         <p>A generalized suffix array with a 1/2/3-character prefix table. Fastest at handing back very broad results, which it memoizes in a bounded cache.</p>
       </article>
       <article class="algo-card">
-        <span class="tag">Suffix trie</span>
         <h3>CharSequenceSearch</h3>
+        <span class="tag">Suffix trie</span>
         <p>Stores a precomputed answer at every trie node, so narrow queries are the fastest of all (about 0.1 µs). Memory grows as O(N·L²): 1.5 GiB for 1M items.</p>
       </article>
       <article class="algo-card">
-        <span class="tag">Hash-based</span>
         <h3>HashSearch</h3>
+        <span class="tag">Hash-based</span>
         <p>Precomputes a hash of every substring. Query speed is similar to the trie, and it uses the most memory of any algorithm.</p>
       </article>
       <article class="algo-card">
-        <span class="tag">No index</span>
         <h3>LinqSearch</h3>
+        <span class="tag">No index</span>
         <p>A parallel LINQ scan over lowercased copies made at construction. It has no substring index, but retains a text snapshot that must be rebuilt when indexed data changes.</p>
       </article>
       <article class="algo-card">
-        <span class="tag">Baseline</span>
         <h3>StringSearch</h3>
+        <span class="tag">Baseline</span>
         <p>A single-threaded <code>Contains</code> scan with no index. It’s the reference that every other algorithm is tested against.</p>
       </article>
     </div>
@@ -667,9 +675,8 @@
 
   <!-- CHOOSING -->
   <section id="choose" aria-labelledby="choose-h">
-    <span class="section-label">Choosing</span>
     <h2 id="choose-h">Which algorithm should I use?</h2>
-    <div class="table-wrap">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Algorithm selection comparison">
       <table class="choose">
         <thead><tr><th scope="col">If you need…</th><th scope="col">Use</th></tr></thead>
         <tbody>
@@ -686,10 +693,9 @@
 
   <!-- BENCHMARKS -->
   <section id="benchmarks" aria-labelledby="benchmarks-h">
-    <span class="section-label">Benchmarks</span>
     <h2 id="benchmarks-h">Benchmarks: 1 million items</h2>
     <p class="subtitle">Recorded v1.1 results: every algorithm uses the same 999,998 nonblank passwords on the same Apple-silicon Mac with .NET 10 and workstation GC, each in its own process with DOTNET_TieredCompilation=0. Query calls are sequential; LinqSearch uses parallel workers.</p>
-    <div class="table-wrap">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Benchmark measurements">
       <table>
         <caption>Build time, index memory and search latency at 1M items (lower is better)</caption>
         <thead>
@@ -707,48 +713,50 @@
     </div>
     <p class="note">The random query is the average of 1,000 cold searches of 1–8 characters and times the <code>Search</code> call only. The named queries average 2,000 warm calls (20 for scans), including enumeration of every result. Heap after queries is measured after both workloads and excludes input strings. These charts reuse the recorded results; performance depends on hardware, data, queries, and cache state. Full tables for 10k, 100k and 1M items are in the <a href="https://github.com/MILL5/FastSearch#performance--memory-v11-net-10">README</a>.</p>
     <figure>
-      <img src="images/search-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs.">
-      <figcaption>Average cold Search-call time over 1,000 random substrings at 999,998 items (log scale; excludes enumeration).</figcaption>
+      <a href="images/search-performance.png"><img src="images/search-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Bar chart, log scale: average time per random substring search over 1 million items. StringSearch 36.7 ms, LinqSearch 4.0 ms, HashSearch 2.22 µs, CharSequenceSearch 1.51 µs, SuffixArraySearch 103 µs, NGramSearch 5.28 µs."></a>
+      <figcaption>Average cold Search-call time over 1,000 random substrings at 999,998 items (log scale; excludes enumeration). <a href="images/search-performance.png">Open full-size chart</a>.</figcaption>
     </figure>
     <figure>
-      <img src="images/indexing-cost.png?v=1.1.0" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index.">
-      <figcaption>Build time and retained heap at 999,998 items (log scales; lower is better).</figcaption>
+      <a href="images/indexing-cost.png"><img src="images/indexing-cost.png?v=1.1.0" width="2890" height="1020" loading="lazy" decoding="async" alt="Log-scale bar charts comparing index build time, index memory and heap after queries for six algorithms at 1 million items. NGramSearch uses the least memory among substring indexes: 47.4 MiB; StringSearch has no index."></a>
+      <figcaption>Build time and retained heap at 999,998 items (log scales; lower is better). <a href="images/indexing-cost.png">Open full-size chart</a>.</figcaption>
     </figure>
     <figure>
-      <img src="images/index-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Build time across 10,000, 100,000 and 999,998 items for all six algorithms. StringSearch reports zero build time; the trie and hash indexes have the highest build cost.">
-      <figcaption>How index build time changes with collection size.</figcaption>
+      <a href="images/index-performance.png"><img src="images/index-performance.png?v=1.1.0" width="1870" height="951" loading="lazy" decoding="async" alt="Build time across 10,000, 100,000 and 999,998 items for all six algorithms. StringSearch reports zero build time; the trie and hash indexes have the highest build cost."></a>
+      <figcaption>How index build time changes with collection size. <a href="images/index-performance.png">Open full-size chart</a>.</figcaption>
     </figure>
     <figure>
-      <img src="images/search-latency.png?v=1.1.0" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items.">
-      <figcaption>Warm latency including enumeration by query at 999,998 items.</figcaption>
+      <a href="images/search-latency.png"><img src="images/search-latency.png?v=1.1.0" width="2040" height="1105" loading="lazy" decoding="async" alt="Log-scale chart of warm enumerated search latency per query (a, 12, love, phoenix, catherine) for six algorithms at 1 million items."></a>
+      <figcaption>Warm latency including enumeration by query at 999,998 items. <a href="images/search-latency.png">Open full-size chart</a>.</figcaption>
     </figure>
     <figure>
-      <img src="images/optimizations.png?v=1.1.0" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results.">
-      <figcaption>Optimizations used by each algorithm.</figcaption>
+      <a href="images/optimizations.png"><img src="images/optimizations.png?v=1.1.0" width="2210" height="1003" loading="lazy" decoding="async" alt="Matrix of the optimizations each algorithm uses: pre-normalized text, parallel index build, parallel query scan, all-substring index, prefix range tables, bounded query cache, compressed postings, and lazy posting results."></a>
+      <figcaption>Optimizations used by each algorithm. <a href="images/optimizations.png">Open full-size chart</a>.</figcaption>
     </figure>
   </section>
 
   <!-- QUICK START -->
   <section id="quickstart" aria-labelledby="quickstart-h">
-    <span class="section-label">Quick Start</span>
     <h2 id="quickstart-h">Searching in three lines of C#</h2>
     <p class="subtitle">Install the NuGet package, index your collection once, and call <code style="color:var(--accent-2);">Search()</code>.</p>
+
+<pre class="code-block" tabindex="0" role="region" aria-label="C sharp quick start example"><code><span class="cmt">// 1. Install: dotnet add package FastSearch</span>
+
+<span class="kw">using</span> FastSearch;
+
+<span class="cmt">// 2. Index your collection (one-time cost)</span>
+<span class="kw">var</span> names = <span class="kw">new</span> <span class="type">List</span>&lt;<span class="type">string</span>&gt; { <span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Catherine"</span>, <span class="str">"Phoenix"</span> };
+<span class="kw">var</span> search = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">string</span>&gt;(names);
+
+<span class="cmt">// 3. Search: case-insensitive, input order, no duplicates</span>
+<span class="kw">var</span> results = search.<span class="fn">Search</span>(<span class="str">"cat"</span>);
+<span class="cmt">// results: ["Catherine"]</span>
+
+<span class="cmt">// Given your existing people collection, index several fields:</span>
+<span class="kw">var</span> peopleSearch = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">Person</span>&gt;(
+  people,
+  p =&gt; <span class="kw">new</span>[] { p.FirstName, p.LastName, p.Email }
+);</code></pre>
     <p>Algorithm specifications: <a href="https://github.com/MILL5/FastSearch/blob/main/docs/NGramSearch-Spec.md">NGramSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/SuffixArraySearch-Spec.md">SuffixArraySearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/CharSequenceSearch-Spec.md">CharSequenceSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/HashSearch-Spec.md">HashSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/LinqSearch-Spec.md">LinqSearch</a>, <a href="https://github.com/MILL5/FastSearch/blob/main/docs/StringSearch-Spec.md">StringSearch</a>.</p>
-    <div class="code-block">
-      <span class="cmt">// 1. Install: dotnet add package FastSearch</span><br><br>
-      <span class="kw">using</span> FastSearch;<br><br>
-      <span class="cmt">// 2. Index your collection (one-time cost)</span><br>
-      <span class="kw">var</span> names = <span class="kw">new</span> <span class="type">List</span>&lt;<span class="type">string</span>&gt; { <span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Catherine"</span>, <span class="str">"Phoenix"</span> };<br>
-      <span class="kw">var</span> search = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">string</span>&gt;(names);<br><br>
-      <span class="cmt">// 3. Search: case-insensitive, input order, no duplicates</span><br>
-      <span class="kw">var</span> results = search.<span class="fn">Search</span>(<span class="str">"cat"</span>);<br>
-      <span class="cmt">// results: ["Catherine"]</span><br><br>
-      <span class="cmt">// Given your existing people collection, index several fields:</span><br>
-      <span class="kw">var</span> peopleSearch = <span class="kw">new</span> <span class="type">NGramSearch</span>&lt;<span class="type">Person</span>&gt;(<br>
-      &nbsp;&nbsp;people,<br>
-      &nbsp;&nbsp;p =&gt; <span class="kw">new</span>[] { p.FirstName, p.LastName, p.Email }<br>
-      );
-    </div>
   </section>
 
   <!-- INTERACTIVE SAMPLE -->
@@ -764,7 +772,6 @@
 
   <!-- HOW IT WORKS -->
   <section id="how-it-works" aria-labelledby="how-h">
-    <span class="section-label">How it works</span>
     <h2 id="how-h">How NGramSearch stays small and fast</h2>
     <p class="subtitle">It stores which items contain each short substring, compressed, instead of every possible answer.</p>
     <div class="steps-list">
@@ -785,7 +792,6 @@
 
   <!-- ECOSYSTEM -->
   <section id="ecosystem">
-    <span class="section-label">MILL5 Ecosystem</span>
     <h2>Part of the MILL5 open-source family</h2>
     <p class="subtitle">FastSearch is one of many open-source .NET libraries built by MILL5 — a Boston-based Microsoft Gold Partner.</p>
     <div class="eco-grid">
@@ -824,7 +830,6 @@
 
   <!-- FAQ -->
   <section id="faq" aria-labelledby="faq-h">
-    <span class="section-label">FAQ</span>
     <h2 id="faq-h">Frequently asked questions</h2>
     <div class="faq-list">
       <div class="faq-item">

@@ -206,7 +206,7 @@ Enjoy the power of efficient searching with FastSearch!
 ### **Contributing**
 We welcome contributions! Please feel free to submit issues or pull requests.
 
-- **Branches:** work on a `release/*` branch, open a pull request into `develop`, and `develop` reaches `main` only through a pull request.
+- **Branches:** work on a `feature/*` branch, open a pull request into `develop`, and `develop` reaches `main` only through a pull request.
 - **Checks:** CI builds the solution with warnings as errors and runs the tests on every pull request.
 - **Releases:** pushing a `vX.Y.Z` tag on `main` publishes the package to NuGet.
 
