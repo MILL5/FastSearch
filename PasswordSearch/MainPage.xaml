@@ -30,24 +30,24 @@
         </VerticalStackLayout>
 
         <Grid x:Name="Workspace" Grid.Row="1" ColumnDefinitions="280,*" ColumnSpacing="24" SizeChanged="OnWorkspaceSizeChanged">
-            <ScrollView x:Name="SetupPanel">
+            <ScrollView x:Name="SetupPanel" IsEnabled="{Binding IsIdle}">
                 <VerticalStackLayout Spacing="24" Padding="0,0,4,4">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Dataset" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
-                        <Label Text="Number of passwords" Style="{StaticResource SecondaryText}" />
-                        <Entry Keyboard="Numeric" Text="{Binding NumberOfEntries, Mode=TwoWay}"
+                        <Label Text="Number of passwords (1–1,000,000)" Style="{StaticResource SecondaryText}" />
+                        <Entry Keyboard="Numeric" Text="{Binding NumberOfEntriesText, Mode=TwoWay}"
                                SemanticProperties.Description="Number of passwords to load" />
                         <Button Text="Load dataset" Command="{Binding LoadFileCommand}" HorizontalOptions="Fill" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Search algorithm" Style="{StaticResource SectionHeading}" SemanticProperties.HeadingLevel="Level2" />
-                        <RadioButton GroupName="Implementation" Content="N-Gram" IsChecked="{Binding UseNGram, Mode=TwoWay}" />
-                        <RadioButton GroupName="Implementation" Content="Suffix Array" IsChecked="{Binding UseSuffixArray, Mode=TwoWay}" />
-                        <RadioButton GroupName="Implementation" Content="Character Sequence" IsChecked="{Binding UseCharSequence, Mode=TwoWay}" />
-                        <RadioButton GroupName="Implementation" Content="Hash" IsChecked="{Binding UseHash, Mode=TwoWay}" />
-                        <RadioButton GroupName="Implementation" Content="LINQ" IsChecked="{Binding UseLinq, Mode=TwoWay}" />
-                        <RadioButton GroupName="Implementation" Content="String Contains" IsChecked="{Binding UseString, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="N-Gram" SemanticProperties.Description="N-Gram" IsChecked="{Binding UseNGram, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Suffix Array" SemanticProperties.Description="Suffix Array" IsChecked="{Binding UseSuffixArray, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Character Sequence" SemanticProperties.Description="Character Sequence" IsChecked="{Binding UseCharSequence, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="Hash" SemanticProperties.Description="Hash" IsChecked="{Binding UseHash, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="LINQ" SemanticProperties.Description="LINQ" IsChecked="{Binding UseLinq, Mode=TwoWay}" />
+                        <RadioButton GroupName="Implementation" Content="String Contains" SemanticProperties.Description="String Contains" IsChecked="{Binding UseString, Mode=TwoWay}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="8">

@@ -1,11 +1,13 @@
 # FastSearch — agent guidance
 
 ## Branching (mandatory)
-- All development happens on `release/*` branches (e.g. `release/1.2`).
-- `release/*` → `develop` via pull request only.
+- All development happens on `feature/*` branches (e.g. `feature/search-improvements`).
+- `feature/*` → `develop` via pull request only.
 - `develop` → `main` via pull request only. This is the only way changes reach `main`; never commit or push to `main` or `develop` directly.
 - Version tags (`vX.Y.Z`) go on `main` after the develop → main PR merges; pushing the tag runs `.github/workflows/release.yml`, which publishes to NuGet.
 - Resolve diverged branches with merge commits, never rebase.
+- Final desired-state GitHub ruleset payloads are in `.github/rulesets/`; provisioning is explicit through the repository API, not automatic file discovery. Follow `.github/rulesets/README.md` for bootstrap ordering. Once applied, they require `Branch source`, `build-test`, and `sample` checks with no bypass actors. The trusted metadata-only `pull_request_target` guard rejects foreign repositories and invalid source branches.
+- Automatic Copilot cloud review applies only to PRs targeting `develop`; never manually request or re-request it.
 
 ## Build & test
 - `dotnet build FastSearch.slnx -c Release -warnaserror` on macOS or Windows (needs the `maui` workload for the `PasswordSearch` .NET MAUI sample, which targets Mac Catalyst on macOS and Windows on Windows). On Linux, build `FastSearch`, `FastSearch.UnitTests`, and `PasswordSearch.Benchmark` individually.
@@ -18,3 +20,10 @@
 - Every algorithm implements `ISearch<T>` and must match `StringSearch<T>` (the oracle) on the consistency tests; new algorithms need the same coverage.
 - Test data lives once in `data/` and is linked into projects that set `<UsesPasswordData>true</UsesPasswordData>` (see `Directory.Build.props`).
 - When benchmark numbers change, update them everywhere together: README tables, the chart PNGs (root and `docs/images/`), `docs/index.html` (table, FAQ text and JSON-LD), `docs/llms.txt`, `docs/*-Spec.md`, and the current benchmark sheets in `archive/*.xlsx`. Regenerate charts with `uv run scripts/generate_benchmark_charts.py`; PNG filenames are lowercase.
+
+EGM artifact directory: docs/designs
+
+## Design review tooling
+- Project-local Google EGM skills and reviewer personas are installed under `.agents/`; pins and local adjustments are in `.agents/egm-source.json`.
+- Design flow: `/egm-draft` → `/egm-review` with fresh-context Goldfish reviewers → resolve findings → implementation. Reports live under `docs/designs/`.
+- Impeccable context is `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`, and the target surface brief; the MAUI sample has its own scoped context under `PasswordSearch/`.

@@ -121,7 +121,7 @@ namespace FastSearch
 
                   foreach (var s in values)
                   {
-                      if (s is null) continue;
+                      if (string.IsNullOrEmpty(s)) continue;
 
                       var value = s.ToLowerInvariant()
                                    .ToArray();
