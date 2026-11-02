@@ -56,3 +56,9 @@ bump, release tag, NuGet publication, new raster or global toolchain changes.
 
 Final native preview additionally confirmed Character Sequence selection/log name
 and actual11=oracle11 after load100; all six names appear in native AX.
+
+Second cloud review identified an ambiguous provisioning contract in desired-state
+JSON. Added `.github/rulesets/README.md` with exact API application and safe
+bootstrap ordering, clarified AGENTS, and retained full active payloads only as
+final desired state. The older-head missing-script finding was fixed in f0c1882;
+that head passed Linux and macOS CI. No manual review request was made.

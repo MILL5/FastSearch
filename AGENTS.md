@@ -6,7 +6,7 @@
 - `develop` → `main` via pull request only. This is the only way changes reach `main`; never commit or push to `main` or `develop` directly.
 - Version tags (`vX.Y.Z`) go on `main` after the develop → main PR merges; pushing the tag runs `.github/workflows/release.yml`, which publishes to NuGet.
 - Resolve diverged branches with merge commits, never rebase.
-- GitHub rulesets in `.github/rulesets/` require `Branch source`, `build-test`, and `sample` checks with no bypass actors. The trusted metadata-only `pull_request_target` guard rejects foreign repositories and invalid source branches.
+- Final desired-state GitHub ruleset payloads are in `.github/rulesets/`; provisioning is explicit through the repository API, not automatic file discovery. Follow `.github/rulesets/README.md` for bootstrap ordering. Once applied, they require `Branch source`, `build-test`, and `sample` checks with no bypass actors. The trusted metadata-only `pull_request_target` guard rejects foreign repositories and invalid source branches.
 - Automatic Copilot cloud review applies only to PRs targeting `develop`; never manually request or re-request it.
 
 ## Build & test

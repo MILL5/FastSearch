@@ -2,7 +2,7 @@
 
 - Author: Rich Crane / MILL5
 - Date: 2026-11-02
-- Status: Proposed; undergoing independent Goldfish review
+- Status: Reviewed and implemented; operational evidence is in the PRs and live rulesets
 
 ## Overview
 
@@ -378,3 +378,5 @@ shows validated result counts. Test logic remains separate from native visuals.
 Create `docs/favicon.svg` from the existing navigation magnifier geometry and reference it in index metadata; browser acceptance exposed an implicit favicon 404. No raster assets generated.
 
 Finish review: place release metadata below hero description and all six algorithm tags below their h3 headings; preserve text while removing the remaining eyebrow pattern.
+
+Create `.github/rulesets/README.md` to distinguish desired-state JSON from live API enforcement and document exact ordered bootstrap/provisioning commands.
