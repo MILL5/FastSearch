@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="4.5.1" />
     <PackageReference Include="MSTest.TestFramework" Version="4.5.1" />
@@ -28,6 +29,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FastSearch\FastSearch.csproj" />
+    <Compile Include="../PasswordSearch/MainViewModel.cs" Link="Native/MainViewModel.cs" />
+    <Compile Include="../PasswordSearch/TimerScope.cs" Link="Native/TimerScope.cs" />
   </ItemGroup>
 
 </Project>

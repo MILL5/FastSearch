@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T00:00:00Z",
+  "title": "Design System: FastSearch documentation",
+  "extensions": {
+    "motion": [
+      {
+        "name": "link-transition",
+        "value": "color 0.2s",
+        "purpose": "Existing link hover feedback"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "640px"
+      },
+      {
+        "name": "wrapped-navigation",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary install action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Existing NuGet action; same dark foreground on hover.",
+      "html": "<a class=\"primary\" href=\"#\">Install from NuGet</a>",
+      "css": ".primary { display:inline-block; background:#10b981; color:#07070a; padding:12px 24px; border-radius:10px; font:600 0.95rem system-ui; } .primary:hover { color:#07070a; } .primary:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
+    },
+    {
+      "name": "Readable benchmark region",
+      "kind": "custom",
+      "description": "Captioned comparison table with local keyboard scrolling.",
+      "html": "<div class=\"region\" tabindex=\"0\" role=\"region\" aria-label=\"Benchmark measurements\"><table><caption>Recorded measurements</caption><tr><th scope=\"col\">Algorithm</th><th scope=\"col\">Index memory</th></tr><tr><td>NGramSearch</td><td>47.4 MiB</td></tr></table></div>",
+      "css": ".region { overflow-x:auto; border:1px solid rgba(255,255,255,.08); border-radius:16px; background:#13131a; color:#e1e7ed; } th,td,caption { padding:10px; } .region:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Existing technical reference",
+    "overview": "Preserve the incumbent dark/emerald documentation and measured algorithm comparisons.",
+    "keyCharacteristics": [
+      "Dark neutral surfaces",
+      "Emerald actions",
+      "Readable measurement tables"
+    ],
+    "rules": [],
+    "dos": [
+      "Keep factual evidence visible",
+      "Support keyboard navigation"
+    ],
+    "donts": [
+      "Do not invent benchmark claims",
+      "Do not rebrand during scoped fixes"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T00:00:00Z",
+  "title": "Design System: FastSearch Password Search",
+  "extensions": {
+    "breakpoints": [
+      {
+        "name": "stacked-workspace",
+        "value": "820"
+      }
+    ]
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "Native benchmark workbench",
+    "overview": "Existing native controls and honest measurable results.",
+    "keyCharacteristics": [
+      "Native controls",
+      "Light/dark results",
+      "Responsive setup/results"
+    ],
+    "rules": [],
+    "dos": [
+      "Keep controls familiar"
+    ],
+    "donts": [
+      "Do not replace native behavior with web chrome"
+    ]
+  }
+}
