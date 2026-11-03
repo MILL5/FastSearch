@@ -28,7 +28,7 @@
       "refersTo": "button-primary",
       "description": "Existing NuGet action; same dark foreground on hover.",
       "html": "<a class=\"primary\" href=\"#\">Install from NuGet</a>",
-      "css": ".primary { display:inline-block; background:#10b981; color:#07070a; padding:12px 24px; border-radius:10px; font:600 0.95rem system-ui; } .primary:hover { color:#07070a; } .primary:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
+      "css": ".primary { display:inline-block; background:linear-gradient(135deg,#10b981 0%,#3b82f6 100%); color:#07070a; padding:12px 24px; border-radius:10px; font:600 0.95rem system-ui; } .primary:hover { color:#07070a; } .primary:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
     },
     {
       "name": "Readable benchmark region",
@@ -40,10 +40,10 @@
   ],
   "narrative": {
     "northStar": "Existing technical reference",
-    "overview": "Preserve the incumbent dark/emerald documentation and measured algorithm comparisons.",
+    "overview": "Preserve the original green-to-blue gradients, dark documentation surfaces and measured algorithm comparisons.",
     "keyCharacteristics": [
       "Dark neutral surfaces",
-      "Emerald actions",
+      "Green-to-blue gradient actions",
       "Readable measurement tables"
     ],
     "rules": [],
