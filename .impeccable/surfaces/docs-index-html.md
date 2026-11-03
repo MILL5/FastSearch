@@ -17,7 +17,7 @@ tradeoffs. Preserve all factual copy, benchmarks, structured data and attributio
 ## Direction contract
 
 THESIS: a technical reference centered on concrete algorithm evidence.
-OWN-WORLD: existing dark neutral surfaces, emerald actions, system sans and code.
+OWN-WORLD: existing dark neutral surfaces, green-to-blue gradient actions, system sans and code.
 STORY: understand contains search, install, compare memory/build/query costs.
 FIRST VIEWPORT: sticky navigation, headline/description, install/source actions.
 FORM: preserve the incumbent single-page reference; no generated comp or redesign.

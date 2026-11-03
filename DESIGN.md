@@ -10,11 +10,14 @@ colors:
   text-muted: "#acbac7"
   emerald: "#10b981"
   emerald-bright: "#34d399"
+  blue: "#3b82f6"
   syntax-keyword: "#c084fc"
   syntax-type: "#38bdf8"
   syntax-string: "#fbbf24"
   chart-paper: "#fcfcfb"
   white: "#ffffff"
+gradients:
+  accent: "linear-gradient(135deg, {colors.emerald} 0%, {colors.blue} 100%)"
 typography:
   display:
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
@@ -77,7 +80,7 @@ spacing:
   section-block: "80px"
 components:
   button-primary:
-    backgroundColor: "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)"
+    backgroundColor: "{gradients.accent}"
     textColor: "{colors.canvas}"
     rounded: "{rounded.control}"
     padding: "12px 24px"

@@ -19,7 +19,16 @@
         "name": "wrapped-navigation",
         "value": "900px"
       }
-    ]
+    ],
+    "palette": {
+      "colors": {
+        "emerald": "#10b981",
+        "blue": "#3b82f6"
+      },
+      "gradients": {
+        "accent": "linear-gradient(135deg, {colors.emerald} 0%, {colors.blue} 100%)"
+      }
+    }
   },
   "components": [
     {
@@ -28,7 +37,7 @@
       "refersTo": "button-primary",
       "description": "Existing NuGet action; same dark foreground on hover.",
       "html": "<a class=\"primary\" href=\"#\">Install from NuGet</a>",
-      "css": ".primary { display:inline-block; background:linear-gradient(135deg,#10b981 0%,#3b82f6 100%); color:#07070a; padding:12px 24px; border-radius:10px; font:600 0.95rem system-ui; } .primary:hover { color:#07070a; } .primary:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
+      "css": ".primary { display:inline-block; --accent:#10b981; --blue:#3b82f6; background:linear-gradient(135deg,var(--accent) 0%,var(--blue) 100%); color:#07070a; padding:12px 24px; border-radius:10px; font:600 0.95rem system-ui; } .primary:hover { color:#07070a; } .primary:focus-visible { outline:3px solid #34d399; outline-offset:4px; }"
     },
     {
       "name": "Readable benchmark region",

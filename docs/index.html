@@ -553,6 +553,14 @@
     footer a { color: var(--text-dim); }
     .footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
 
+    @media (forced-colors: active) {
+      .hero h1 .gradient, .stat .num {
+        background: none;
+        color: CanvasText;
+        -webkit-text-fill-color: CanvasText;
+      }
+    }
+
     /* ---- RESPONSIVE ---- */
     @media (max-width: 900px) {
       html { scroll-padding-top: 176px; }
