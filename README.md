@@ -4,12 +4,12 @@
 [![NuGet downloads](https://img.shields.io/nuget/dt/FastSearch.svg)](https://www.nuget.org/packages/FastSearch)
 [![CI](https://github.com/MILL5/FastSearch/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/MILL5/FastSearch/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![License: PolyForm Strict 1.0.0](https://img.shields.io/badge/License-PolyForm_Strict_1.0.0-blue.svg)](LICENSE)
 ## _Lightning-fast, low-memory substring search for .NET_
 
-FastSearch is an open-source C# library for case-insensitive substring search ("contains" search) over in-memory collections of objects: autocomplete, type-ahead, filtering, and lookups across millions of items.
+FastSearch is a source-available C# library for case-insensitive substring search ("contains" search) over in-memory collections of objects: autocomplete, type-ahead, filtering, and lookups across millions of items.
 
-**Current release:** [FastSearch 1.1.3](https://www.nuget.org/packages/FastSearch/1.1.3). This patch updates the desktop sample and documentation; the algorithms and recorded benchmark measurements are unchanged from 1.1.0.
+**Current release:** [FastSearch 1.1.4](https://www.nuget.org/packages/FastSearch/1.1.4). This patch adopts PolyForm Strict 1.0.0; the algorithms, APIs and recorded benchmark measurements are unchanged.
 
 ✨ **Features**
 - **Effortless searching:** case-insensitive substring matches across large lists of objects through one interface, `ISearch<T>`.
@@ -23,7 +23,7 @@ FastSearch is an open-source C# library for case-insensitive substring search ("
 - **Customizable object representation:** override `ToString()` or pass a custom index function that returns the strings to index for each item.
 
 🚀 **Quick Start**
-1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch --version 1.1.3`.
+1. Install the **FastSearch** package from NuGet: `dotnet add package FastSearch --version 1.1.4`.
 2. Override `ToString()` on your objects, or pass an index function.
 3. Create an `NGramSearch` with your `IEnumerable<T>`, then call `Search`.
 
@@ -211,7 +211,9 @@ We welcome contributions! Please feel free to submit issues or pull requests.
 - **Releases:** pushing a `vX.Y.Z` tag on `main` publishes the package to NuGet.
 
 ### **License**
-This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.
+The current source adopts [PolyForm Strict 1.0.0](LICENSE), with copyright retained by MILL5, LLC. This is source-available software; the license permits the uses it expressly describes. Uses outside those terms require separate authorization from MILL5. Read the full license before using the software.
+
+Published version 1.1.3 and earlier distributions retain their original Apache-2.0 license. Third-party dependencies retain their own licenses.
 
 ## Credits
 

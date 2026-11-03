@@ -171,7 +171,7 @@ def main():
     # Branded social preview; use the same README measurements as the charts.
     background, accent, white, muted = "#0a0a0f", "#3de0b4", "#f3f5f8", "#a6abb9"
     fig = plt.figure(figsize=(12, 6.3), dpi=100, facecolor=background)
-    fig.text(0.06, 0.9, "OPEN SOURCE · C# / .NET 10", fontsize=12, weight="bold", color=accent)
+    fig.text(0.06, 0.9, "SOURCE AVAILABLE · C# / .NET 10", fontsize=12, weight="bold", color=accent)
     fig.text(0.94, 0.9, "MILL5", fontsize=17, weight="bold", ha="right", color=white)
     fig.text(0.055, 0.74, "FastSearch", fontsize=54, weight="bold", color=white)
     fig.text(0.06, 0.64, "Case-insensitive substring search. Six algorithms.", fontsize=21, color=muted)
