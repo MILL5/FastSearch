@@ -1,6 +1,6 @@
 ---
 name: FastSearch documentation
-description: Existing dark technical documentation with emerald actions and measured comparisons
+description: Dark technical documentation with green-to-blue gradients and measured comparisons
 colors:
   canvas: "#07070a"
   elevated: "#0f0f14"
@@ -10,11 +10,14 @@ colors:
   text-muted: "#acbac7"
   emerald: "#10b981"
   emerald-bright: "#34d399"
+  blue: "#3b82f6"
   syntax-keyword: "#c084fc"
   syntax-type: "#38bdf8"
   syntax-string: "#fbbf24"
   chart-paper: "#fcfcfb"
   white: "#ffffff"
+gradients:
+  accent: "linear-gradient(135deg, {colors.emerald} 0%, {colors.blue} 100%)"
 typography:
   display:
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
@@ -77,7 +80,7 @@ spacing:
   section-block: "80px"
 components:
   button-primary:
-    backgroundColor: "{colors.emerald}"
+    backgroundColor: "{gradients.accent}"
     textColor: "{colors.canvas}"
     rounded: "{rounded.control}"
     padding: "12px 24px"
@@ -89,8 +92,9 @@ components:
 
 Extracted from docs/index.html for this maintenance task. The existing composition
 pairs installation with algorithm tradeoffs, benchmark tables and source material.
-Dark neutral surfaces carry near-white text; emerald identifies actions and the
-recommended algorithm. No replacement identity has been selected.
+Dark neutral surfaces carry near-white text. The original green-to-blue gradients
+color the hero heading, primary action, step markers and benchmark statistics;
+emerald identifies links and the recommended algorithm.
 
 ## Colors
 
@@ -128,7 +132,7 @@ radii during a quality fix.
 
 ## Components
 
-Primary installation action is emerald on canvas text; secondary source action
+Primary installation action uses a green-to-blue gradient with canvas text; secondary source action
 is a bordered panel. Navigation links expose section anchors. Comparison tables
 retain captions and the recommended-row highlight. Code samples remain selectable.
 Focused controls and scroll regions must visibly stand apart from adjacent content.
