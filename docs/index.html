@@ -287,7 +287,10 @@
       margin: 0 auto 18px;
     }
     .hero h1 .gradient {
-      color: var(--accent-2);
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .hero p {
       max-width: 560px;
@@ -306,7 +309,7 @@
     }
     .btn:hover { transform: translateY(-1px); }
     .btn-primary {
-      background: var(--accent);
+      background: var(--accent-grad);
       color: var(--bg);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
@@ -417,7 +420,7 @@
       display: flex; align-items: center; justify-content: center;
       width: 36px; height: 36px;
       border-radius: 50%;
-      background: var(--accent);
+      background: var(--accent-grad);
       color: var(--bg);
       font-weight: 700;
       font-size: 0.95rem;
@@ -441,7 +444,10 @@
     .stat .num {
       font-size: 2rem;
       font-weight: 800;
-      color: var(--accent-2);
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .stat .lbl { color: var(--text-dim); font-size: 0.82rem; margin-top: 2px; }
 
@@ -546,6 +552,14 @@
     }
     footer a { color: var(--text-dim); }
     .footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    @media (forced-colors: active) {
+      .hero h1 .gradient, .stat .num {
+        background: none;
+        color: CanvasText;
+        -webkit-text-fill-color: CanvasText;
+      }
+    }
 
     /* ---- RESPONSIVE ---- */
     @media (max-width: 900px) {
